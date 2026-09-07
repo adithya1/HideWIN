@@ -1,13 +1,14 @@
-﻿from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 import uuid
 
-import db_models as models
-from src.lib.database import get_db
-from src.api.user.auth import get_current_user, send_email
+from services.api import db_models as models
+from services.api.core.database import get_db
+from services.api.core.security import get_current_user
+from services.api.services.email_service import EmailService
 from datetime import timedelta
 
 router = APIRouter(prefix="/api/meetings", tags=["meetings"])
@@ -159,7 +160,7 @@ def create_meeting(
                     lines.append("Add to Google Calendar:")
                     lines.append(link)
             content_str = chr(10).join(lines)
-            send_email(db, to_email=email, subject=subject, content=content_str, cc=meeting.cc_participants, bcc=meeting.bcc_participants, attachments=att_data)
+            EmailService.send_email(db, to_email=email, subject=subject, content=content_str, cc=meeting.cc_participants, bcc=meeting.bcc_participants, attachments=att_data)
 
 
     
@@ -264,7 +265,7 @@ def send_invites_for_meeting(
                     lines.append("Add to Google Calendar:")
                     lines.append(link)
             content_str = chr(10).join(lines)
-            send_email(db, to_email=email, subject=subject, content=content_str, cc=data.cc_participants, bcc=data.bcc_participants, attachments=att_data)
+            EmailService.send_email(db, to_email=email, subject=subject, content=content_str, cc=data.cc_participants, bcc=data.bcc_participants, attachments=att_data)
 
     return {"status": "success"}
 
@@ -345,7 +346,7 @@ def update_meeting(
                     lines.append("Add to Google Calendar:")
                     lines.append(link)
             content_str = chr(10).join(lines)
-            send_email(db, to_email=email, subject=subject, content=content_str, cc=meeting_data.cc_participants, bcc=meeting_data.bcc_participants)
+            EmailService.send_email(db, to_email=email, subject=subject, content=content_str, cc=meeting_data.cc_participants, bcc=meeting_data.bcc_participants)
             
     db.commit()
     db.refresh(meeting)
