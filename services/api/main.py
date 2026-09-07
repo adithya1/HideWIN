@@ -9,6 +9,7 @@ from services.api.api.users.router import router as user_router
 from services.api.api.devices.router import router as devices_router
 from services.api.api.notifications.router import router as notifications_router
 from services.api.api.system.router import router as system_router
+from services.api.api.calendar.router import router as calendar_router
 
 from services.api.core.exceptions import ApplicationError, application_error_handler, validation_error_handler
 
@@ -21,6 +22,7 @@ app.include_router(user_router)
 app.include_router(devices_router)
 app.include_router(notifications_router)
 app.include_router(system_router)
+app.include_router(calendar_router)
 app.include_router(ws.router)
 app.include_router(ai_proxy.router)
 app.include_router(meeting.router)
