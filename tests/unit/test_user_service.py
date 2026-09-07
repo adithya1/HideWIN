@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock
-from services.api.services.user_service import UserService
+from services.api.api.users.service import UserService
 from services.api.models.user import User
 
 @pytest.mark.asyncio

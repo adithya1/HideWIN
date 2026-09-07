@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from services.api.repositories.user_repo import UserRepository
+from services.api.api.users.repository import UserRepository
 from services.api.models.user import User
 
 @pytest.mark.asyncio
