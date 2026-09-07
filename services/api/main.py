@@ -18,6 +18,9 @@ from services.api.api.billing.router import router as billing_router
 from services.api.api.vendor.router import router as vendor_router
 from services.api.api.team.router import router as team_router
 from services.api.api.guest.router import router as guest_router
+from services.api.api.integrations.router import router as integrations_router
+from services.api.api.reports.router import router as reports_router
+from services.api.api.admin.router import router as internal_admin_router
 
 from services.api.core.exceptions import ApplicationError, application_error_handler, validation_error_handler
 
@@ -39,6 +42,9 @@ app.include_router(billing_router)
 app.include_router(vendor_router)
 app.include_router(team_router)
 app.include_router(guest_router)
+app.include_router(integrations_router)
+app.include_router(reports_router)
+app.include_router(internal_admin_router)
 app.include_router(ws.router)
 app.include_router(ai_proxy.router)
 app.include_router(meeting.router)
