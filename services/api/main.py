@@ -14,6 +14,7 @@ from services.api.api.calendar.router import router as calendar_router
 from services.api.api.resume.router import router as resume_router
 from services.api.api.code_pilot.router import router as code_pilot_router
 from services.api.api.context.router import router as context_router
+from services.api.api.billing.router import router as billing_router
 
 from services.api.core.exceptions import ApplicationError, application_error_handler, validation_error_handler
 
@@ -31,6 +32,7 @@ app.include_router(calendar_router)
 app.include_router(resume_router)
 app.include_router(code_pilot_router)
 app.include_router(context_router)
+app.include_router(billing_router)
 app.include_router(ws.router)
 app.include_router(ai_proxy.router)
 app.include_router(meeting.router)
