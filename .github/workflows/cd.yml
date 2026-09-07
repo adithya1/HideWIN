@@ -1,12 +1,7 @@
 name: CD Pipeline
 
 on:
-  push:
-    branches: [ "main" ]
-
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: hidewin-services
+  workflow_dispatch:
 
 jobs:
   build-and-push:
@@ -51,3 +46,4 @@ jobs:
     steps:
       - name: Deploy to Production EKS
         run: echo "Executing Helm upgrade against production cluster..."
+
