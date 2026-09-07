@@ -57,3 +57,15 @@ async def reset_password(body: ResetPasswordRequest, db: AsyncSession = Depends(
         return await PasswordService.reset_password(body.token, body.new_password, db)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+from services.api.schemas.auth_schema import InviteRequest
+from services.api.api.authentication.invitation_service import InvitationService
+from services.api.core.security import get_current_user
+from services.api.models.user import User
+
+@router.post("/send-invites")
+async def send_invites(
+    body: InviteRequest, 
+    db: AsyncSession = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    return await InvitationService.send_invites(body.emails, current_user, db)

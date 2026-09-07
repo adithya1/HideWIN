@@ -43,3 +43,27 @@ async def test_forgot_password_not_found(monkeypatch):
     response = client.post("/auth/forgot-password", json={"email": "nobody@test.com"})
     assert response.status_code == 200
     assert "reset link has been sent" in response.json()["message"] # Security feature: don't reveal if email exists
+def test_send_invites_success(monkeypatch):
+    # Mock get_current_user dependency
+    from services.api.core.security import get_current_user
+    app.dependency_overrides[get_current_user] = lambda: User(id=1, email="admin@test.com")
+    
+    # We must also mock the DB add/commit since we are testing endpoints directly
+    class MockDb:
+        def add(self, obj): pass
+        async def commit(self): pass
+        
+    from services.api.core.database import get_db
+    async def mock_get_db():
+        yield MockDb()
+    app.dependency_overrides[get_db] = mock_get_db
+    
+    response = client.post("/auth/send-invites", json={"emails": ["invite1@test.com", "invite2@test.com"]})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert len(data["invited"]) == 2
+    assert data["invited"][0]["email"] == "invite1@test.com"
+    
+    # Cleanup overrides
+    app.dependency_overrides.clear()

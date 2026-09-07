@@ -22,3 +22,7 @@ class ForgotPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str
+from typing import List
+
+class InviteRequest(BaseModel):
+    emails: List[EmailStr]
