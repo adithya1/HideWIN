@@ -21,3 +21,5 @@ langchain-google-genai
 langchain-groq
 faiss-cpu
 sentence-transformers
+faster-whisper
+numpy
