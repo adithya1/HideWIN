@@ -1,0 +1,29 @@
+name: Code Quality and Coverage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio pytest-cov passlib pydantic pydantic-settings fastapi httpx PyJWT
+          
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=services/api --cov-report=term --cov-report=xml
+          
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
