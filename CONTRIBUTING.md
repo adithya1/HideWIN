@@ -1,3 +1,1 @@
-# CONTRIBUTING
-
-See AGENT_WORKFLOW.md for contribution rules.
+# Contributing Guidelines\n\nPlease read the DEVELOPMENT_CONTRACT.md before submitting a PR.\n
