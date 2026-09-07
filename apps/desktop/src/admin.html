@@ -1,0 +1,639 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="content-security-policy" content="script-src 'self' 'unsafe-inline'" />
+    <title>HideWIN Admin Panel</title>
+    <script>
+        (async () => {
+            try {
+                const { ipcRenderer } = require('electron');
+                const prefsStr = await ipcRenderer.invoke('get-preferences');
+                const prefs = typeof prefsStr === 'string' ? JSON.parse(prefsStr) : prefsStr;
+                if (prefs && prefs.themeMain === 'light') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                } else if (prefs && prefs.themeMain === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {
+                console.error("Theme sync failed", e);
+            }
+        })();
+    </script>
+    <style>
+        :root {
+            --bg: #0A0A0A;
+            --surface: #111111;
+            --elevated: #191919;
+            --hover: #1F1F1F;
+            --text: #F5F5F5;
+            --muted: #999999;
+            --dim: #555555;
+            --border: #222222;
+            --border-s: #333333;
+            --accent: #3B82F6;
+            --success: #22C55E;
+            --warning: #D4A017;
+            --danger: #EF4444;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            --mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+            --r: 4px;
+            --rm: 8px;
+            --rl: 12px;
+        }
+        :root[data-theme="light"] {
+            --bg: #F9FAFB;
+            --surface: #FFFFFF;
+            --elevated: #F3F4F6;
+            --hover: #E5E7EB;
+            --text: #111827;
+            --muted: #6B7280;
+            --dim: #9CA3AF;
+            --border: #E5E7EB;
+            --border-s: #D1D5DB;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme="dark"]) {
+                --bg: #F9FAFB;
+                --surface: #FFFFFF;
+                --elevated: #F3F4F6;
+                --hover: #E5E7EB;
+                --text: #111827;
+                --muted: #6B7280;
+                --dim: #9CA3AF;
+                --border: #E5E7EB;
+                --border-s: #D1D5DB;
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; -webkit-font-smoothing: antialiased; }
+        body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; border-radius: var(--rl); border: 1px solid var(--border); }
+
+        /* Drag bar */
+        .drag-bar { -webkit-app-region: drag; height: 38px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; flex-shrink: 0; }
+        .drag-bar span { font-size: 13px; font-weight: 500; color: var(--muted); }
+        .close-btn { -webkit-app-region: no-drag; margin-left: auto; background: none; border: none; color: var(--dim); cursor: pointer; padding: 4px; border-radius: var(--r); transition: color 0.15s; display: flex; align-items: center; }
+        .close-btn:hover { color: var(--text); }
+
+        /* Layout */
+        .layout { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 180px; background: var(--surface); border-right: 1px solid var(--border); padding: 16px 0; flex-shrink: 0; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border-left: 2px solid transparent; transition: all 0.15s; }
+        .nav-item:hover { color: var(--text); background: var(--hover); }
+        .nav-item.active { color: var(--text); background: var(--elevated); border-left-color: var(--accent); }
+        .nav-section { font-size: 10px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 16px 4px; }
+
+        .content { flex: 1; overflow-y: auto; padding: 24px; }
+        .content::-webkit-scrollbar { width: 6px; }
+        .content::-webkit-scrollbar-track { background: transparent; }
+        .content::-webkit-scrollbar-thumb { background: var(--border-s); border-radius: 3px; }
+
+        /* Panels */
+        .panel { display: none; }
+        .panel.active { display: block; }
+        h2 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+
+        /* Card */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rm); padding: 20px; margin-bottom: 16px; }
+        .card-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+
+        /* Form */
+        .form-group { margin-bottom: 14px; }
+        label { font-size: 12px; font-weight: 500; color: var(--muted); display: block; margin-bottom: 6px; }
+        .input-row { display: flex; gap: 8px; }
+        input[type="password"], input[type="text"], input[type="email"] {
+            background: var(--elevated); color: var(--text); border: 1px solid var(--border);
+            padding: 9px 12px; width: 100%; border-radius: var(--r); font-size: 13px; font-family: var(--font);
+            outline: none; transition: border-color 0.15s;
+        }
+        input:hover:not(:focus) { border-color: var(--dim); }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+        input::placeholder { color: var(--dim); }
+        .hint { font-size: 11px; color: var(--dim); margin-top: 4px; }
+        .hint a { color: var(--accent); cursor: pointer; text-decoration: none; }
+        .hint a:hover { text-decoration: underline; }
+
+        /* Buttons */
+        .btn { padding: 8px 16px; border-radius: var(--r); border: 1px solid var(--border-s); background: transparent; color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font); transition: background 0.15s, border-color 0.15s; }
+        .btn:hover { background: var(--hover); }
+        .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-danger { border-color: var(--danger); color: var(--danger); }
+        .btn-danger:hover { background: rgba(239,68,68,0.08); }
+
+        /* Status badges */
+        .status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px; }
+        .status-ok { background: rgba(34,197,94,0.12); color: var(--success); }
+        .status-warn { background: rgba(212,160,23,0.12); color: var(--warning); }
+        .status-err { background: rgba(239,68,68,0.12); color: var(--danger); }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+        .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rm); padding: 16px; }
+        .stat-value { font-size: 24px; font-weight: 700; color: var(--text); }
+        .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border-s); padding: 10px 16px; border-radius: var(--rm); font-size: 13px; color: var(--text); box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: none; z-index: 999; }
+        .toast.show { display: block; animation: slideUp 0.2s ease; }
+        @keyframes slideUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--danger); }
+
+        /* Key row */
+        .key-row { display: flex; align-items: center; gap: 8px; }
+        .key-row input { flex: 1; }
+        .key-row .btn { flex-shrink: 0; }
+
+        /* Toggle */
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .toggle-row:last-child { border-bottom: none; }
+        .toggle-label { font-size: 13px; font-weight: 500; color: var(--text); }
+        .toggle-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .toggle { width: 36px; height: 20px; border-radius: 10px; background: var(--border-s); position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+        .toggle.on { background: var(--accent); }
+        .toggle .knob { width: 14px; height: 14px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .toggle.on .knob { left: 19px; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align:left; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; padding:8px 10px; border-bottom:1px solid var(--border); }
+        td { padding:10px; font-size:13px; border-bottom:1px solid var(--border); color:var(--text); }
+        tr:last-child td { border-bottom:none; }
+        tr:hover td { background: var(--hover); }
+    </style>
+</head>
+<body>
+    <div class="drag-bar">
+        <span>⚡ HideWIN Admin Panel</span>
+        <button class="close-btn" onclick="window.close()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <div class="nav-section">Overview</div>
+            <div class="nav-item active" onclick="showPanel('dashboard', this)">📊 Dashboard</div>
+            <div class="nav-section">Configuration</div>
+            <div class="nav-item" onclick="showPanel('transcription', this)">🎙️ Live Transcription API</div>
+            <div class="nav-item" onclick="showPanel('api-keys', this)">🔑 API Keys</div>
+            <div class="nav-item" onclick="showPanel('vendors', this)">🏢 Vendors</div>
+            <div class="nav-item" onclick="showPanel('users', this)">👥 Users</div>
+            <div class="nav-section">System</div>
+            <div class="nav-item" onclick="showPanel('billing', this)">💰 Billing</div>
+            <div class="nav-item" onclick="showPanel('preferences', this)">⚙️ Preferences</div>
+        </div>
+
+        <div class="content">
+            <!-- Dashboard -->
+            <div class="panel active" id="panel-dashboard">
+                <h2>Dashboard</h2>
+                <div class="subtitle">System overview and health</div>
+                <div class="stats-grid">
+                    <div class="stat"><div class="stat-value" id="stat-sessions">—</div><div class="stat-label">Total Sessions</div></div>
+                    <div class="stat"><div class="stat-value">4</div><div class="stat-label">Vendor Orgs</div></div>
+                    <div class="stat"><div class="stat-value">127</div><div class="stat-label">Total Users</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Service Status</div>
+                    <div class="toggle-row">
+                        <div><div class="toggle-label">FastAPI Backend</div><div class="toggle-desc">localhost:8000</div></div>
+                        <span class="status" id="api-status"><span class="dot"></span> Checking...</span>
+                    </div>
+                    <div class="toggle-row">
+                        <div><div class="toggle-label">Gemini API</div><div class="toggle-desc">Direct BYOK connection</div></div>
+                        <span class="status" id="gemini-status"><span class="dot"></span> Checking...</span>
+                    </div>
+                    <div class="toggle-row">
+                        <div><div class="toggle-label">Session Auto-Pause</div><div class="toggle-desc">Pauses after 2 min inactivity</div></div>
+                        <span class="status status-ok"><span class="dot"></span> Enabled</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Default Accounts</div>
+                    <table>
+                        <thead><tr><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="status status-err">ADMIN</span></td><td>admin@hidewin.com</td><td style="font-family:var(--mono);font-size:12px">adminpassword123</td></tr>
+                            <tr><td><span class="status status-warn">VENDOR</span></td><td>StarkIndustries@vendor.com</td><td style="font-family:var(--mono);font-size:12px">vendorpassword123</td></tr>
+                            <tr><td><span class="status status-ok">USER</span></td><td>tony.stark@starkindustries.com</td><td style="font-family:var(--mono);font-size:12px">password123</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Transcription -->
+            <div class="panel" id="panel-transcription">
+                <h2>🎙️ Live Transcription API</h2>
+                <div class="subtitle">Secure Backend Configuration for Audio Routing</div>
+                <div class="card">
+                    <div class="card-title">Transcription Providers</div>
+                    
+                    <div class="form-group">
+                        <label>Groq / Local Whisper Hybrid Mode</label>
+                        <div class="key-row" style="margin-bottom:8px">
+                            <input type="password" id="stt-groq-key" placeholder="Enter Groq Key..." />
+                            <div class="toggle" id="stt-groq-toggle" onclick="this.classList.toggle('on');saveSttConfig('groq')"><div class="knob"></div></div>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="saveSttConfig('groq', true)">Set as Active Engine</button>
+                    </div>
+                    
+                    <hr style="border:0; border-bottom:1px solid var(--border); margin:16px 0;">
+
+                    <div class="form-group">
+                        <label>Deepgram WebSocket API</label>
+                        <div class="key-row" style="margin-bottom:8px">
+                            <input type="password" id="stt-deepgram-key" placeholder="Enter Deepgram Key..." />
+                            <div class="toggle" id="stt-deepgram-toggle" onclick="this.classList.toggle('on');saveSttConfig('deepgram')"><div class="knob"></div></div>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="saveSttConfig('deepgram', true)">Set as Active Engine</button>
+                    </div>
+
+                    <hr style="border:0; border-bottom:1px solid var(--border); margin:16px 0;">
+
+                    <div class="form-group">
+                        <label>Custom STT Endpoint (Hybrid / Advanced)</label>
+                        <input type="text" id="stt-custom-url" placeholder="wss://your-custom-stt-endpoint..." style="margin-bottom:8px" />
+                        <div class="key-row" style="margin-bottom:8px">
+                            <input type="password" id="stt-custom-key" placeholder="Custom API Key (Optional)..." />
+                            <div class="toggle" id="stt-custom-toggle" onclick="this.classList.toggle('on');saveSttConfig('custom')"><div class="knob"></div></div>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="saveSttConfig('custom', true)">Set as Active Engine</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Security Status</div>
+                    <p style="font-size:12px; color:var(--muted)">Keys are encrypted in the FastAPI SQLite DB and do not exist on the client machine. Audio is transmitted via Base64 JSON over WebSockets.</p>
+                </div>
+            </div>
+
+            <!-- API Keys -->
+            <div class="panel" id="panel-api-keys">
+                <h2>🔑 API Key Configuration</h2>
+                <div class="subtitle">Keys are stored locally in Electron storage. Never transmitted externally.</div>
+
+                <div class="card">
+                    <div class="card-title">AI Providers</div>
+                    <div class="form-group">
+                        <label>Gemini API Key (Primary)</label>
+                        <div class="key-row">
+                            <input type="password" id="key-gemini" placeholder="AIza..." />
+                            <button class="btn btn-sm btn-primary" onclick="saveKey('gemini')">Save</button>
+                            <button class="btn btn-sm" onclick="testKey('gemini')">Test</button>
+                        </div>
+                        <div class="hint"><a onclick="openExternal('https://aistudio.google.com/apikey')">Get Gemini key →</a></div>
+                    </div>
+                      <div class="form-group">
+                          <label>Groq API Key (Fast transcription & LLM)</label>
+                          <div class="key-row">
+                              <input type="password" id="key-groq" placeholder="gsk_..." />
+                              <button class="btn btn-sm btn-primary" onclick="saveKey('groq')">Save</button>
+                              </div>
+                          <div class="hint"><a onclick="openExternal('https://console.groq.com/keys')">Get Groq key →</a></div>
+                          
+                          </div>
+                      <div class="form-group">
+                          <label>OpenAI API Key (Optional fallback)</label>
+                        <div class="key-row">
+                            <input type="password" id="key-openai" placeholder="sk-..." />
+                            <button class="btn btn-sm btn-primary" onclick="saveKey('openai')">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Payment & Billing</div>
+                    <div class="form-group">
+                        <label>Stripe Secret Key</label>
+                        <div class="key-row">
+                            <input type="password" id="key-stripe" placeholder="sk_live_..." />
+                            <button class="btn btn-sm btn-primary" onclick="saveKey('stripe')">Save</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Stripe Webhook Secret</label>
+                        <div class="key-row">
+                            <input type="password" id="key-stripe-webhook" placeholder="whsec_..." />
+                            <button class="btn btn-sm btn-primary" onclick="saveKey('stripe-webhook')">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Active Provider Mode</div>
+                    <select id="provider-mode" onchange="saveProviderMode()" style="background:var(--elevated);color:var(--text);border:1px solid var(--border);padding:9px 12px;width:100%;border-radius:var(--r);font-size:13px;font-family:var(--font);outline:none;appearance:none;">
+                        <option value="byok">BYOK — Use Your Own Keys (Gemini / Groq)</option>
+                        <option value="local">Local AI — Ollama + Whisper</option>
+                        <option value="cloud">Cloud — HideWIN Invite Code</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Vendors -->
+            <div class="panel" id="panel-vendors">
+                <h2>🏢 Vendor Management</h2>
+                <div class="subtitle">Create and manage enterprise vendor accounts</div>
+                <div class="card">
+                    <div class="card-title">Create Vendor</div>
+                    <div class="form-group">
+                        <label>Organization Email</label>
+                        <input type="email" id="v-email" placeholder="org@company.com" />
+                    </div>
+                    <div class="form-group">
+                        <label>Seat Allocation</label>
+                        <input type="text" id="v-seats" placeholder="50" style="max-width:120px;" />
+                    </div>
+                    <button class="btn btn-primary" onclick="createVendor()">Create Vendor Account</button>
+                </div>
+                <div class="card">
+                    <div class="card-title">Active Vendors</div>
+                    <table>
+                        <thead><tr><th>Organization</th><th>Email</th><th>Seats</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>Stark Industries</td><td>StarkIndustries@vendor.com</td><td>50</td><td><span class="status status-ok"><span class="dot"></span>Active</span></td></tr>
+                            <tr><td>Wayne Enterprises</td><td>wayne@vendor.com</td><td>100</td><td><span class="status status-ok"><span class="dot"></span>Active</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users -->
+            <div class="panel" id="panel-users">
+                <h2>👥 User Accounts</h2>
+                <div class="subtitle">All registered users across all vendors</div>
+                <div class="card">
+                    <table>
+                        <thead><tr><th>Email</th><th>Role</th><th>Vendor</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>admin@hidewin.com</td><td><span class="status status-err">ADMIN</span></td><td>—</td><td><span class="status status-ok"><span class="dot"></span>Active</span></td></tr>
+                            <tr><td>StarkIndustries@vendor.com</td><td><span class="status status-warn">VENDOR</span></td><td>—</td><td><span class="status status-ok"><span class="dot"></span>Active</span></td></tr>
+                            <tr><td>tony.stark@starkindustries.com</td><td><span class="status" style="background:rgba(59,130,246,0.1);color:#60A5FA">USER</span></td><td>Stark Industries</td><td><span class="status status-ok"><span class="dot"></span>Active</span></td></tr>
+                            <tr><td>pepper.potts@starkindustries.com</td><td><span class="status" style="background:rgba(59,130,246,0.1);color:#60A5FA">USER</span></td><td>Stark Industries</td><td><span class="status status-ok"><span class="dot"></span>Active</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Billing -->
+            <div class="panel" id="panel-billing">
+                <h2>💰 Billing & Revenue</h2>
+                <div class="subtitle">Revenue metrics and Stripe integration</div>
+                <div class="stats-grid">
+                    <div class="stat"><div class="stat-value">$9,450</div><div class="stat-label">Monthly Revenue</div></div>
+                    <div class="stat"><div class="stat-value">4</div><div class="stat-label">Active Subscriptions</div></div>
+                    <div class="stat"><div class="stat-value">$23.40</div><div class="stat-label">Token Cost / Month</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Stripe Configuration</div>
+                    <div id="stripe-status-msg" style="font-size:13px;color:var(--muted);margin-bottom:12px;">Configure Stripe keys in the API Keys panel to enable live billing.</div>
+                    <button class="btn" onclick="openExternal('https://dashboard.stripe.com')">Open Stripe Dashboard →</button>
+                </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="panel" id="panel-preferences">
+                <h2>⚙️ System Preferences</h2>
+                <div class="subtitle">Global behavior settings</div>
+                <div class="card">
+                    <div class="card-title">Session Behavior</div>
+                    <div class="toggle-row">
+                        <div><div class="toggle-label">Auto-Pause on Inactivity</div><div class="toggle-desc">Pause session after 2 minutes of no audio/response activity</div></div>
+                        <div class="toggle on" id="pref-autopause" onclick="this.classList.toggle('on');savePref('autoPause', this.classList.contains('on'))"><div class="knob"></div></div>
+                    </div>
+                    <div class="toggle-row">
+                        <div><div class="toggle-label">Content Protection</div><div class="toggle-desc">Hide from screen recording software (Zoom, Teams, OBS)</div></div>
+                        <div class="toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+                    </div>
+                    <div class="toggle-row">
+                        <div><div class="toggle-label">Skip Taskbar</div><div class="toggle-desc">Hide from Windows taskbar and Alt+Tab</div></div>
+                        <div class="toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+                    </div>
+                    <div class="toggle-row">
+                        <div><div class="toggle-label">Resume Same Session</div><div class="toggle-desc">After resume, continue same profile without re-prompting the AI</div></div>
+                        <div class="toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Danger Zone</div>
+                    <button class="btn btn-danger" onclick="clearAllData()">Clear All Storage Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        // --- Nav ---
+        function showPanel(id, el) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('panel-' + id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        // --- Toast ---
+        function toast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = (type === 'success' ? '✓ ' : '✕ ') + msg;
+            t.className = 'toast show ' + type;
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // --- Load keys ---
+        async function loadKeys() {
+            try {
+                const [gemini, groq, creds, prefs] = await Promise.all([
+                    ipcRenderer.invoke('storage:get-api-key'),
+                    ipcRenderer.invoke('storage:get-groq-api-key'),
+                    ipcRenderer.invoke('storage:get-credentials'),
+                    ipcRenderer.invoke('storage:get-preferences'),
+                ]);
+                if (gemini.success && gemini.data) document.getElementById('key-gemini').value = gemini.data;
+                if (groq.success && groq.data) document.getElementById('key-groq').value = groq.data;
+                if (creds.success && creds.data) {
+                    if (creds.data.openaiKey) document.getElementById('key-openai').value = creds.data.openaiKey;
+                    if (creds.data.stripeKey) document.getElementById('key-stripe').value = creds.data.stripeKey;
+                    if (creds.data.stripeWebhook) document.getElementById('key-stripe-webhook').value = creds.data.stripeWebhook;
+                }
+                if (prefs.success && prefs.data && prefs.data.providerMode) {
+                    document.getElementById('provider-mode').value = prefs.data.providerMode;
+                }
+            } catch(e) { console.error('Load keys error:', e); }
+        }
+
+        // --- Save key ---
+        async function saveKey(type) {
+            try {
+                if (type === 'gemini') {
+                    const val = document.getElementById('key-gemini').value.trim();
+                    await ipcRenderer.invoke('storage:set-api-key', val);
+                    toast('Gemini API key saved');
+                } else if (type === 'groq') {
+                    const val = document.getElementById('key-groq').value.trim();
+                    await ipcRenderer.invoke('storage:set-groq-api-key', val);
+                    toast('Groq API key saved');
+                } else if (type === 'openai') {
+                    const val = document.getElementById('key-openai').value.trim();
+                    const creds = (await ipcRenderer.invoke('storage:get-credentials')).data || {};
+                    await ipcRenderer.invoke('storage:set-credentials', { ...creds, openaiKey: val });
+                    toast('OpenAI key saved');
+                } else if (type === 'stripe') {
+                    const val = document.getElementById('key-stripe').value.trim();
+                    const creds = (await ipcRenderer.invoke('storage:get-credentials')).data || {};
+                    await ipcRenderer.invoke('storage:set-credentials', { ...creds, stripeKey: val });
+                    toast('Stripe secret key saved');
+                } else if (type === 'stripe-webhook') {
+                    const val = document.getElementById('key-stripe-webhook').value.trim();
+                    const creds = (await ipcRenderer.invoke('storage:get-credentials')).data || {};
+                    await ipcRenderer.invoke('storage:set-credentials', { ...creds, stripeWebhook: val });
+                    toast('Stripe webhook secret saved');
+                }
+            } catch(e) { toast('Save failed: ' + e.message, 'error'); }
+        }
+
+        async function testKey(type) {
+            const key = document.getElementById('key-' + type).value.trim();
+            if (!key) { toast('Enter a key first', 'error'); return; }
+            toast('Key present — test by starting a session');
+        }
+
+        async function saveProviderMode() {
+            const mode = document.getElementById('provider-mode').value;
+            await ipcRenderer.invoke('storage:update-preference', 'providerMode', mode);
+            toast('Provider mode saved: ' + mode);
+        }
+
+        async function savePref(key, val) {
+            await ipcRenderer.invoke('storage:update-preference', key, val);
+        }
+
+        async function createVendor() {
+            const email = document.getElementById('v-email').value.trim();
+            const seats = document.getElementById('v-seats').value.trim();
+            if (!email) { toast('Enter vendor email', 'error'); return; }
+            try {
+                const res = await fetch('http://localhost:8000/api/vendor/invite-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, seats: parseInt(seats) || 50 })
+                });
+                toast('Vendor created: ' + email);
+            } catch(e) {
+                toast('Created (backend offline — use real FastAPI endpoint)', 'success');
+            }
+        }
+
+        async function clearAllData() {
+            if (!confirm('Are you sure? This clears all local storage including API keys.')) return;
+            await ipcRenderer.invoke('storage:clear-all');
+            toast('All storage cleared');
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        function openExternal(url) {
+            ipcRenderer.invoke('open-external', url);
+        }
+
+        // --- Status checks ---
+        async function checkStatus() {
+            // API status
+            try {
+                const r = await fetch('http://localhost:8000/health', { signal: AbortSignal.timeout(2000) });
+                const el = document.getElementById('api-status');
+                if (r.ok) { el.className = 'status status-ok'; el.innerHTML = '<span class="dot"></span> Online'; }
+                else throw new Error();
+            } catch {
+                const el = document.getElementById('api-status');
+                el.className = 'status status-err';
+                el.innerHTML = '<span class="dot"></span> Offline';
+            }
+
+            // Gemini key status
+            const gemini = await ipcRenderer.invoke('storage:get-api-key');
+            const gel = document.getElementById('gemini-status');
+            if (gemini.success && gemini.data && gemini.data.length > 10) {
+                gel.className = 'status status-ok'; gel.innerHTML = '<span class="dot"></span> Key configured';
+            } else {
+                gel.className = 'status status-warn'; gel.innerHTML = '<span class="dot"></span> No key set';
+            }
+
+            // Session count
+            const sessions = await ipcRenderer.invoke('storage:get-all-sessions');
+            if (sessions.success && sessions.data) {
+                const count = Object.keys(sessions.data).length;
+                document.getElementById('stat-sessions').textContent = count;
+            }
+        }
+
+        loadKeys();
+        loadSttConfig();
+        
+        async function loadSttConfig() {
+            try {
+                const res = await fetch('http://localhost:8000/api/stt/config');
+                const data = await res.json();
+                
+                data.configs.forEach(c => {
+                    const prefix = 'stt-' + c.provider_name + '-';
+                    const keyEl = document.getElementById(prefix + 'key');
+                    const toggleEl = document.getElementById(prefix + 'toggle');
+                    
+                    if (keyEl && c.api_key_masked) keyEl.value = c.api_key_masked;
+                    if (toggleEl && c.is_enabled) toggleEl.classList.add('on');
+                    
+                    if (c.provider_name === 'custom' && c.custom_url) {
+                        document.getElementById('stt-custom-url').value = c.custom_url;
+                    }
+                    
+                    if (c.is_active) {
+                        // Highlight active engine
+                        keyEl.parentElement.parentElement.style.borderLeft = '3px solid var(--success)';
+                        keyEl.parentElement.parentElement.style.paddingLeft = '10px';
+                    }
+                });
+            } catch(e) { console.error('Failed to load STT configs', e); }
+        }
+
+        async function saveSttConfig(providerName, makeActive=false) {
+            try {
+                const prefix = 'stt-' + providerName + '-';
+                const keyVal = document.getElementById(prefix + 'key').value;
+                const isEnabled = document.getElementById(prefix + 'toggle').classList.contains('on');
+                
+                const payload = {
+                    provider_name: providerName,
+                    api_key_value: keyVal,
+                    is_enabled: isEnabled,
+                    is_active: makeActive
+                };
+                
+                if (providerName === 'custom') {
+                    payload.custom_url = document.getElementById('stt-custom-url').value;
+                }
+                
+                await fetch('http://localhost:8000/api/stt/config', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                
+                toast(providerName + ' STT config saved!');
+                setTimeout(loadSttConfig, 500);
+            } catch(e) {
+                toast('Failed to save STT: ' + e.message, 'error');
+            }
+        }
+        checkStatus();
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hide-WIN Collaboration</title>
+    <style>
+        :root {
+            --bg-dark: #0f0f11;
+            --bg-panel: #1c1c1f;
+            --primary: #4a90e2;
+            --text: #f0f0f0;
+            --text-muted: #888;
+            --border: #333;
+            --pending: #f5a623;
+            --active: #2ecc71;
+        }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-dark); color: var(--text); overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        
+        .setup-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: var(--bg-dark); }
+        .setup-card { background: var(--bg-panel); padding: 32px; border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .setup-card h2 { margin: 0 0 24px 0; text-align: center; }
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+        .input-group input { width: 100%; box-sizing: border-box; padding: 10px; background: #2a2a2e; border: 1px solid var(--border); color: #fff; border-radius: 6px; outline: none; }
+        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
+        
+        .main-layout { display: flex; flex: 1; overflow: hidden; flex-direction: row; }
+        @media (max-width: 768px) { .main-layout { flex-direction: column; } }
+        
+        .stage { flex: 1; display: flex; flex-direction: column; position: relative; background: #000; }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        .empty-state { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; color: var(--text-muted); font-size: 14px; }
+        
+        /* Zoom-style Bottom Control Bar */
+        .control-bar { height: 64px; background: var(--bg-panel); border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; gap: 16px; padding: 0 16px; }
+        .control-btn { background: transparent; border: 1px solid transparent; color: var(--text); border-radius: 8px; width: 48px; height: 48px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-size: 10px; gap: 4px; }
+        .control-btn:hover { background: rgba(255,255,255,0.1); }
+        .control-btn svg { width: 20px; height: 20px; }
+        .control-btn.pending { color: var(--pending); border-color: var(--pending); background: rgba(245, 166, 35, 0.1); }
+        .control-btn.active { color: var(--active); border-color: var(--active); background: rgba(46, 204, 113, 0.1); }
+        
+        /* Sidebar Tabs */
+        .side-panel { width: 320px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+        @media (max-width: 768px) { .side-panel { width: 100%; height: 40vh; border-left: none; border-top: 1px solid var(--border); } }
+        .tabs-header { display: flex; border-bottom: 1px solid var(--border); }
+        .tab-btn { flex: 1; padding: 12px 0; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; font-weight: 500; }
+        .tab-btn.active { color: var(--text); border-bottom: 2px solid var(--primary); }
+        .tab-content { display: none; flex: 1; padding: 16px; flex-direction: column; }
+        .tab-content.active { display: flex; }
+        
+        .ai-message { background: #2a2a2e; padding: 10px; border-radius: 8px; font-size: 13px; line-height: 1.4; }
+        .ai-message.user { background: var(--primary); align-self: flex-end; }
+        .ai-input-bar { display: flex; gap: 8px; margin-top: 12px; }
+        .ai-input-bar input { flex: 1; padding: 8px; background: #2a2a2e; border: 1px solid var(--border); color: #fff; border-radius: 4px; }
+        .ai-input-bar button { padding: 8px 16px; background: var(--primary); border: none; color: #fff; border-radius: 4px; cursor: pointer; }
+        
+        /* Participants Tab */
+        .participant-req { display: flex; justify-content: space-between; align-items: center; background: #2a2a2e; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-size: 13px; }
+        .btn-approve { background: var(--active); color: #000; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="setup-screen" id="join-screen">
+        <div class="setup-card">
+            <h2>Elite Mission Access</h2>
+            <div class="input-group" id="channel-group">
+                <label>Channel ID</label>
+                <input type="text" id="channel-id" placeholder="e.g. HW-ABCD-1234">
+            </div>
+            <div class="input-group" id="passcode-group">
+                <label>Security Passcode</label>
+                <input type="password" id="passcode" placeholder="••••••••">
+            </div>
+            <div class="input-group">
+                <label>Your Alias</label>
+                <input type="text" id="guest-name" placeholder="e.g. Agent 47">
+            </div>
+            <button class="btn-primary" id="join-btn">Connect to Session</button>
+        </div>
+    </div>
+
+    <div class="main-layout" id="call-screen" style="display: none;">
+        <div class="stage">
+            <div class="empty-state" id="empty-state">Waiting for Host to share screen...</div>
+            <video id="remote-video" autoplay playsinline></video>
+            
+            <div class="control-bar" id="controls-bar" style="display: none;">
+                <button class="control-btn" id="btn-mic" onclick="toggleRole('mic')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                    <span>Mic</span>
+                </button>
+                <button class="control-btn" id="btn-mouse" onclick="toggleRole('mouse')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path><path d="M13 13l6 6"></path></svg>
+                    <span>Mouse</span>
+                </button>
+                <button class="control-btn" id="btn-host" onclick="toggleRole('host')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <span>Host</span>
+                </button>
+                <button class="control-btn" id="ai-camera" title="Take AI Screenshot">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    <span>AI Cam</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="side-panel" id="side-panel" style="display: none;">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('ai')">AI Chat</button>
+                <button class="tab-btn" onclick="switchTab('chat')">Meeting Chat</button>
+                <button class="tab-btn" onclick="switchTab('transcript')">Transcript</button>
+                <button class="tab-btn" id="tab-btn-participants" onclick="switchTab('participants')" style="display: none;">Requests</button>
+            </div>
+            
+            <div class="tab-content active" id="tab-ai">
+                <div id="ai-chat-log" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                    <div class="ai-message">Click AI Cam to analyze the host's screen!</div>
+                </div>
+                <div class="ai-input-bar">
+                    <input type="text" id="ai-prompt" placeholder="Ask AI about screen...">
+                    <button id="send-ai">Send</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-transcript">
+                <div id="transcript-log" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; color: var(--text-muted); font-size: 13px;"></div>
+            </div>
+            
+            <div class="tab-content" id="tab-participants">
+                <div id="requests-list" style="flex: 1; overflow-y: auto;">
+                    <div style="color:var(--text-muted);font-size:12px;margin-bottom:10px;">You are the Host. Approve requests here.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+                  function sendMeetingChat() {
+              const input = document.getElementById('chat-input');
+              const text = input.value.trim();
+              if(!text || !ws) return;
+              const msg = { type: 'chat_message', sender: guestName || 'Guest', text: text };
+              ws.send(JSON.stringify(msg));
+              
+              const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+              document.getElementById('meeting-chat-log').innerHTML += `<div class="ai-message user"><b>You</b> (${time}):<br>${text}</div>`;
+              input.value = '';
+          }
+
+          function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+        
+        let ws;
+        let peerConnection;
+        let dataChannels = { mouse: null, events: null };
+        let roleStates = { mic: 'default', mouse: 'default', host: 'default' };
+        let pendingRequests = [];
+        let speechRecog = null;
+        
+        const params = new URLSearchParams(window.location.search);
+        const channelParam = params.get('channel');
+        const passcodeParam = params.get('passcode');
+        
+        if (channelParam && passcodeParam) {
+            document.getElementById('channel-id').value = channelParam;
+            document.getElementById('passcode').value = passcodeParam;
+            document.getElementById('channel-group').style.display = 'none';
+            document.getElementById('passcode-group').style.display = 'none';
+        }
+        
+        document.getElementById('join-btn').addEventListener('click', () => {
+            const channel = document.getElementById('channel-id').value;
+            const passcode = document.getElementById('passcode').value;
+            const name = document.getElementById('guest-name').value;
+            if(!name || !channel || !passcode) return alert('Please enter all fields.');
+            
+            document.getElementById('join-btn').innerText = 'Connecting...';
+            const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${location.host}/ws/signaling/join/${channel}/${passcode}/${encodeURIComponent(name)}`);
+            
+            ws.onopen = () => {
+                document.getElementById('join-screen').style.display = 'none';
+                document.getElementById('call-screen').style.display = 'flex';
+                setupWebRTC();
+
+                if ('webkitSpeechRecognition' in window) {
+                    speechRecog = new webkitSpeechRecognition();
+                    speechRecog.continuous = true;
+                    speechRecog.interimResults = true;
+                    speechRecog.onresult = (event) => {
+                        if (roleStates.mic !== 'active') return; // Strict gating
+                        let finalTranscript = '';
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
+                        }
+                        if (finalTranscript.trim() !== '') {
+                            const log = document.getElementById('transcript-log');
+                            log.innerHTML += `<div><strong>You:</strong> ${finalTranscript}</div>`;
+                            log.scrollTop = log.scrollHeight;
+                            if (dataChannels.events) dataChannels.events.send(JSON.stringify({ type: 'transcript', text: finalTranscript }));
+                        }
+                    };
+                }
+            };
+            
+            ws.onmessage = async (e) => {
+                const msg = JSON.parse(e.data);
+                if(msg.type === 'error') {
+                    alert(msg.message); location.reload();
+                } else if(msg.type === 'offer') {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    ws.send(JSON.stringify({ type: 'answer', sdp: answer }));
+                } else if(msg.type === 'candidate' || msg.type === 'ice_candidate') {
+                    await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                } else if(msg.type === 'ai_answer') {
+                    const log = document.getElementById('ai-chat-log');
+                    log.innerHTML += `<div class="ai-message">${msg.text}</div>`;
+                    log.scrollTop = log.scrollHeight;
+                } else if(msg.type === 'transcript') {
+                    const log = document.getElementById('transcript-log');
+                    log.innerHTML += `<div><strong>Speaker:</strong> ${msg.text}</div>`;
+                    log.scrollTop = log.scrollHeight;
+                }
+            };
+        });
+        
+        function setupWebRTC() {
+            peerConnection = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+            
+            peerConnection.onicecandidate = (e) => {
+                if(e.candidate) ws.send(JSON.stringify({ type: 'candidate', candidate: e.candidate }));
+            };
+            
+            peerConnection.ontrack = (e) => {
+                const video = document.getElementById('remote-video');
+                document.getElementById('empty-state').style.display = 'none';
+                video.srcObject = e.streams[0];
+                document.getElementById('controls-bar').style.display = 'flex';
+                document.getElementById('side-panel').style.display = 'flex';
+            };
+            
+            peerConnection.ondatachannel = (e) => {
+                if (e.channel.label === "mouse-move") dataChannels.mouse = e.channel;
+                if (e.channel.label === "events") {
+                    dataChannels.events = e.channel;
+                    e.channel.onmessage = (event) => {
+                        try {
+                            const msg = JSON.parse(event.data);
+                            if (msg.type === 'role_granted') {
+                                roleStates[msg.role] = 'active';
+                                updateBtnUI(msg.role);
+                                if (msg.role === 'mic' && speechRecog) speechRecog.start();
+                                if (msg.role === 'host') document.getElementById('tab-btn-participants').style.display = 'block';
+                            } else if (msg.type === 'role_revoked') {
+                                roleStates[msg.role] = 'default';
+                                updateBtnUI(msg.role);
+                                if (msg.role === 'mic' && speechRecog) speechRecog.stop();
+                                if (msg.role === 'host') document.getElementById('tab-btn-participants').style.display = 'none';
+                            } else if (msg.type === 'chat_message') {
+                                const log = document.getElementById('meeting-chat-log');
+                                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                                log.innerHTML += `<div class="ai-message"><b>${msg.sender}</b> (${time}):<br>${msg.text}</div>`;
+                                log.scrollTop = log.scrollHeight;
+                                // If not on chat tab, maybe show alert
+                                if (!document.getElementById('tab-chat').classList.contains('active')) {
+                                    alert(`New message from ${msg.sender}: ${msg.text}`);
+                                }
+                            } else if (msg.type === 'forwarded_request') {
+                                pendingRequests.push({ guestId: msg.guestId, role: msg.role });
+                                renderRequests();
+                            }
+                        } catch(err) {}
+                    };
+                }
+            };
+        }
+        
+        function toggleRole(role) {
+            if (roleStates[role] === 'active') {
+                if (dataChannels.events) dataChannels.events.send(JSON.stringify({ type: 'release_role', role }));
+                roleStates[role] = 'default';
+            } else {
+                if (dataChannels.events) dataChannels.events.send(JSON.stringify({ type: 'request_role', role }));
+                roleStates[role] = 'pending';
+            }
+            updateBtnUI(role);
+        }
+        
+        function updateBtnUI(role) {
+            const btn = document.getElementById('btn-' + role);
+            btn.className = 'control-btn';
+            if (roleStates[role] !== 'default') btn.classList.add(roleStates[role]);
+        }
+        
+        function renderRequests() {
+            const list = document.getElementById('requests-list');
+            list.innerHTML = '';
+            pendingRequests.forEach((req, idx) => {
+                const el = document.createElement('div');
+                el.className = 'participant-req';
+                el.innerHTML = `<span>Guest ${req.guestId.substring(0,4)} requests <strong>${req.role}</strong></span>
+                                <button class="btn-approve" onclick="approveReq(${idx})">Approve</button>`;
+                list.appendChild(el);
+            });
+        }
+        
+        window.approveReq = function(idx) {
+            const req = pendingRequests[idx];
+            if (dataChannels.events) dataChannels.events.send(JSON.stringify({ type: 'approve_role', guestId: req.guestId, role: req.role }));
+            pendingRequests.splice(idx, 1);
+            renderRequests();
+        }
+        
+        let lastMouseTime = 0;
+        function sendControlEvent(type, e, extra = {}) {
+            if (roleStates.mouse !== 'active' && type !== 'screenshot_and_analyze') return;
+            let targetChannel = (type === 'mousemove') ? dataChannels.mouse : dataChannels.events;
+            if (!targetChannel || targetChannel.readyState !== 'open') return;
+            
+            if (type === 'mousemove') {
+                const now = performance.now();
+                if (now - lastMouseTime < 16) return;
+                lastMouseTime = now;
+            }
+            
+            let payload = { type, ...extra };
+            if (e && e.clientX !== undefined) {
+                const video = document.getElementById('remote-video');
+                const rect = video.getBoundingClientRect();
+                const vRatio = video.videoWidth / video.videoHeight;
+                const eRatio = rect.width / rect.height;
+                let rW = rect.width, rH = rect.height, rX = 0, rY = 0;
+                if (eRatio > vRatio) { rW = rect.height * vRatio; rX = (rect.width - rW) / 2; }
+                else { rH = rect.width / vRatio; rY = (rect.height - rH) / 2; }
+                const cX = e.clientX - rect.left - rX, cY = e.clientY - rect.top - rY;
+                if (cX < 0 || cX > rW || cY < 0 || cY > rH) return;
+                payload.x = cX / rW; payload.y = cY / rH;
+            } else if (e && e.key) {
+                payload.key = e.key;
+            }
+            targetChannel.send(JSON.stringify(payload));
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'p') { e.preventDefault(); toggleRole('mouse'); return; }
+            if (roleStates.mouse === 'active') sendControlEvent('keydown', e);
+        });
+
+        document.getElementById('ai-camera').onclick = document.getElementById('send-ai').onclick = function() {
+            const prompt = document.getElementById('ai-prompt').value;
+            document.getElementById('ai-chat-log').innerHTML += `<div class="ai-message user">📸 Sent screenshot for analysis...</div>`;
+            sendControlEvent('screenshot_and_analyze', null, { prompt });
+        };
+
+        const video = document.getElementById('remote-video');
+        video.addEventListener('mousemove', (e) => sendControlEvent('mousemove', e));
+        video.addEventListener('mousedown', (e) => sendControlEvent('mousedown', e));
+        video.addEventListener('mouseup', (e) => sendControlEvent('mouseup', e));
+        video.addEventListener('click', (e) => sendControlEvent('click', e));
+        video.addEventListener('touchstart', (e) => { if(e.touches.length) sendControlEvent('mousedown', e.touches[0]); });
+        video.addEventListener('touchmove', (e) => { if(e.touches.length) sendControlEvent('mousemove', e.touches[0]); });
+        video.addEventListener('touchend', () => { sendControlEvent('mouseup', {clientX:0, clientY:0}); sendControlEvent('click', {clientX:0, clientY:0}); });
+    </script>
+</body>
+</html>

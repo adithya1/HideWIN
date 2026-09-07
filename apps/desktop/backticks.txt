@@ -1,0 +1,1509 @@
+0: import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+1: 
+2: export class MainView extends LitElement {
+3: static styles = css`
+4: * {
+5: font-family: var(--font);
+6: cursor: default;
+7: user-select: none;
+8: box-sizing: border-box;
+9: }
+10: 
+11: @keyframes errorShake {
+12: 0%, 100% { transform: translateX(0); }
+13: 20%, 60% { transform: translateX(-4px); }
+14: 40%, 80% { transform: translateX(4px); }
+15: }
+16: .error-shake {
+17: animation: errorShake 0.4s ease-in-out;
+18: border-color: #ef4444 !important;
+19: box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.5) !important;
+20: }
+21: 
+22: @keyframes slideDownFade {
+23: 0% { opacity: 0; transform: translateY(-10px); }
+24: 100% { opacity: 1; transform: translateY(0); }
+25: }
+26: .child-dropdown {
+27: animation: slideDownFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+28: -ms-overflow-style: none;  /* IE and Edge */
+29: scrollbar-width: none;  /* Firefox */
+30: }
+31: .child-dropdown::-webkit-scrollbar {
+32: display: none;
+33: }
+34: 
+35: :host {
+36: height: 100%;
+37: display: flex;
+38: flex-direction: column;
+39: align-items: center;
+40: justify-content: center;
+41: padding: var(--space-xl) var(--space-lg);
+42: }
+43: 
+44: .form-wrapper {
+45: width: 100%;
+46: max-width: 420px;
+47: display: flex;
+48: flex-direction: column;
+49: gap: var(--space-md);
+50: }
+51: 
+52: .page-title {
+53: font-size: var(--font-size-xl);
+54: font-weight: var(--font-weight-semibold);
+55: color: var(--text-primary);
+56: margin-bottom: var(--space-xs);
+57: }
+58: 
+59: .page-title .mode-suffix {
+60: opacity: 0.5;
+61: }
+62: 
+63: .page-subtitle {
+64: font-size: var(--font-size-sm);
+65: color: var(--text-muted);
+66: margin-bottom: var(--space-md);
+67: }
+68: 
+69: /* ── Cloud promo card ── */
+70: 
+71: .cloud-promo {
+72: position: relative;
+73: overflow: hidden;
+74: display: flex;
+75: flex-direction: column;
+76: gap: 10px;
+77: padding: 16px 20px;
+78: border-radius: 12px;
+79: border: 1px solid rgba(99, 102, 241, 0.2);
+80: background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
+81: cursor: default;
+82: transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+83: }
+84: 
+85: .cloud-promo:hover {
+86: border-color: rgba(99, 102, 241, 0.4);
+87: background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+88: box-shadow: 0 0 30px rgba(99, 102, 241, 0.1), 0 0 60px rgba(139, 92, 246, 0.05);
+89: transform: translateY(-2px);
+90: }
+91: 
+92: .cloud-promo-glow {
+93: position: absolute;
+94: top: -40%;
+95: right: -20%;
+96: width: 140px;
+97: height: 140px;
+98: background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+99: pointer-events: none;
+100: transition: opacity 0.3s ease;
+101: }
+102: 
+103: .cloud-promo:hover .cloud-promo-glow {
+104: opacity: 1;
+105: background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+106: }
+107: 
+108: .cloud-promo-header {
+109: display: flex;
+110: align-items: center;
+111: justify-content: space-between;
+112: }
+113: 
+114: .cloud-promo-title {
+115: font-size: var(--font-size-sm);
+116: font-weight: 600;
+117: color: var(--text-primary);
+118: letter-spacing: 0.02em;
+119: }
+120: 
+121: .cloud-promo-arrow {
+122: color: var(--accent);
+123: font-size: 16px;
+124: transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+125: }
+126: 
+127: .cloud-promo:hover .cloud-promo-arrow {
+128: transform: translateX(4px);
+129: }
+130: 
+131: .cloud-promo-desc {
+132: font-size: 13px;
+133: color: var(--text-secondary);
+134: line-height: 1.5;
+135: }
+136: 
+137: /* ── Form controls ── */
+138: 
+139: .form-group {
+140: display: flex;
+141: flex-direction: column;
+142: gap: var(--space-xs);
+143: }
+144: 
+145: .form-label {
+146: font-size: var(--font-size-xs);
+147: font-weight: var(--font-weight-medium);
+148: color: var(--text-secondary);
+149: text-transform: uppercase;
+150: letter-spacing: 0.5px;
+151: }
+152: 
+153: input, select, textarea {
+154: background: rgba(255, 255, 255, 0.04);
+155: color: var(--text-primary);
+156: border: 1px solid rgba(255, 255, 255, 0.08);
+157: padding: 10px 14px;
+158: width: 100%;
+159: border-radius: 12px;
+160: font-size: var(--font-size-sm);
+161: font-family: var(--font);
+162: transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+163: box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+164: }
+165: 
+166: input:hover:not(:focus), select:hover:not(:focus), textarea:hover:not(:focus) {
+167: border-color: rgba(255, 255, 255, 0.15);
+168: background: rgba(255, 255, 255, 0.06);
+169: }
+170: 
+171: input:focus, select:focus, textarea:focus {
+172: outline: none;
+173: border-color: rgba(99, 102, 241, 0.5);
+174: box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.2);
+175: background: rgba(255, 255, 255, 0.08);
+176: }
+177: 
+178: input::placeholder, textarea::placeholder {
+179: color: rgba(255, 255, 255, 0.3);
+180: }
+181: 
+182: input.error {
+183: border-color: var(--danger, #EF4444);
+184: box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+185: }
+186: 
+187: select {
+188: cursor: default;
+189: appearance: none;
+190: background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='rgba(255,255,255,0.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+191: background-position: right 12px center;
+192: background-repeat: no-repeat;
+193: background-size: 14px;
+194: padding-right: 32px;
+195: }
+196: 
+197: option {
+198: background-color: #1e1e24;
+199: color: var(--text-primary);
+200: }
+201: 
+202: textarea {
+203: resize: vertical;
+204: min-height: 80px;
+205: line-height: 1.5;
+206: }
+207: 
+208: .form-hint {
+209: font-size: var(--font-size-xs);
+210: color: var(--text-muted);
+211: }
+212: 
+213: .form-hint a, .form-hint span.link {
+214: color: var(--accent);
+215: text-decoration: none;
+216: cursor: default;
+217: }
+218: 
+219: .form-hint span.link:hover {
+220: text-decoration: underline;
+221: }
+222: 
+223: .whisper-label-row {
+224: display: flex;
+225: align-items: center;
+226: gap: 6px;
+227: }
+228: 
+229: .whisper-spinner {
+230: width: 12px;
+231: height: 12px;
+232: border: 2px solid var(--border);
+233: border-top-color: var(--accent);
+234: border-radius: 50%;
+235: animation: whisper-spin 0.8s linear infinite;
+236: }
+237: 
+238: @keyframes whisper-spin {
+239: to { transform: rotate(360deg); }
+240: }
+241: 
+242: /* ── Start button ── */
+243: 
+244: .start-button {
+245: width: 100%;
+246: padding: 14px 40px;
+247: border-radius: 12px;
+248: border: none;
+249: background: #185fc4;
+250: color: white;
+251: font-size: 15px;
+252: font-weight: 600;
+253: cursor: pointer;
+254: display: flex;
+255: align-items: center;
+256: justify-content: center;
+257: gap: 10px;
+258: transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+259: box-shadow: 0 4px 14px rgba(24, 95, 196, 0.4);
+260: }
+261: 
+262: .start-button:hover:not(:disabled) {
+263: transform: translateY(-2px);
+264: background: #1550a6;
+265: box-shadow: 0 6px 20px rgba(24, 95, 196, 0.6) !important;
+266: }
+267: 
+268: .start-button:active:not(:disabled) {
+269: transform: translateY(0);
+270: box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+271: }
+272: 
+273: .spinner {
+274: width: 18px;
+275: height: 18px;
+276: border: 2px solid rgba(59, 130, 246, 0.3);
+277: border-top-color: var(--accent);
+278: border-radius: 50%;
+279: animation: spin 0.8s linear infinite;
+280: }
+281: 
+282: @keyframes spin {
+283: to { transform: rotate(360deg); }
+284: }
+285: 
+286: .start-button:disabled {
+287: opacity: 0.5;
+288: cursor: not-allowed;
+289: box-shadow: none !important;
+290: transform: none;
+291: background: rgba(255, 255, 255, 0.05);
+292: border: 1px solid rgba(255, 255, 255, 0.05);
+293: color: var(--text-muted);
+294: }
+295: 
+296: .form-grid {
+297: display: grid;
+298: grid-template-columns: 1fr 1fr;
+299: gap: var(--space-md);
+300: }
+301: 
+302: .form-grid.single {
+303: grid-template-columns: 1fr;
+304: }
+305: 
+306: /* ── Divider ── */
+307: 
+308: .divider {
+309: display: flex;
+310: align-items: center;
+311: gap: var(--space-md);
+312: margin: var(--space-sm) 0;
+313: }
+314: 
+315: .divider-line {
+316: flex: 1;
+317: height: 1px;
+318: background: var(--border);
+319: }
+320: 
+321: .divider-text {
+322: font-size: var(--font-size-xs);
+323: color: var(--text-muted);
+324: text-transform: lowercase;
+325: }
+326: 
+327: /* ── Mode switch links ── */
+328: 
+329: .mode-links {
+330: display: flex;
+331: justify-content: center;
+332: gap: var(--space-lg);
+333: }
+334: 
+335: .mode-link {
+336: font-size: var(--font-size-sm);
+337: color: var(--text-secondary);
+338: cursor: default;
+339: background: none;
+340: border: none;
+341: padding: 0;
+342: transition: color var(--transition);
+343: }
+344: 
+345: .mode-link:hover {
+346: color: var(--text-primary);
+347: }
+348: 
+349: /* ── Mode option cards ── */
+350: 
+351: .mode-cards {
+352: display: flex;
+353: gap: var(--space-sm);
+354: }
+355: 
+356: .mode-card {
+357: flex: 1;
+358: display: flex;
+359: flex-direction: column;
+360: gap: 4px;
+361: padding: 12px 14px;
+362: border-radius: var(--radius-md);
+363: border: 1px solid var(--border);
+364: background: var(--bg-elevated);
+365: cursor: default;
+366: transition: border-color 0.2s, background 0.2s;
+367: }
+368: 
+369: .mode-card:hover {
+370: border-color: var(--text-muted);
+371: background: var(--bg-hover);
+372: }
+373: 
+374: .mode-card-title {
+375: font-size: var(--font-size-sm);
+376: font-weight: var(--font-weight-semibold);
+377: color: var(--text-primary);
+378: }
+379: 
+380: .mode-card-desc {
+381: font-size: var(--font-size-xs);
+382: color: var(--text-muted);
+383: line-height: var(--line-height);
+384: }
+385: 
+386: /* ── Title row with help ── */
+387: 
+388: .title-row {
+389: display: flex;
+390: justify-content: space-between;
+391: align-items: center;
+392: margin-bottom: var(--space-md);
+393: }
+394: .brand-logo {
+395: width: 120px;
+396: height: 32px;
+397: background-size: contain;
+398: background-repeat: no-repeat;
+399: background-position: left center;
+400: display: inline-block;
+401: background-image: url('./assets/images/media_1786601281073.png');
+402: }
+403: :host-context(html[data-theme='dark']) .brand-logo,
+404: html[data-theme='dark'] .brand-logo {
+405: background-image: url('./assets/images/media_1786601281022.png');
+406: }
+407: 
+408: .title-row .page-title {
+409: margin-bottom: 0;
+410: }
+411: 
+412: .help-btn {
+413: background: none;
+414: border: none;
+415: color: var(--text-muted);
+416: cursor: default;
+417: padding: 4px;
+418: border-radius: var(--radius-sm);
+419: transition: color 0.2s;
+420: display: flex;
+421: align-items: center;
+422: }
+423: 
+424: .help-btn:hover {
+425: color: var(--text-secondary);
+426: }
+427: 
+428: .help-btn * {
+429: pointer-events: none;
+430: }
+431: 
+432: /* ── Help content ── */
+433: 
+434: .help-content {
+435: display: flex;
+436: flex-direction: column;
+437: gap: var(--space-md);
+438: max-height: 500px;
+439: overflow-y: auto;
+440: }
+441: 
+442: .help-section {
+443: display: flex;
+444: flex-direction: column;
+445: gap: 4px;
+446: }
+447: 
+448: .help-section-title {
+449: font-size: var(--font-size-xs);
+450: font-weight: var(--font-weight-semibold);
+451: color: var(--text-primary);
+452: }
+453: 
+454: .help-section-text {
+455: font-size: var(--font-size-xs);
+456: color: var(--text-secondary);
+457: line-height: var(--line-height);
+458: }
+459: 
+460: .help-code {
+461: font-family: var(--font-mono);
+462: font-size: 11px;
+463: background: var(--bg-hover);
+464: padding: 6px 8px;
+465: border-radius: var(--radius-sm);
+466: color: var(--text-primary);
+467: display: block;
+468: }
+469: 
+470: .help-link {
+471: color: var(--accent);
+472: cursor: default;
+473: text-decoration: none;
+474: }
+475: 
+476: .help-link:hover {
+477: text-decoration: underline;
+478: }
+479: 
+480: .help-models {
+481: display: flex;
+482: flex-direction: column;
+483: gap: 2px;
+484: }
+485: 
+486: .help-model {
+487: font-size: var(--font-size-xs);
+488: color: var(--text-secondary);
+489: display: flex;
+490: justify-content: space-between;
+491: }
+492: 
+493: .help-model-name {
+494: font-family: var(--font-mono);
+495: font-size: 11px;
+496: color: var(--text-primary);
+497: }
+498: 
+499: .help-divider {
+500: border: none;
+501: border-top: 1px solid var(--border);
+502: margin: 0;
+503: }
+504: 
+505: .help-cloud-btn {
+506: background: #e8e8e8;
+507: color: #111111;
+508: border: none;
+509: padding: 10px var(--space-md);
+510: border-radius: var(--radius-sm);
+511: font-size: var(--font-size-sm);
+512: font-family: var(--font);
+513: font-weight: var(--font-weight-semibold);
+514: cursor: default;
+515: width: 100%;
+516: transition: opacity 0.15s;
+517: }
+518: 
+519: .help-cloud-btn:hover {
+520: opacity: 0.9;
+521: }
+522: 
+523: .help-warn {
+524: font-size: var(--font-size-xs);
+525: color: var(--warning);
+526: line-height: var(--line-height);
+527: }
+528: 
+529: /* ── NEW HOME LAYOUT ── */
+530: .home-container {
+531: width: 100%;
+532: height: 100%;
+533: display: flex;
+534: flex-direction: column;
+535: align-items: flex-start;
+536: justify-content: flex-start;
+537: padding: 40px 60px;
+538: box-sizing: border-box;
+539: background: var(--bg-app);
+540: overflow-y: auto;
+541: }
+542: 
+543: .home-header {
+544: display: flex;
+545: justify-content: space-between;
+546: align-items: center;
+547: width: 100%;
+548: margin-bottom: 24px;
+549: }
+550: 
+551: .header-left {
+552: display: flex;
+553: align-items: center;
+554: gap: 16px;
+555: }
+556: 
+557: .header-right {
+558: display: flex;
+559: align-items: center;
+560: gap: 24px;
+561: }
+562: 
+563: .refresh-btn {
+564: background: transparent;
+565: border: none;
+566: color: var(--text-muted);
+567: cursor: pointer;
+568: padding: 8px;
+569: border-radius: 50%;
+570: transition: background 0.2s;
+571: display: flex;
+572: align-items: center;
+573: justify-content: center;
+574: }
+575: .refresh-btn:hover {
+576: background: rgba(255,255,255,0.05);
+577: color: var(--text-primary);
+578: }
+579: 
+580: .start-btn-blue {
+581: background: #3b82f6;
+582: color: white;
+583: border: none;
+584: border-radius: 100px;
+585: padding: 10px 24px;
+586: font-size: 15px;
+587: font-weight: 600;
+588: display: flex;
+589: align-items: center;
+590: cursor: pointer;
+591: transition: transform 0.2s, background 0.2s;
+592: box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+593: }
+594: .start-btn-blue:hover {
+595: background: #2563eb;
+596: transform: scale(1.02);
+597: }
+598: 
+599: .meetings-left-text {
+600: font-size: 11px;
+601: color: var(--text-muted);
+602: margin-top: 6px;
+603: }
+604: 
+605: .avatar-circle {
+606: width: 36px;
+607: height: 36px;
+608: border-radius: 50%;
+609: background: #3b82f6;
+610: color: white;
+611: display: flex;
+612: align-items: center;
+613: justify-content: center;
+614: font-size: 13px;
+615: font-weight: bold;
+616: letter-spacing: 0.5px;
+617: }
+618: 
+619: .home-subtext {
+620: font-size: 14px;
+621: color: var(--text-secondary);
+622: margin-bottom: 40px;
+623: }
+624: 
+625: .history-list-container {
+626: display: flex;
+627: flex-direction: column;
+628: gap: 24px;
+629: width: 100%;
+630: }
+631: 
+632: .history-group {
+633: display: flex;
+634: flex-direction: column;
+635: gap: 12px;
+636: }
+637: 
+638: .history-group-title {
+639: font-size: 13px;
+640: color: var(--text-muted);
+641: font-weight: 600;
+642: }
+643: 
+644: .history-row {
+645: display: flex;
+646: justify-content: space-between;
+647: align-items: center;
+648: padding: 12px 16px;
+649: border-radius: 8px;
+650: background: var(--bg-surface);
+651: border: 1px solid var(--border);
+652: cursor: pointer;
+653: transition: background 0.2s;
+654: width: 100%;
+655: }
+656: 
+657: .history-row:hover {
+658: background: var(--bg-hover);
+659: }
+660: 
+661: .history-title {
+662: font-size: 14px;
+663: font-weight: 500;
+664: color: var(--text-primary);
+665: }
+666: 
+667: .history-time {
+668: font-size: 12px;
+669: color: var(--text-muted);
+670: }
+671: `;
+672: 
+673: static properties = {
+674: onStart: { type: Function },
+675: onExternalLink: { type: Function },
+676: onNavigate: { type: Function },
+677: selectedProfile: { type: String },
+678: onProfileChange: { type: Function },
+679: isInitializing: { type: Boolean },
+680: whisperDownloading: { type: Boolean },
+681: statusText: { type: String },
+682: isPaused: { type: Boolean },
+683: isClickThrough: { type: Boolean },
+684: onToggleClickThrough: { type: Function },
+685: _profiles: { state: true },
+686: 
+687: _selectedModeCategory: { state: true },
+688: _modeCategoryError: { state: true },
+689: _profileError: { state: true },
+690: 
+691: // Internal state
+692: _mode: { state: true },
+693: _token: { state: true },
+694: _geminiKey: { state: true },
+695: _groqKey: { state: true },
+696: _openaiKey: { state: true },
+697: _tokenError: { state: true },
+698: _keyError: { state: true },
+699: // Local AI state
+700: _ollamaHost: { state: true },
+701: _ollamaModel: { state: true },
+702: _whisperModel: { state: true },
+703: _showLocalHelp: { state: true },
+704: _sessions: { state: true },
+705: _notes: { state: true },
+706: _loadingNotes: { state: true },
+707: _loadingSessions: { state: true },
+708: isModeMenuOpen: { type: Boolean, state: true },
+709: isProfileMenuOpen: { type: Boolean, state: true }
+710: };
+711: 
+712: constructor() {
+713: super();
+714: this.onStart = () => {};
+715: this.onExternalLink = () => {};
+716: this.onNavigate = () => {};
+717: this.selectedProfile = '';
+718: this.onProfileChange = () => {};
+719: this.isInitializing = false;
+720: this.whisperDownloading = false;
+721: this.isClickThrough = false;
+722: this.onToggleClickThrough = () => {};
+723: this.isModeMenuOpen = false;
+724: this.isProfileMenuOpen = false;
+725: this._profiles = [];
+726: 
+727: this._selectedModeCategory = '';
+728: this._modeCategoryError = false;
+729: this._profileError = false;
+730: 
+731: this._mode = 'byok';
+732: this._token = '';
+733: this._geminiKey = '';
+734: this._groqKey = '';
+735: this._openaiKey = '';
+736: this._tokenError = false;
+737: this._keyError = false;
+738: this._showLocalHelp = false;
+739: this._ollamaHost = 'http://127.0.0.1:11434';
+740: this._ollamaModel = 'llama3.1';
+741: this._whisperModel = 'Xenova/whisper-small';
+742: 
+743: this._animId = null;
+744: this._time = 0;
+745: this._mouseX = -1;
+746: this._mouseY = -1;
+747: 
+748: this._sessions = [];
+749: this._loadingSessions = false;
+750: 
+751: this.boundKeydownHandler = this._handleKeydown.bind(this);
+752: this._loadFromStorage();
+753: }
+754: 
+755: async _loadFromStorage() {
+756: try {
+757: const [prefs, creds] = await Promise.all([
+758: hideWin.storage.getPreferences(),
+759: hideWin.storage.getCredentials().catch(() => ({})),
+760: ]);
+761: 
+762: const storedMode = prefs.providerMode || 'byok';
+763: this._mode = storedMode === 'cloud' ? 'byok' : storedMode;
+764: 
+765: if (storedMode === 'cloud') {
+766: await hideWin.storage.updatePreference('providerMode', this._mode);
+767: }
+768: 
+769: // Load keys
+770: this._token = creds.cloudToken || '';
+771: this._geminiKey = await hideWin.storage.getApiKey().catch(() => '') || '';
+772: this._groqKey = await hideWin.storage.getGroqApiKey().catch(() => '') || '';
+773: this._openaiKey = creds.openaiKey || '';
+774: 
+775: // Load local AI settings
+776: this._ollamaHost = prefs.ollamaHost || 'http://127.0.0.1:11434';
+777: this._ollamaModel = prefs.ollamaModel || 'llama3.1';
+778: this._whisperModel = prefs.whisperModel || 'Xenova/whisper-small';
+779: 
+780: // Load profiles
+781: this._profiles = await hideWin.storage.getProfiles().catch(() => []);
+782: 
+783: // Load history sessions
+784: this._loadingSessions = true;
+785: this.requestUpdate();
+786: this._sessions = await hideWin.storage.getAllSessions().catch(() => []);
+787: this._loadingSessions = false;
+788: 
+789: this.requestUpdate();
+790: } catch (e) {
+791: console.error('Error loading MainView storage:', e);
+792: }
+793: }
+794: 
+795: 
+796: async loadNotes() {
+797: this._loadingNotes = true;
+798: this.requestUpdate();
+799: this._notes = await hideWin.storage.getNotes().catch(() => []);
+800: this._loadingNotes = false;
+801: this.requestUpdate();
+802: }
+803: 
+804: async connectedCallback() {
+805: super.connectedCallback();
+806: this._boundLoadNotes = this.loadNotes.bind(this);
+807: window.addEventListener('notes-updated', this._boundLoadNotes);
+808: this.loadNotes();
+809: document.addEventListener('keydown', this.boundKeydownHandler);
+810: 
+811: this._handleOutsideClick = () => {
+812: if (this.isModeMenuOpen || this.isProfileMenuOpen) {
+813: this.isModeMenuOpen = false;
+814: this.isProfileMenuOpen = false;
+815: this.requestUpdate();
+816: }
+817: };
+818: document.addEventListener('click', this._handleOutsideClick);
+819: 
+820: // Listen for profile updates from other views
+821: this._profilesListener = () => this._loadFromStorage();
+822: window.addEventListener('profiles-updated', this._profilesListener);
+823: 
+824: if (window.require) {
+825: const { ipcRenderer } = window.require('electron');
+826: this._sessionStatusListener = (event, status) => {
+827: this._sessionState = status.state || (status.active ? 'active' : 'idle');
+828: this._sessionStartTime = status.startTime;
+829: this._updateClock();
+830: this.requestUpdate();
+831: };
+832: ipcRenderer.on('session-status-changed', this._sessionStatusListener);
+833: 
+834: // Check initial status
+835: ipcRenderer.invoke('get-session-status').then(status => {
+836: this._sessionState = status.state || (status.active ? 'active' : 'idle');
+837: this._sessionStartTime = status.startTime;
+838: this._updateClock();
+839: this.requestUpdate();
+840: }).catch(() => {});
+841: 
+842: this._clockInterval = setInterval(() => {
+843: if (this._sessionState && this._sessionState !== 'idle' && this._sessionStartTime) {
+844: this._updateClock();
+845: this.requestUpdate();
+846: }
+847: }, 1000);
+848: }
+849: 
+850: await this._loadFromStorage();
+851: }
+852: 
+853: disconnectedCallback() {
+854: super.disconnectedCallback();
+855: if (this._boundLoadNotes) {
+856: window.removeEventListener('notes-updated', this._boundLoadNotes);
+857: }
+858: document.removeEventListener('keydown', this.boundKeydownHandler);
+859: document.removeEventListener('click', this._handleOutsideClick);
+860: window.removeEventListener('profiles-updated', this._profilesListener);
+861: if (this._clockInterval) {
+862: clearInterval(this._clockInterval);
+863: this._clockInterval = null;
+864: }
+865: if (window.require && this._sessionStatusListener) {
+866: const { ipcRenderer } = window.require('electron');
+867: ipcRenderer.removeListener('session-status-changed', this._sessionStatusListener);
+868: }
+869: if (this._animId) cancelAnimationFrame(this._animId);
+870: }
+871: 
+872: updated(changedProperties) {
+873: super.updated(changedProperties);
+874: if (changedProperties.has('_mode')) {
+875: // Stop old animation when switching modes
+876: if (this._animId) {
+877: cancelAnimationFrame(this._animId);
+878: this._animId = null;
+879: }
+880: }
+881: }
+882: 
+883: getAppStatus() {
+884: if (this.isPaused) return 'paused';
+885: if (!this.statusText) return 'listening';
+886: const txt = this.statusText.toLowerCase();
+887: if (txt.includes('generating') || txt.includes('analyzing') || txt.includes('processing')) {
+888: return 'processing';
+889: }
+890: return 'listening';
+891: }
+892: 
+893: renderStatusDot() {
+894: const status = this.getAppStatus();
+895: let color = '#22c55e';
+896: if (status === 'paused') color = '#eab308';
+897: else if (status === 'processing') color = '#ef4444';
+898: 
+899: return html`
+900: <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+901: <div style="width: 8px; height: 8px; border-radius: 50%; background-color: ${color}; box-shadow: 0 0 10px ${color}; animation: pulse-status-main 2s infinite ease-in-out;"></div>
+902: </div>
+903: <style>
+904: @keyframes pulse-status-main {
+905: 0% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(${status === 'paused' ? '234, 179, 8' : status === 'processing' ? '239, 68, 68' : '34, 197, 94'}, 0.7); }
+906: 70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 6px rgba(0, 0, 0, 0); }
+907: 100% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+908: }
+909: 
+910: .action-bar-pill {
+911: display: flex;
+912: align-items: center;
+913: border-radius: 50px;
+914: background: var(--bg-surface);
+915: padding: 8px 12px 8px 24px;
+916: width: 100%;
+917: max-width: 850px;
+918: transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+919: }
+920: 
+921: .action-bar-divider {
+922: width: 1px; height: 32px; background: var(--border); margin: 0 12px;
+923: }
+924: 
+925: .action-bar-btn {
+926: height: 44px; padding: 0 32px; border-radius: 22px; font-size: 15px;
+927: }
+928: 
+929: @media (max-width: 768px) {
+930: .action-bar-pill {
+931: flex-direction: column;
+932: border-radius: 16px;
+933: padding: 16px;
+934: gap: 16px;
+935: max-width: 100%;
+936: }
+937: .action-bar-pill > div, .action-bar-pill > button {
+938: width: 100% !important;
+939: max-width: 100% !important;
+940: }
+941: .action-bar-divider {
+942: width: 100%;
+943: height: 1px;
+944: margin: 8px 0;
+945: }
+946: .action-bar-btn {
+947: width: 100%;
+948: }
+949: .mouse-toggle-container {
+950: flex-direction: row !important;
+951: justify-content: space-between !important;
+952: width: 100% !important;
+953: max-width: 100% !important;
+954: }
+955: }
+956: \n    </style>
+957: `;
+958: }
+959: 
+960: _updateClock() {
+961: if (!this._sessionStartTime) {
+962: this._sessionTimerText = "00:00";
+963: return;
+964: }
+965: const diff = Math.floor((Date.now() - this._sessionStartTime) / 1000);
+966: const m = Math.floor(diff / 60).toString().padStart(2, '0');
+967: const s = (diff % 60).toString().padStart(2, '0');
+968: this._sessionTimerText = `${m}:${s}`;
+969: }
+970: 
+971: _handleKeydown(e) {
+972: const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+973: if ((isMac ? e.metaKey : e.ctrlKey) && e.key === 'Enter') {
+974: e.preventDefault();
+975: this._handleStart();
+976: }
+977: }
+978: 
+979: // ── Persistence ──
+980: 
+981: async _saveMode(mode) {
+982: this._mode = mode;
+983: this._tokenError = false;
+984: this._keyError = false;
+985: await hideWin.storage.updatePreference('providerMode', mode);
+986: this.requestUpdate();
+987: }
+988: 
+989: async _saveToken(val) {
+990: this._token = val;
+991: this._tokenError = false;
+992: try {
+993: const creds = await hideWin.storage.getCredentials().catch(() => ({}));
+994: await hideWin.storage.setCredentials({ ...creds, cloudToken: val });
+995: } catch (e) {}
+996: this.requestUpdate();
+997: }
+998: 
+999: async _saveGeminiKey(val) {
+1000: this._geminiKey = val;
+1001: this._keyError = false;
+1002: await hideWin.storage.setApiKey(val);
+1003: this.requestUpdate();
+1004: }
+1005: 
+1006: async _saveGroqKey(val) {
+1007: this._groqKey = val;
+1008: await hideWin.storage.setGroqApiKey(val);
+1009: this.requestUpdate();
+1010: }
+1011: 
+1012: async _saveOpenaiKey(val) {
+1013: this._openaiKey = val;
+1014: try {
+1015: const creds = await hideWin.storage.getCredentials().catch(() => ({}));
+1016: await hideWin.storage.setCredentials({ ...creds, openaiKey: val });
+1017: } catch (e) {}
+1018: this.requestUpdate();
+1019: }
+1020: 
+1021: async _saveOllamaHost(val) {
+1022: this._ollamaHost = val;
+1023: await hideWin.storage.updatePreference('ollamaHost', val);
+1024: this.requestUpdate();
+1025: }
+1026: 
+1027: async _saveOllamaModel(val) {
+1028: this._ollamaModel = val;
+1029: await hideWin.storage.updatePreference('ollamaModel', val);
+1030: this.requestUpdate();
+1031: }
+1032: 
+1033: async _saveWhisperModel(val) {
+1034: this._whisperModel = val;
+1035: await hideWin.storage.updatePreference('whisperModel', val);
+1036: this.requestUpdate();
+1037: }
+1038: 
+1039: _handleProfileChange(e) {
+1040: const val = e.target.value;
+1041: if (val === '__CREATE_NEW__') {
+1042: this.onNavigate('ai-customize');
+1043: } else {
+1044: this.selectedProfile = val;
+1045: this.onProfileChange(val);
+1046: this.requestUpdate();
+1047: }
+1048: }
+1049: 
+1050: // ── Start ──
+1051: 
+1052: _handleStart() {
+1053: if (this.isInitializing) return;
+1054: 
+1055: // Only validate mode if we are starting a NEW session
+1056: if (this._sessionState !== 'paused' && !this._selectedModeCategory) {
+1057: this._modeCategoryError = true;
+1058: this.requestUpdate();
+1059: setTimeout(() => { this._modeCategoryError = false; this.requestUpdate(); }, 2000);
+1060: return;
+1061: }
+1062: 
+1063: this.onStart(this._selectedModeCategory, this.selectedProfile);
+1064: }
+1065: 
+1066: async _handleEndSessionCompletely() {
+1067: if (window.require) {
+1068: const { ipcRenderer } = window.require('electron');
+1069: await ipcRenderer.invoke('end-session-completely');
+1070: this._isSessionActive = false;
+1071: this.requestUpdate();
+1072: }
+1073: }
+1074: 
+1075: triggerApiKeyError() {
+1076: this._keyError = this._mode !== 'local';
+1077: this.requestUpdate();
+1078: setTimeout(() => {
+1079: this._tokenError = false;
+1080: this._keyError = false;
+1081: this.requestUpdate();
+1082: }, 3000);
+1083: }
+1084: 
+1085: _formatDateGroup(dateString) {
+1086: if (!dateString) return 'Unknown Date';
+1087: const date = new Date(dateString);
+1088: const today = new Date();
+1089: const yesterday = new Date(today);
+1090: yesterday.setDate(yesterday.getDate() - 1);
+1091: 
+1092: if (date.toDateString() === today.toDateString()) return 'Today';
+1093: if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+1094: 
+1095: return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+1096: }
+1097: 
+1098: _formatTime(dateString) {
+1099: if (!dateString) return '';
+1100: return new Date(dateString).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+1101: }
+1102: 
+1103: // ── Render helpers ──
+1104: 
+1105: _renderStartButton() {
+1106: return html`
+1107: <button
+1108: class="start-button ${this._keyError ? 'error' : ''}"
+1109: style="${this._keyError ? 'background: var(--danger, #EF4444); color: white;' : ''}"
+1110: @click=${() => this._handleStart()}
+1111: ?disabled=${this.isInitializing}
+1112: >
+1113: ${this._keyError ? html`
+1114: Missing API Key (Check Settings)
+1115: ` : this.isInitializing ? html`
+1116: <div class="spinner"></div> Starting...
+1117: ` : html`
+1118: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+1119: <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+1120: <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+1121: </svg>
+1122: Start Session
+1123: `}
+1124: </button>
+1125: `;
+1126: }
+1127: 
+1128: _renderDivider() {
+1129: return html`
+1130: <div class="divider">
+1131: <div class="divider-line"></div>
+1132: <span class="divider-text">or</span>
+1133: <div class="divider-line"></div>
+1134: </div>
+1135: `;
+1136: }
+1137: 
+1138: // ── Cloud mode ──
+1139: // Cloud UI intentionally disabled. Backend cloud wiring is still present in
+1140: // the codebase, but the renderer no longer exposes this setup path.
+1141: 
+1142: // ── Mode + Profile selectors (rendered before Start button in all modes) ──
+1143: 
+1144: _renderActionBar() {
+1145: const MODES = [
+1146: { value: '', label: 'Select Mode' },
+1147: { value: 'Job Interview', label: 'Job Interview' },
+1148: { value: 'Business Meeting', label: 'Business Meeting' },
+1149: { value: 'Sales Call', label: 'Sales Call' },
+1150: { value: 'Presentation', label: 'Presentation' },
+1151: { value: 'Negotiation', label: 'Negotiation' },
+1152: { value: 'Exam Assistant', label: 'Exam Assistant' },
+1153: { value: 'Custom', label: 'Custom' }
+1154: ];
+1155: 
+1156: // Profile options filtered based on selected mode
+1157: const profileOptions = this._selectedModeCategory
+1158: ? (this._profiles || []).filter(p => p.type === this._selectedModeCategory)
+1159: : [];
+1160: 
+1161: const isProfileValid = this.selectedProfile && profileOptions.some(p => (p.id || p.name) === this.selectedProfile);
+1162: const displayProfileName = isProfileValid ? profileOptions.find(p => (p.id || p.name) === this.selectedProfile).name : 'Select Profile';
+1163: 
+1164: // Dynamic border color based on validation error
+1165: const borderColor = this._modeCategoryError ? '#ef4444' : 'var(--accent, #3b82f6)';
+1166: const outlineColor = this._modeCategoryError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)';
+1167: 
+1168: return html`
+1169: <div style="display: flex; flex-direction: column; align-items: center; margin: 24px 0 40px 0; width: 100%;">
+1170: <div class="action-bar-pill" style="border: 1px solid ${borderColor === 'var(--accent, #3b82f6)' ? 'var(--border)' : borderColor}; box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 0 4px ${outlineColor};">
+1171: 
+1172: <!-- Mode Select (Custom Dropdown) -->
+1173: <div style="width: 220px; flex-shrink: 0; flex-grow: 0; display: flex; flex-direction: column; position: relative;" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
+1174: <div style="display: flex; align-items: center; gap: 12px; padding: 6px 0; cursor: pointer; width: 100%;">
+1175: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
+1176: <circle cx="11" cy="11" r="8"></circle>
+1177: <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+1178: </svg>
+1179: <span style="font-size: 15px; font-weight: ${this._selectedModeCategory ? '600' : '500'}; color: ${this._selectedModeCategory ? 'var(--text-primary)' : 'var(--text-muted)'}; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+1180: ${this._selectedModeCategory ? (MODES.find(m => m.value === this._selectedModeCategory)?.label || this._selectedModeCategory) : 'Select Mode'}
+1181: </span>
+1182: </div>
+1183: 
+1184: ${this.isModeMenuOpen ? html`
+1185: <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: -12px; width: calc(100% + 24px); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
+1186: ${MODES.slice(1).map(m => html`
+1187: <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: ${this._selectedModeCategory === m.value ? 'var(--accent)' : 'var(--text-primary)'}; background: ${this._selectedModeCategory === m.value ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;"
+1188: @mouseover=${e => { if (this._selectedModeCategory !== m.value) e.currentTarget.style.background = 'var(--bg-hover)'; }}
+1189: @mouseout=${e => { if (this._selectedModeCategory !== m.value) e.currentTarget.style.background = 'transparent'; }}
+1190: @click=${(e) => {
+1191: e.stopPropagation();
+1192: this._selectedModeCategory = m.value;
+1193: this.selectedProfile = '';
+1194: this._modeCategoryError = false;
+1195: this.isModeMenuOpen = false;
+1196: this.requestUpdate();
+1197: }}>
+1198: ${m.label}
+1199: </div>
+1200: `)}
+1201: </div>
+1202: ` : ''}
+1203: </div>
+1204: 
+1205: <div class="action-bar-divider" style="width: 1px; height: 32px; background: var(--border); margin: 0 20px;"></div>
+1206: 
+1207: <!-- Profile Select (Custom Dropdown) -->
+1208: <div style="width: 220px; flex-shrink: 0; flex-grow: 0; display: flex; flex-direction: column; position: relative;" @click=${(e) => {
+1209: e.stopPropagation();
+1210: if (!this._selectedModeCategory) {
+1211: this._modeCategoryError = true;
+1212: this.requestUpdate();
+1213: setTimeout(() => { this._modeCategoryError = false; this.requestUpdate(); }, 2000);
+1214: return;
+1215: }
+1216: this.isProfileMenuOpen = !this.isProfileMenuOpen;
+1217: this.isModeMenuOpen = false;
+1218: this.requestUpdate();
+1219: }}>
+1220: <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; cursor: pointer; width: 100%; gap: 8px;">
+1221: <span style="font-size: 15px; font-weight: ${isProfileValid ? '600' : '500'}; color: ${isProfileValid ? 'var(--text-primary)' : 'var(--text-muted)'}; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+1222: ${displayProfileName}
+1223: </span>
+1224: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
+1225: <polyline points="6 9 12 15 18 9"></polyline>
+1226: </svg>
+1227: </div>
+1228: 
+1229: ${this.isProfileMenuOpen ? html`
+1230: <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: -12px; width: calc(100% + 24px); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
+1231: <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: ${!isProfileValid ? 'var(--accent)' : 'var(--text-primary)'}; background: ${!isProfileValid ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;"
+1232: @mouseover=${e => { if (isProfileValid) e.currentTarget.style.background = 'var(--bg-hover)'; }}
+1233: @mouseout=${e => { if (isProfileValid) e.currentTarget.style.background = 'transparent'; }}
+1234: @click=${(e) => {
+1235: e.stopPropagation();
+1236: this.selectedProfile = '';
+1237: this.isProfileMenuOpen = false;
+1238: this.requestUpdate();
+1239: }}>
+1240: No Profile (AI Mode)
+1241: </div>
+1242: ${profileOptions.map(p => html`
+1243: <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: ${this.selectedProfile === (p.id || p.name) ? 'var(--accent)' : 'var(--text-primary)'}; background: ${this.selectedProfile === (p.id || p.name) ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;"
+1244: @mouseover=${e => { if (this.selectedProfile !== (p.id || p.name)) e.currentTarget.style.background = 'var(--bg-hover)'; }}
+1245: @mouseout=${e => { if (this.selectedProfile !== (p.id || p.name)) e.currentTarget.style.background = 'transparent'; }}
+1246: @click=${(e) => {
+1247: e.stopPropagation();
+1248: this.selectedProfile = p.id || p.name;
+1249: this.isProfileMenuOpen = false;
+1250: this.requestUpdate();
+1251: }}>
+1252: ${p.name}
+1253: </div>
+1254: `)}
+1255: <div style="height: 1px; background: var(--border); margin: 6px 0;"></div>
+1256: <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--accent); transition: background 0.15s;"
+1257: @mouseover=${e => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)'}
+1258: @mouseout=${e => e.currentTarget.style.background = 'transparent'}
+1259: @click=${(e) => {
+1260: e.stopPropagation();
+1261: this.selectedProfile = '';
+1262: this.isProfileMenuOpen = false;
+1263: if (this.onNavigate) this.onNavigate('customize-ai');
+1264: }}>
+1265: + Add New Profile
+1266: </div>
+1267: </div>
+1268: ` : ''}
+1269: </div>
+1270: <div class="action-bar-divider" style="width: 1px; height: 32px; background: var(--border); margin: 0 12px;"></div>
+1271: 
+1272: <!-- Mouse Toggle (Centered with pointer-events fix and fixed width) -->
+1273: <div class="mouse-toggle-container stealth-tooltip" data-tooltip="Stealth Mode" style="pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 0 8px; margin-right: 8px; width: 130px; max-width: 130px; flex-shrink: 0;" @click=${() => this.onToggleClickThrough && this.onToggleClickThrough()}>
+1274: <span style="font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; transition: color 0.2s; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+1275: ${this.isClickThrough ? 'Mouse Un-Detect' : 'Mouse Detect'}
+1276: </span>
+1277: <div style="width: 42px; height: 22px; border-radius: 6px; background: ${this.isClickThrough ? 'var(--bg-elevated)' : 'var(--text-muted)'}; border: 1px solid var(--border); position: relative; transition: all 0.3s ease; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+1278: <div style="width: 18px; height: 18px; border-radius: 4px; background: #ffffff; position: absolute; top: 1px; left: ${this.isClickThrough ? '21px' : '1px'}; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
+1279: <div style="width: 10px; height: 10px; border-radius: 2px; background: ${this.isClickThrough ? 'var(--bg-elevated)' : 'var(--text-muted)'}; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+1280: <div style="width: 5px; height: 1.5px; background: #ffffff; border-radius: 1px; transform: rotate(-45deg);"></div>
+1281: </div>
+1282: </div>
+1283: </div>
+1284: </div>
+1285: 
+1286: <!-- Start/Active Buttons -->
+1287: <div style="display: flex; gap: 12px; margin-left: 12px;">
+1288: ${this._sessionState === 'active' ? html`
+1289: <button class="start-btn-blue" @click=${() => this._handleStart()} style="border-radius: 40px; padding: 14px 40px; display: flex; align-items: center; gap: 8px; border: none; outline: none; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); color: var(--accent); font-weight: 600; font-size: 15px; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s;">
+1290: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+1291: <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+1292: <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+1293: </svg>
+1294: <span>Started</span>
+1295: </button>
+1296: ` : this._sessionState === 'paused' ? html`
+1297: <button class="start-btn-blue" @click=${() => this._handleStart()} style="border-radius: 40px; padding: 14px 40px; display: flex; align-items: center; gap: 8px; border: none; outline: none; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5); font-weight: 600; font-size: 15px; letter-spacing: 0.5px; cursor: pointer;">
+1298: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+1299: <path d="M8 5v14l11-7z" />
+1300: </svg>
+1301: <span>Resume</span>
+1302: </button>
+1303: ` : html`
+1304: <button class="start-btn-blue" @click=${() => this._handleStart()} style="border-radius: 40px; padding: 14px 40px; display: flex; align-items: center; gap: 8px; border: none; outline: none; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5); font-weight: 600; font-size: 15px; letter-spacing: 0.5px; cursor: pointer;">
+1305: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+1306: <path d="M8 5v14l11-7z" />
+1307: </svg>
+1308: <span>Start</span>
+1309: </button>
+1310: `}
+1311: </div>
+1312: </div>
+1313: 
+1314: <!-- Active Session Timer and Stop Button below the panel -->
+1315: ${this._sessionState && this._sessionState !== 'idle' ? html`
+1316: <div style="display: flex; align-items: center; justify-content: center; gap: 24px; width: 100%; max-width: 850px; margin-top: 16px;">
+1317: <div style="display: flex; align-items: center; gap: 8px;">
+1318: ${this.renderStatusDot()}
+1319: <span style="font-size: 20px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; letter-spacing: 1px;">
+1320: ${this._sessionTimerText || '00:00'}
+1321: </span>
+1322: </div>
+1323: <button class="start-btn-blue" @click=${() => this._handleEndSessionCompletely()} style="border-radius: 8px; padding: 0 24px; height: 40px; background: var(--danger, #ef4444); display: flex; align-items: center; justify-content: center; gap: 8px; border: none; outline: none; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4); cursor: pointer; transition: transform 0.2s;">
+1324: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+1325: <rect x="5" y="5" width="14" height="14" rx="2" ry="2"></rect>
+1326: </svg>
+1327: <span style="font-weight: 600; font-size: 14px; color: white;">Stop</span>
+1328: </button>
+1329: </div>
+1330: ` : ''}
+1331: 
+1332: <!-- Validation message beneath the pill -->
+1333: <div style="height: 20px; width: 100%; max-width: 800px; display: flex; align-items: center; padding-left: 20px; margin-top: 8px;">
+1334: ${this._modeCategoryError ? html`
+1335: <span style="color: #ef4444; font-size: 12px; font-weight: 500; margin-top: 8px;">Please select mode</span>
+1336: ` : ''}
+1337: </div>
+1338: 
+1339: <div class="home-subtext" style="margin-top: 24px;">
+1340: View and manage your previous sessions below.
+1341: </div>
+1342: 
+1343: <div class="history-list-container">
+1344: ${Object.keys(groupedSessions).length === 0 ? html`
+1345: <div style="color: var(--text-muted); padding-top: 40px; text-align: center;">No sessions found. Start a new session above!</div>
+1346: ` : Object.keys(groupedSessions).map(group => html`
+1347: <div class="history-group">
+1348: <div class="history-group-title">${group}</div>
+1349: ${groupedSessions[group].map(session => html`
+1350: <div class="history-row" @click=${() => this.onNavigate('history')}>
+1351: <div class="history-title">${session.title || 'Untitled Session'}</div>
+1352: <div class="history-time">${this._formatTime(session.updatedAt || session.createdAt)}</div>
+1353: </div>
+1354: `)}
+1355: </div>
+1356: `)}
+1357: </div>
+1358: 
+1359: </div>
+1360: `;
+1361: }
+1362: 
+1363: // ── BYOK mode ──
+1364: 
+1365: _renderByokMode() {
+1366: return html`
+1367: <div class="form-wrapper">
+1368: ${this._renderModeProfileSelectors()}
+1369: ${this._renderStartButton()}
+1370: </div>
+1371: `;
+1372: }
+1373: 
+1374: // ── Local AI mode ──
+1375: 
+1376: _renderLocalMode() {
+1377: return html`
+1378: <div class="form-group">
+1379: <label class="form-label">Ollama Host</label>
+1380: <input
+1381: type="text"
+1382: placeholder="http://127.0.0.1:11434"
+1383: .value=${this._ollamaHost}
+1384: @input=${e => this._saveOllamaHost(e.target.value)}
+1385: />
+1386: <div class="form-hint">Ollama must be running locally</div>
+1387: </div>
+1388: 
+1389: <div class="form-group">
+1390: <label class="form-label">Ollama Model</label>
+1391: <input
+1392: type="text"
+1393: placeholder="llama3.1"
+1394: .value=${this._ollamaModel}
+1395: @input=${e => this._saveOllamaModel(e.target.value)}
+1396: />
+1397: <div class="form-hint">Run <code style="font-family: var(--font-mono); font-size: 11px; background: var(--bg-elevated); padding: 1px 4px; border-radius: 3px;">ollama pull ${this._ollamaModel}</code> first</div>
+1398: </div>
+1399: 
+1400: <div class="form-group">
+1401: <div class="whisper-label-row">
+1402: <label class="form-label">Whisper Model</label>
+1403: ${this.whisperDownloading ? html`<div class="whisper-spinner"></div>` : ''}
+1404: </div>
+1405: <select
+1406: .value=${this._whisperModel}
+1407: @change=${e => this._saveWhisperModel(e.target.value)}
+1408: >
+1409: <option value="Xenova/whisper-tiny" ?selected=${this._whisperModel === 'Xenova/whisper-tiny'}>Tiny (fastest, least accurate)</option>
+1410: <option value="Xenova/whisper-base" ?selected=${this._whisperModel === 'Xenova/whisper-base'}>Base</option>
+1411: <option value="Xenova/whisper-small" ?selected=${this._whisperModel === 'Xenova/whisper-small'}>Small (recommended)</option>
+1412: <option value="Xenova/whisper-medium" ?selected=${this._whisperModel === 'Xenova/whisper-medium'}>Medium (most accurate, slowest)</option>
+1413: </select>
+1414: <div class="form-hint">${this.whisperDownloading ? 'Downloading model...' : 'Downloaded automatically on first use'}</div>
+1415: </div>
+1416: 
+1417: ${this._renderStartButton()}
+1418: 
+1419: <!-- Cloud promo intentionally removed from the active UI. -->
+1420: `;
+1421: }
+1422: 
+1423: render() {
+1424: const groupedSessions = {};
+1425: if (this._sessions && this._sessions.length > 0) {
+1426: this._sessions.forEach(session => {
+1427: const group = this._formatDateGroup(session.updatedAt || session.createdAt);
+1428: if (!groupedSessions[group]) groupedSessions[group] = [];
+1429: groupedSessions[group].push(session);
+1430: });
+1431: }
+1432: 
+1433: return html`
+1434: <div class="home-container">
+1435: <!-- Header -->
+1436: <div class="home-header">
+1437: <div class="header-left">
+1438: <div class="brand-logo" style="margin-right: 16px;"></div>
+1439: 
+1440: </div>
+1441: 
+1442: <div class="header-right">
+1443: <div style="display:flex; flex-direction:column; align-items:center; margin-right: 16px;">
+1444: <span class="meetings-left-text" style="font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7);">Unlimited sessions left</span>
+1445: </div>
+1446: 
+1447: <div class="avatar-circle">
+1448: AV
+1449: </div>
+1450: </div>
+1451: </div>
+1452: 
+1453: ${this._renderActionBar()}
+1454: 
+1455: <div class="home-subtext" style="margin-top: 16px; font-weight: 600; color: var(--text-primary);">
+1456: Pinned Shortcuts
+1457: </div>
+1458: <div class="pinned-shortcuts-container" style="width: 100%; max-width: 100%; max-height: 270px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, 100px); gap: 16px; margin-top: 8px; padding: 24px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-surface); box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+1459: <div class="pinned-shortcut-card" @click=${() => this.onNavigate('notes')} style="width: 100px; height: 100px; background: transparent; border: 2px dashed var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative;" onmouseover="this.style.background='rgba(59, 130, 246, 0.05)'; this.style.borderColor='rgba(59, 130, 246, 0.4)'; " onmouseout="this.style.background='transparent'; this.style.borderColor='var(--border)'; ">
+1460: <div style="width: 24px; height: 24px; border-radius: 50%; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; color: #3b82f6; transition: transform 0.2s;">
+1461: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+1462: </div>
+1463: <div style="font-size: 11px; font-weight: 500; color: var(--text-primary); text-align: center;">
+1464: Add
+1465: </div>
+1466: </div>
+1467: ${(this._notes || []).slice(0,10).map(note => html`
+1468: <div class="pinned-shortcut-card" @click=${() => this.onNavigate('notes')} style="width: 100px; height: 100px; background: rgba(120, 120, 120, 0.05); border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease; display: flex; flex-direction: column; gap: 8px; position: relative;" onmouseover="this.style.background='rgba(120, 120, 120, 0.08)'; this.style.borderColor='rgba(99, 102, 241, 0.4)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.1), 0 0 0 1px rgba(99,102,241,0.2)';" onmouseout="this.style.background='rgba(120, 120, 120, 0.05)'; this.style.borderColor='var(--border)'; this.style.boxShadow='none';">
+1469: <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+1470: <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: #3b82f6;">
+1471: ${note.type === 'image' ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`}
+1472: </div>
+1473: </div>
+1474: <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: auto; text-align: center; width: 100%;">
+1475: ${note.shortcutName || note.title || 'Untitled Note'}
+1476: </div>
+1477: <div style="font-size: 9px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 100%;">
+1478: ${note.type === 'image' ? 'Image Note' : note.ext || 'Text Note'}
+1479: </div>
+1480: </div>
+1481: `)}
+1482: </div>
+1483: 
+1484: <div class="home-subtext" style="margin-top: 24px;">
+1485: View and manage your previous sessions below.
+1486: </div>
+1487: 
+1488: <div class="history-list-container">
+1489: ${Object.keys(groupedSessions).length === 0 ? html`
+1490: <div style="color: var(--text-muted); padding-top: 40px; text-align: center;">No sessions found. Start a new session above!</div>
+1491: ` : Object.keys(groupedSessions).map(group => html`
+1492: <div class="history-group">
+1493: <div class="history-group-title">${group}</div>
+1494: ${groupedSessions[group].map(session => html`
+1495: <div class="history-row" @click=${() => this.onNavigate('history')}>
+1496: <div class="history-title">${session.title || 'Untitled Session'}</div>
+1497: <div class="history-time">${this._formatTime(session.updatedAt || session.createdAt)}</div>
+1498: </div>
+1499: `)}
+1500: </div>
+1501: `)}
+1502: </div>
+1503: </div>
+1504: `;
+1505: }
+1506: }
+1507: 
+1508: customElements.define('main-view', MainView);
