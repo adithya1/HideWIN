@@ -1,0 +1,59 @@
+{
+    "name": "hide-win",
+    "productName": "HideWin",
+    "version": "0.7.1",
+    "description": "HideWin Application",
+    "main": "src/index.js",
+    "scripts": {
+        "dev": "taskkill /F /IM electron.exe 2>nul & timeout /t 3 /nobreak >nul & electron-forge start",
+        "start": "electron-forge start",
+        "package": "electron-forge package",
+        "make": "electron-forge make",
+        "publish": "electron-forge publish",
+        "test": "node tests/run-tests.js",
+        "test:playwright": "node tests/playwright.test.js",
+        "test:all": "node tests/run-all-tests.js",
+        "lint": "echo \"No linting configured\""
+    },
+    "keywords": [
+        "hide win",
+        "hide win ai",
+        "hide win ai assistant",
+        "hide win ai assistant for interviews",
+        "hide win ai assistant for interviews"
+    ],
+    "author": {
+        "name": "sohzm",
+        "email": "sohambharambe9@gmail.com"
+    },
+    "license": "GPL-3.0",
+    "dependencies": {
+        "@google/genai": "^1.2.0",
+        "@huggingface/transformers": "^3.8.1",
+        "acorn": "^8.18.0",
+        "dotenv": "^16.0.3",
+        "electron-squirrel-startup": "^1.0.1",
+        "mammoth": "^1.12.1",
+        "ollama": "^0.6.3",
+        "onnxruntime-web": "^1.14.0",
+        "pdf-parse": "^2.4.5",
+        "word-extractor": "^1.0.4",
+        "ws": "^8.19.0",
+        "xlsx": "^0.18.5"
+    },
+    "devDependencies": {
+        "@electron-forge/cli": "^7.8.1",
+        "@electron-forge/maker-deb": "^7.8.1",
+        "@electron-forge/maker-dmg": "^7.8.1",
+        "@electron-forge/maker-rpm": "^7.8.1",
+        "@electron-forge/maker-squirrel": "^7.8.1",
+        "@electron-forge/maker-zip": "^7.8.1",
+        "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
+        "@electron-forge/plugin-fuses": "^7.8.1",
+        "@electron/fuses": "^1.8.0",
+        "@reforged/maker-appimage": "^5.0.0",
+        "electron": "^30.0.5",
+        "javascript-obfuscator": "^5.5.0",
+        "playwright": "^1.62.1"
+    }
+}

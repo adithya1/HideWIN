@@ -1,0 +1,24 @@
+
+
+Yes, there are exactly two major "tightly coupled" bottlenecks in the current architecture that will instantly break if you throw thousands of sessions at it in a Kubernetes Auto-Scaling environment.
+
+I have created an .env.example file and a master blueprint called VPC_SCALING_GUIDE.md in your root folder. I also updated your Python code to automatically read from .env files to fix the hardcoding.
+
+Here are the critical architectural changes you must make when moving to the cloud:
+
+1. The WebRTC State Problem (The Biggest Threat)
+Right now, your Cloud Relay stores active meeting rooms in a local Python dictionary in its memory.
+
+The Bug: If your VPC Load Balancer auto-scales to 5 relay servers, the Host PC might connect to Server A, but the Load Balancer might route the Guest to Server B. Server B's memory is empty, so the connection instantly fails.
+The Fix: You must configure Sticky Sessions (Session Affinity) on your Cloud Load Balancer (AWS ALB / Nginx). This forces the load balancer to always route the same users to the exact same server pod. If you want to scale to tens of thousands of sessions, you will eventually need to implement a Redis Pub/Sub backplane so the servers can pass messages to each other.
+2. The SQLite Problem (Database Locking)
+Right now, your backend uses a local SQLite file (hidewin.db).
+
+The Bug: If Kubernetes spins up 10 API pods to handle heavy web traffic, you will end up with 10 separate database files. Users will log in on Pod A, but Pod B won't know they exist.
+The Fix: I just updated your database.py file to accept external databases. You must spin up an AWS RDS PostgreSQL cluster and paste the URL into your .env file. This completely decouples your storage, allowing 1,000 API pods to safely read and write to the same central database.
+3. The Corporate Firewall Problem (TURN Servers)
+Currently, your WebRTC relies on Google's free STUN server to connect video.
+
+The Bug: STUN fails if a user tries to join a session from a strict corporate office network or symmetric NAT.
+The Fix: You must rent or host a TURN Server (like Twilio Network Traversal or Coturn). A TURN server acts as a physical middleman for video data when direct peer-to-peer connection is blocked.
+The VPC_SCALING_GUIDE.md file contains the full breakdown of how to configure your Kubernetes deployments to handle this!

@@ -1,0 +1,27 @@
+=========================================================
+      HIDE-WIN MONOREPO ARCHITECTURE
+=========================================================
+
+This project has been restructured to follow standard Enterprise MVC / Microservice principles. 
+
+All UI/Frontend logic is separated from backend logic. Do not place HTML/React/Vue files inside the API or Relay folders.
+
+1. Hide-Win-Web (The Presentation Layer)
+   Contains all frontend applications.
+   - /Admin : The Admin Dashboard (HTML/JS)
+   - /Guest : The Meeting Room Web Client (invite_client)
+   - /User  : The main React Application
+
+2. hidewin-fastapi (The Business Logic Layer)
+   - Contains database models, REST APIs, and background tasks.
+   - Note: The main.py mounts the /Admin folder from Hide-Win-Web.
+
+3. hidewin-cloud-relay (The Network Gateway / Signaling Layer)
+   - A totally standalone microservice for WebRTC signaling.
+   - Note: The cloud_relay.py mounts the /Guest folder from Hide-Win-Web.
+
+4. Hide-Win-Master (The Desktop / Electron Client)
+   - The native desktop application for the host PC.
+
+5. whisper-server
+   - A dedicated microservice for AI transcription logic.

@@ -1,0 +1,15 @@
+python patch_app.py
+python patch_app2.py
+python patch_sidebar.py
+python patch_app3.py
+python patch_imports2.py
+python patch_scrollbars.py
+python patch_hidewin_layout.py
+python patch_overflow.py
+python patch_render.py
+python patch_drawer.py
+python patch_drawer_items.py
+python patch_app_scrollbar.py
+python patch_app_hide_scrollbar.py
+python patch_lean_scrollbar.py
+python patch_app_scrollbar_append.py

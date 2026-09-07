@@ -1,0 +1,788 @@
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1888
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1888
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1888
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught ReferenceError: noteId is not defined
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1723
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1888
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1888
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+PROMISE REJECTION: TypeError: Cannot read properties of null (reading 'insertBefore')
+    at Q.L (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4787)
+    at Q.j (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:5457)
+    at Q._$AI (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4739)
+    at K.U (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4028)
+    at Q.O (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:5171)
+    at Q._$AI (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4694)
+    at K.U (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4028)
+    at Q.O (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:5171)
+    at Q._$AI (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4694)
+    at K.U (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4028)
+PROMISE REJECTION: TypeError: Cannot read properties of null (reading 'insertBefore')
+    at Q.L (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4787)
+    at Q.j (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:5457)
+    at Q._$AI (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4739)
+    at K.U (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4028)
+    at Q.O (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:5171)
+    at Q._$AI (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4694)
+    at K.U (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4028)
+    at Q.O (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:5171)
+    at Q._$AI (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4694)
+    at K.U (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/assets/lit-core-2.7.4.min.js:16:4028)
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/out/HideWin-win32-x64/resources/app.asar/src/components/views/NotesView.js:1994
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+ERROR: Uncaught TypeError: this.closeTab is not a function
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:1994
+ERROR: Uncaught SyntaxError: Unexpected token ';'
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/NotesView.js:24
+ERROR: Uncaught SyntaxError: Invalid or unexpected token
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1300
+ERROR: Uncaught SyntaxError: Invalid or unexpected token
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2211
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: ReferenceError: groupedSessions is not defined
+    at MainView._renderActionBar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1345:35)
+    at MainView.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:1454:24)
+    at MainView.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at MainView.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at MainView.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at MainView.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: TypeError: Cannot read properties of undefined (reading 'profile')
+    at HideWinApp.renderTopToolbar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2239:81)
+    at HideWinApp.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2612:24)
+    at HideWinApp.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at HideWinApp.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at HideWinApp.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at HideWinApp.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: TypeError: Cannot read properties of undefined (reading 'profile')
+    at HideWinApp.renderTopToolbar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2239:81)
+    at HideWinApp.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2612:24)
+    at HideWinApp.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at HideWinApp.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at HideWinApp.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at HideWinApp.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: TypeError: Cannot read properties of undefined (reading 'profile')
+    at HideWinApp.renderTopToolbar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2239:81)
+    at HideWinApp.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2612:24)
+    at HideWinApp.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at HideWinApp.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at HideWinApp.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at HideWinApp.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: TypeError: Cannot read properties of undefined (reading 'profile')
+    at HideWinApp.renderTopToolbar (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2239:81)
+    at HideWinApp.render (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/app/HideWinApp.js:2612:24)
+    at HideWinApp.update (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:21:306)
+    at HideWinApp.performUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4739)
+    at HideWinApp.scheduleUpdate (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4398)
+    at HideWinApp.T (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:11:4306)
+PROMISE REJECTION: Error: Error invoking remote method 'storage:get-preferences': Error: No handler registered for 'storage:get-preferences'
+    at IpcRenderer.invoke (node:electron/js2c/renderer_init:2:6995)
+    at async Object.getPreferences (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/utils/renderer.js:106:24)
+    at async loadPreferencesCache (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/utils/renderer.js:176:24)
+PROMISE REJECTION: Error: Error invoking remote method 'storage:get-preferences': Error: No handler registered for 'storage:get-preferences'
+    at IpcRenderer.invoke (node:electron/js2c/renderer_init:2:6995)
+    at async Object.getPreferences (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/utils/renderer.js:106:24)
+    at async loadPreferencesCache (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/utils/renderer.js:176:24)
+ERROR: Uncaught SyntaxError: Unexpected token '-'
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:6
+ERROR: Uncaught SyntaxError: Unexpected token '-'
+file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/MainView.js:6

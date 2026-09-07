@@ -1,0 +1,38 @@
+# Implementation Plan: Central "Cloud Relay" Signaling
+
+You have correctly identified a critical security and stability flaw. Exposing the local IP (`192.168.1.15`) in the invite link is bad for two reasons:
+1. **Security**: It exposes your internal network layout to the guest.
+2. **Stability**: If your router changes your PC's IP via DHCP, all previously generated links break instantly.
+
+To fix this properly (exactly how TeamViewer or Zoom does it), we must decouple the Signaling Server into its own standalone "Cloud" entity. 
+
+## User Review Required
+
+> [!IMPORTANT]  
+> Please review the architecture below. By having the Desktop App establish an **outbound** connection to the simulated Cloud server, you completely eliminate the need for Port Forwarding on your router, and the guest *never* sees your PC's actual IP address.
+
+## Proposed Architecture
+
+---
+
+### 1. The Simulated Cloud Server (`cloud_relay.py`)
+I will create a brand new FastAPI server specifically designed to simulate your future cloud environment (VPC). 
+- It will run on a new port (e.g., `9000`).
+- It will host the Web Client UI (`invite_client`) and manage the WebRTC `offer`/`answer` routing.
+- Because it runs centrally, the invite link will look like: `http://<cloud-ip>:9000/invite/index.html?channel=...` (which in production will be `https://hidewin.com/join/...`).
+
+### 2. Outbound Desktop App Connections (Zero Port Forwarding)
+Currently, your Desktop PC waits for incoming connections. This is why the IP is exposed. 
+- I will modify the Desktop App (`InviteView.js`) to establish a permanent **Outbound WebSocket** connection to the `cloud_relay` server the moment you create a channel.
+- Because the connection is outbound, the Cloud Relay doesn't need to know or store your PC's dynamic IP address. It just talks to you through the open WebSocket tunnel!
+
+### 3. Management Scripts
+As requested, I will create Windows batch files to easily manage this new server in your local setup:
+- `start_cloud_relay.bat` (Starts the cloud server in the background)
+- `stop_cloud_relay.bat` (Kills the cloud server)
+
+## Verification Plan
+1. I will write the `cloud_relay.py` server and batch files.
+2. I will update the Desktop App to generate links pointing to the Cloud Relay port instead of the internal API port.
+3. You will run `start_cloud_relay.bat`.
+4. You will generate a link in the Desktop app. Notice it no longer relies on your dynamic internal IP. You can join via that link, and the WebRTC connection will cleanly route through the simulated cloud!

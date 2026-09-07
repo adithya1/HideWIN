@@ -1,0 +1,48 @@
+Set-Content inject_ultimate_scrollbar.py @'
+import os
+
+scrollbar_css = """
+/* POSH LEAN SCROLLBAR */
+::-webkit-scrollbar { width: 6px !important; height: 6px !important; background-color: transparent !important; }
+::-webkit-scrollbar-track { background: transparent !important; }
+::-webkit-scrollbar-thumb { background-color: #d4d4d8 !important; border-radius: 10px !important; }
+::-webkit-scrollbar-thumb:hover { background-color: #a1a1aa !important; }
+::-webkit-scrollbar-button:single-button:vertical:decrement { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M7 14l5-5 5 5z'/></svg>") !important; background-size: 8px !important; background-position: center !important; background-repeat: no-repeat !important; height: 12px !important; display: block !important; }
+::-webkit-scrollbar-button:single-button:vertical:increment { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'><path d='M7 10l5 5 5-5z'/></svg>") !important; background-size: 8px !important; background-position: center !important; background-repeat: no-repeat !important; height: 12px !important; display: block !important; }
+"""
+
+# 1. Inject into index.html
+with open('src/index.html', 'r', encoding='utf-8') as f:
+    content = f.read()
+if "POSH LEAN SCROLLBAR" not in content:
+    content = content.replace("</style>", scrollbar_css + "\n</style>")
+    with open('src/index.html', 'w', encoding='utf-8') as f:
+        f.write(content)
+
+# 2. Inject into HideWinApp.js
+with open('src/components/app/HideWinApp.js', 'r', encoding='utf-8') as f:
+    content = f.read()
+if "POSH LEAN SCROLLBAR" not in content:
+    content = content.replace("</style>", scrollbar_css + "\n</style>")
+    with open('src/components/app/HideWinApp.js', 'w', encoding='utf-8') as f:
+        f.write(content)
+
+# 3. Inject into sharedPageStyles.js
+with open('src/components/views/sharedPageStyles.js', 'r', encoding='utf-8') as f:
+    content = f.read()
+if "POSH LEAN SCROLLBAR" not in content:
+    content = content.replace("export const unifiedPageStyles = css`", "export const unifiedPageStyles = css`\n" + scrollbar_css)
+    with open('src/components/views/sharedPageStyles.js', 'w', encoding='utf-8') as f:
+        f.write(content)
+
+# 4. Inject into MainView.js
+with open('src/components/views/MainView.js', 'r', encoding='utf-8') as f:
+    content = f.read()
+if "POSH LEAN SCROLLBAR" not in content:
+    content = content.replace("static styles = css`", "static styles = css`\n" + scrollbar_css)
+    with open('src/components/views/MainView.js', 'w', encoding='utf-8') as f:
+        f.write(content)
+
+print("Injected ultimate posh scrollbar perfectly!")
+'@
+python inject_ultimate_scrollbar.py

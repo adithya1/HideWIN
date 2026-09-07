@@ -1,0 +1,1095 @@
+--- 
++++ 
+@@ -16 +15,0 @@
+-                position: relative;
+@@ -25,5 +24,15 @@
+-                overflow: hidden;
+-            }
+-
+-            /* ── Header Toolbar ── */
+-            .notes-toolbar {
++                box-sizing: border-box;
++            }
++
++            .upload-progress-card {
++                background: rgba(38, 40, 48, 0.6);
++                backdrop-filter: blur(12px);
++                -webkit-backdrop-filter: blur(12px);
++                border: 1px solid rgba(255, 255, 255, 0.1);
++                border-radius: var(--radius-lg);
++                padding: var(--space-md);
++                display: flex;
++                flex-direction: column;
++                gap: var(--space-sm);
++            }
++            .upload-progress-info {
+@@ -33,13 +42,2 @@
+-                gap: var(--space-sm);
+-                background: rgba(255, 255, 255, 0.85);
+-                backdrop-filter: blur(16px);
+-                -webkit-backdrop-filter: blur(16px);
+-                padding: var(--space-sm) var(--space-md);
+-                border-radius: 16px;
+-                border: 1px solid rgba(59, 130, 246, 0.2);
+-                box-shadow: 0 4px 24px -8px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+-                flex-wrap: wrap;
+-                color: #0f172a;
+-            }
+-
+-            .toolbar-actions {
++            }
++            .upload-progress-file {
+@@ -48,9 +46,11 @@
+-                gap: 8px;
+-            }
+-
+-            .notes-btn {
+-                display: inline-flex;
+-                align-items: center;
+-                gap: 6px;
+-                padding: 6px 14px;
+-                border-radius: 12px;
++                gap: var(--space-sm);
++                font-size: var(--font-size-sm);
++                color: var(--text-primary);
++                font-weight: 500;
++            }
++            .upload-progress-file svg {
++                width: 16px;
++                height: 16px;
++                color: var(--accent);
++            }
++            .upload-progress-eta {
+@@ -58,113 +58,6 @@
+-                font-weight: 600;
+-                cursor: pointer;
+-                border: 1px solid rgba(59, 130, 246, 0.2);
+-                background: #ffffff;
+-                color: #0f172a;
+-                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+-                box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.05);
+-            }
+-
+-            .notes-btn:hover {
+-                background: #f8fafc;
+-                border-color: #3b82f6;
+-                transform: translateY(-1px);
+-            }
+-
+-            .notes-btn.primary {
+-                background: #185fc4;
+-                color: white;
+-                border: none;
+-                box-shadow: 0 4px 14px rgba(24, 95, 196, 0.4);
+-            }
+-
+-            .notes-btn.primary:hover {
+-                background: #1550a6;
+-                transform: translateY(-2px);
+-                box-shadow: 0 6px 20px rgba(24, 95, 196, 0.6) !important;
+-            }
+-
+-            .notes-btn.danger:hover {
+-                background: rgba(239, 68, 68, 0.2);
+-                border-color: rgba(239, 68, 68, 0.5);
+-                color: #f87171;
+-            }
+-
+-            .notes-btn svg {
+-                width: 14px;
+-                height: 14px;
+-                flex-shrink: 0;
+-            }
+-
+-            .search-box {
+-                display: flex;
+-                align-items: center;
+-                gap: 6px;
+-                background: #ffffff;
+-                border: 1px solid rgba(59, 130, 246, 0.3);
+-                box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.05);
+-                border-radius: 12px;
+-                padding: 4px 10px;
+-                min-width: 180px;
+-                transition: all 0.2s;
+-                height: 42px;
+-                box-sizing: border-box;
+-            }
+-
+-            .search-box svg {
+-                width: 14px;
+-                height: 14px;
+-                color: #64748b;
+-                flex-shrink: 0;
+-            }
+-
+-            .search-box:focus-within {
+-                border-color: #3b82f6;
+-                background: #ffffff;
+-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), inset 0 2px 4px rgba(59, 130, 246, 0.05);
+-            }
+-
+-            .search-box input {
+-                background: transparent;
+-                border: none;
+-                color: #0f172a;
+-                width: 100%;
+-                font-size: var(--font-size-sm);
+-                outline: none;
+-                box-shadow: none;
+-                padding: 0;
+-            }
+-
+-            .search-input::placeholder {
+-                color: #94a3b8;
+-            }
+-
+-            /* ── Cards Grid Container ── */
+-            .grid-viewport {
+-                flex: 1;
+-                overflow-y: auto;
+-                padding-right: 4px;
+-            }
+-
+-            .notes-grid {
+-                display: grid;
+-                grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+-                gap: var(--space-md);
+-                padding-bottom: 20px;
+-            }
+-
+-            /* ── Card Block ── */
+-            .note-card {
+-                display: flex;
+-                flex-direction: column;
+-                background: rgba(38, 40, 48, 0.4);
+-                backdrop-filter: blur(16px);
+-                -webkit-backdrop-filter: blur(16px);
+-                border: 1px solid rgba(255, 255, 255, 0.08);
+-                border-radius: 16px;
+-                padding: 16px;
+-                gap: 8px;
+-                position: relative;
+-                cursor: default;
+-                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+-                min-height: 150px;
+-                max-height: 260px;
++                color: var(--text-muted);
++            }
++            .upload-progress-track {
++                height: 6px;
++                background: rgba(0, 0, 0, 0.3);
++                border-radius: 3px;
+@@ -172,21 +65,10 @@
+-                box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+-            }
+-
+-            .note-card:hover {
+-                transform: translateY(-2px);
+-                box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+-                border: 1px solid rgba(255, 255, 255, 0.12);
+-            }
+-
+-            .card-header {
+-                display: flex;
+-                align-items: center;
+-                justify-content: space-between;
+-                gap: 6px;
+-            }
+-
+-            .card-title {
+-                font-size: 13px;
+-                font-weight: 600;
+-                color: var(--text-primary);
+-                white-space: nowrap;
++            }
++            .upload-progress-fill {
++                height: 100%;
++                background: var(--accent);
++                transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
++            }
++
++            .card-media {
++                margin: -16px -16px 8px -16px;
++                height: 120px;
+@@ -194,30 +76 @@
+-                text-overflow: ellipsis;
+-                flex: 1;
+-            }
+-
+-            .card-type-badge {
+-                font-size: 10px;
+-                font-weight: 600;
+-                padding: 2px 6px;
+-                border-radius: 4px;
+-                text-transform: uppercase;
+-                background: rgba(99, 102, 241, 0.15);
+-                color: var(--accent);
+-                border: 1px solid rgba(99, 102, 241, 0.2);
+-            }
+-
+-            .card-type-badge.image {
+-                background: rgba(34, 197, 94, 0.15);
+-                color: var(--success);
+-                border-color: rgba(34, 197, 94, 0.2);
+-            }
+-
+-            .card-media {
+-                width: 100%;
+-                height: 110px;
+-                border-radius: var(--radius-md);
+-                overflow: hidden;
+-                background: #000;
+-                border: 1px solid var(--border);
+-            }
+-
++            }
+@@ -229,62 +81,0 @@
+-
+-            .card-content {
+-                font-size: 12px;
+-                line-height: 1.5;
+-                color: var(--text-secondary);
+-                overflow: hidden;
+-                display: -webkit-box;
+-                -webkit-line-clamp: 4;
+-                -webkit-box-orient: vertical;
+-                word-break: break-word;
+-                flex: 1;
+-            }
+-
+-            .card-footer {
+-                display: flex;
+-                align-items: center;
+-                justify-content: space-between;
+-                margin-top: auto;
+-                padding-top: 6px;
+-                border-top: 1px solid var(--border);
+-            }
+-
+-            .card-date {
+-                font-size: 10px;
+-                color: var(--text-muted);
+-            }
+-
+-            .card-actions {
+-                display: flex;
+-                align-items: center;
+-                gap: 6px;
+-            }
+-
+-            .action-btn {
+-                background: transparent;
+-                border: none;
+-                color: var(--text-muted);
+-                padding: 4px;
+-                border-radius: var(--radius-sm);
+-                cursor: default;
+-                display: flex;
+-                align-items: center;
+-                justify-content: center;
+-                transition: all var(--transition);
+-            }
+-
+-            .action-btn:hover {
+-                color: var(--text-primary);
+-                background: var(--bg-hover);
+-            }
+-
+-            .action-btn.delete:hover {
+-                color: var(--danger);
+-                background: rgba(239, 68, 68, 0.15);
+-            }
+-
+-            .action-btn svg {
+-                width: 13px;
+-                height: 13px;
+-            }
+-
+-            /* ── Empty Grid View ── */
+@@ -295,0 +87 @@
++                gap: 16px;
+@@ -298 +89,0 @@
+-                gap: 12px;
+@@ -300,3 +91 @@
+-                padding: 40px;
+-            }
+-
++            }
+@@ -306,5 +95,3 @@
+-                opacity: 0.4;
+-            }
+-
+-            /* ── 100% Full-Window Expanded View ── */
+-            .full-note-view {
++                opacity: 0.2;
++            }
++            .expanded-overlay {
+@@ -312,3 +99,4 @@
+-                inset: 0;
+-                z-index: 1000;
+-                background: var(--bg-app);
++                top: 0; left: 0; right: 0; bottom: 0;
++                background: rgba(15, 23, 42, 0.95);
++                backdrop-filter: blur(8px);
++                z-index: 100;
+@@ -317,32 +105,8 @@
+-                height: 100%;
+-                width: 100%;
+-                overflow: hidden;
+-                padding: 12px;
+-                gap: 12px;
+-                animation: slideUp 0.15s ease-out;
+-            }
+-
+-            .full-note-view.doc-mode {
+-                padding: 0;
+-                gap: 0;
+-            }
+-
+-            .full-note-view.doc-mode .full-note-header {
+-                border-radius: 0;
+-                border-left: none;
+-                border-right: none;
+-                border-top: none;
+-                padding: 6px 14px;
+-            }
+-
+-            .full-note-view.doc-mode .full-note-body-wrapper {
+-                border-radius: 0;
+-                border: none;
+-            }
+-
+-            @keyframes slideUp {
+-                from { opacity: 0; transform: translateY(6px); }
+-                to { opacity: 1; transform: translateY(0); }
+-            }
+-
+-            .full-note-header {
++                padding: var(--space-lg);
++                animation: fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
++            }
++            @keyframes fade-in {
++                from { opacity: 0; transform: scale(0.98); }
++                to { opacity: 1; transform: scale(1); }
++            }
++            .expanded-header {
+@@ -352,12 +116,6 @@
+-                gap: 12px;
+-                background: var(--bg-surface);
+-                padding: 8px 14px;
+-                border-radius: var(--radius-lg);
+-                border: 1px solid var(--border);
+-            }
+-
+-            .full-note-title-input {
+-                background: transparent;
+-                border: none;
+-                color: var(--text-primary);
+-                font-size: 15px;
++                padding-bottom: var(--space-md);
++                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
++                margin-bottom: var(--space-md);
++            }
++            .expanded-title {
++                font-size: 18px;
+@@ -365 +123,3 @@
+-                outline: none;
++                color: #fff;
++            }
++            .expanded-content {
+@@ -367,79 +127,3 @@
+-            }
+-
+-            .full-note-body-wrapper {
+-                flex: 1;
+-                display: flex;
+-                flex-direction: column;
+-                border-radius: var(--radius-lg);
+-                border: 1px solid var(--border);
+-                overflow: hidden;
+-                background: #ffffff;
+-            }
+-
+-            .editor-toolbar {
+-                display: flex;
+-                align-items: center;
+-                gap: 4px;
+-                padding: 6px 10px;
+-                background: #f8f9fa;
+-                border-bottom: 1px solid #e5e7eb;
+-                overflow-x: auto;
+-            }
+-
+-            .toolbar-group {
+-                display: flex;
+-                align-items: center;
+-                gap: 2px;
+-            }
+-
+-            .toolbar-divider {
+-                width: 1px;
+-                height: 20px;
+-                background: #d1d5db;
+-                margin: 0 6px;
+-            }
+-
+-            .toolbar-btn {
+-                background: transparent;
+-                border: 1px solid transparent;
+-                color: #4b5563;
+-                padding: 4px 8px;
+-                border-radius: 4px;
+-                font-size: 13px;
+-                cursor: default;
+-                font-weight: 600;
+-                transition: all 0.2s;
+-                display: flex;
+-                align-items: center;
+-                justify-content: center;
+-            }
+-
+-            .toolbar-btn svg {
+-                width: 14px;
+-                height: 14px;
+-            }
+-
+-            .toolbar-btn:hover {
+-                background: #e5e7eb;
+-                color: #111827;
+-            }
+-
+-            .full-note-body {
+-                flex: 1;
+-                display: flex;
+-                flex-direction: row;
+-                background: #ffffff; /* Notepad++ light mode background */
+-                overflow: hidden;
+-            }
+-
+-            .editor-gutter {
+-                display: flex;
+-                flex-direction: column;
+-                background: #f0f0f0;
+-                border-right: 1px solid #d4d4d4;
+-                padding: 12px 8px;
+-                min-width: 40px;
+-                text-align: right;
+-                user-select: none;
+-                color: #2b91af;
+-                font-family: Consolas, "Courier New", monospace;
++                overflow-y: auto;
++                color: var(--text-secondary);
++                line-height: 1.6;
+@@ -447,32 +131,5 @@
+-                line-height: 1.6;
+-            }
+-
+-            .editor-line-number {
+-                display: block;
+-                height: 22.4px; /* match line-height exactly (14px * 1.6) */
+-            }
+-
+-            .full-note-editor {
+-                flex: 1;
+-                padding: 12px 16px;
+-                color: #000000;
+-                font-family: Consolas, "Courier New", monospace;
+-                font-size: 14px;
+-                line-height: 1.6;
+-                outline: none;
+-                overflow-y: auto;
+-                white-space: pre-wrap; /* Preserve spaces and breaks */
+-                word-break: break-word;
+-                cursor: text;
+-            }
+-
+-            /* Make sure selection works */
+-            .full-note-editor::selection {
+-                background: #b5d5ff;
+-            }
+-
+-            .full-note-editor *::selection {
+-                background: #b5d5ff;
+-            }
+-
+-            .full-note-editor img {
++                background: rgba(0, 0, 0, 0.2);
++                border-radius: var(--radius-md);
++                padding: var(--space-md);
++            }
++            .expanded-media {
+@@ -480,327 +137,2 @@
+-                max-height: 400px;
+-                border-radius: 4px;
+-                margin: 4px 0;
+-                display: block;
+-            }
+-
+-            .full-note-editor ul, .full-note-editor ol {
+-                margin: 4px 0;
+-                padding-left: 24px;
+-            }
+-
+-            .full-note-editor h1, .full-note-editor h2, .full-note-editor h3 {
+-                margin: 12px 0 6px 0;
+-                color: #111827;
+-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+-            }
+-
+-            .full-note-editor h1 { font-size: 24px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
+-            .full-note-editor h2 { font-size: 20px; }
+-            .full-note-editor h3 { font-size: 16px; }
+-
+-            .full-note-editor hr {
+-                border: 0;
+-                border-top: 1px solid #e5e7eb;
+-                margin: 16px 0;
+-            }
+-
+-            .file-badge {
+-                display: inline-flex;
+-                align-items: center;
+-                gap: 6px;
+-                padding: 4px 10px;
+-                background: rgba(99, 102, 241, 0.15);
+-                border: 1px solid rgba(99, 102, 241, 0.3);
+-                border-radius: 6px;
+-                color: var(--accent);
+-                font-family: var(--font);
+-                font-size: 12px;
+-                cursor: pointer;
+-                user-select: none;
+-                margin: 4px;
+-                text-decoration: none;
+-            }
+-
+-            .file-badge:hover {
+-                background: rgba(99, 102, 241, 0.25);
+-            }
+-
+-            .file-badge svg {
+-                width: 14px;
+-                height: 14px;
+-            }
+-
+-            .full-image-wrapper {
+-                display: none; /* We will use inline images now instead of the top wrapper */
+-            }
+-
+-            /* Hidden file input */
+-            .hidden-file-input {
+-                display: none;
+-            }
+-
+-            /* ── Document Viewer ── */
+-            .doc-viewer-wrapper {
+-                position: relative;
+-                width: 100%;
+-                margin: 0;
+-                border: none;
+-                border-radius: 0;
+-                overflow: hidden;
+-                background: #f9fafb;
+-                box-shadow: none;
+-            }
+-
+-            /* Full-bleed doc embed inside editor */
+-            .full-note-editor.doc-mode {
+-                padding: 0;
+-                background: transparent;
+-            }
+-
+-            .full-note-editor.doc-mode .doc-viewer-wrapper {
+-                margin: 0;
+-            }
+-
+-            .doc-viewer-toolbar {
+-                display: none !important;
+-            }
+-
+-            .doc-viewer-title {
+-                font-size: 12px;
+-                font-weight: 600;
+-                color: #475569;
+-                flex: 1;
+-                white-space: nowrap;
+-                overflow: hidden;
+-                text-overflow: ellipsis;
+-            }
+-
+-            .doc-viewer-body {
+-                display: flex;
+-                width: 100%;
+-                height: 100%;
+-                overflow: hidden;
+-            }
+-
+-            .doc-viewer-sidebar {
+-                display: none;
+-                flex-direction: column;
+-                width: 80px;
+-                min-width: 60px;
+-                max-width: 180px;
+-                background: #f8fafc;
+-                border-right: 1px solid #e2e8f0;
+-                overflow-y: auto;
+-                flex-shrink: 0;
+-                resize: horizontal;
+-                overflow-x: hidden;
+-            }
+-
+-            .doc-viewer-sidebar.visible {
+-                display: flex;
+-            }
+-
+-            .doc-sidebar-header {
+-                padding: 6px 8px;
+-                font-size: 10px;
+-                font-weight: 700;
+-                color: #94a3b8;
+-                text-transform: uppercase;
+-                letter-spacing: 0.05em;
+-                border-bottom: 1px solid #e2e8f0;
+-                flex-shrink: 0;
+-            }
+-
+-            .doc-sidebar-pages {
+-                display: flex;
+-                flex-direction: column;
+-                padding: 6px;
+-                gap: 4px;
+-            }
+-
+-            .doc-page-btn {
+-                display: flex;
+-                align-items: center;
+-                justify-content: center;
+-                padding: 6px 4px;
+-                border: 1px solid #e2e8f0;
+-                border-radius: 4px;
+-                background: white;
+-                font-size: 11px;
+-                color: #374151;
+-                cursor: pointer;
+-                transition: all 0.15s;
+-                text-align: center;
+-                font-weight: 500;
+-                flex-direction: column;
+-                gap: 2px;
+-            }
+-
+-            .doc-page-btn:hover {
+-                background: #ede9fe;
+-                border-color: #6366f1;
+-                color: #6366f1;
+-            }
+-
+-            .doc-page-btn.active {
+-                background: #6366f1;
+-                border-color: #6366f1;
+-                color: white;
+-            }
+-
+-            .doc-page-icon {
+-                width: 28px;
+-                height: 36px;
+-                background: #e5e7eb;
+-                border-radius: 2px;
+-                margin-bottom: 2px;
+-            }
+-
+-            .doc-viewer-controls {
+-                display: flex;
+-                align-items: center;
+-                gap: 3px;
+-            }
+-
+-            .doc-ctrl-btn {
+-                display: inline-flex;
+-                align-items: center;
+-                justify-content: center;
+-                width: 24px;
+-                height: 24px;
+-                border: 1px solid #cbd5e1;
+-                border-radius: 4px;
+-                background: white;
+-                color: #374151;
+-                font-size: 12px;
+-                font-weight: 700;
+-                cursor: pointer;
+-                transition: background 0.15s;
+-                padding: 0;
+-                line-height: 1;
+-                user-select: none;
+-            }
+-
+-            .doc-ctrl-btn:hover {
+-                background: #e5e7eb;
+-            }
+-
+-            .doc-ctrl-btn.active {
+-                background: #ede9fe;
+-                border-color: #6366f1;
+-                color: #6366f1;
+-            }
+-
+-            .doc-zoom-label {
+-                font-size: 11px;
+-                color: #6b7280;
+-                min-width: 34px;
+-                text-align: center;
+-                font-weight: 600;
+-            }
+-
+-            .doc-viewer-embed {
+-                flex: 1;
+-                width: 100%;
+-                height: 600px;
+-                border: none;
+-                display: block;
+-                transition: height 0.2s;
+-                min-width: 0;
+-            }
+-
+-            /* ── Converting Badge ── */
+-            .converting-badge {
+-                display: inline-flex;
+-                align-items: center;
+-                gap: 8px;
+-                padding: 8px 14px;
+-                background: rgba(99, 102, 241, 0.08);
+-                border: 1px solid rgba(99, 102, 241, 0.3);
+-                border-radius: 8px;
+-                color: var(--accent);
+-                font-size: 12px;
+-                font-weight: 500;
+-                margin: 4px;
+-                animation: pulse-badge 1.4s ease-in-out infinite;
+-            }
+-
+-            @keyframes pulse-badge {
+-                0%, 100% { opacity: 1; }
+-                50% { opacity: 0.55; }
+-            }
+-
+-            .converting-spinner {
+-                width: 14px;
+-                height: 14px;
+-                border: 2px solid rgba(99,102,241,0.3);
+-                border-top-color: var(--accent);
+-                border-radius: 50%;
+-                animation: spin 0.8s linear infinite;
+-            }
+-
+-            @keyframes spin {
+-                to { transform: rotate(360deg); }
+-            }
+-
+-            /* ── Upload Progress Bar ── */
+-            .upload-progress-card {
+-                display: flex;
+-                flex-direction: column;
+-                gap: 6px;
+-                padding: 8px 14px 10px;
+-                background: var(--bg-surface);
+-                border-radius: var(--radius-lg);
+-                border: 1px solid rgba(16,185,129,0.4);
+-                flex-shrink: 0;
+-                animation: slideDown 0.2s ease-out;
+-            }
+-            @keyframes slideDown {
+-                from { opacity: 0; transform: translateY(-6px); }
+-                to   { opacity: 1; transform: translateY(0); }
+-            }
+-            .upload-progress-info {
+-                display: flex;
+-                align-items: center;
+-                justify-content: space-between;
+-                gap: 8px;
+-            }
+-            .upload-progress-file {
+-                display: flex;
+-                align-items: center;
+-                gap: 6px;
+-                font-size: 12px;
+-                font-weight: 600;
+-                color: var(--text-primary);
+-                overflow: hidden;
+-                white-space: nowrap;
+-                text-overflow: ellipsis;
+-                flex: 1;
+-            }
+-            .upload-progress-file svg { width: 14px; height: 14px; flex-shrink: 0; color: #10b981; }
+-            .upload-progress-eta {
+-                font-size: 11px;
+-                color: #10b981;
+-                font-weight: 500;
+-                flex-shrink: 0;
+-            }
+-            .upload-progress-track {
+-                height: 4px;
+-                background: rgba(16,185,129,0.15);
+-                border-radius: 2px;
+-                overflow: hidden;
+-            }
+-            .upload-progress-fill {
+-                height: 100%;
+-                background: linear-gradient(90deg, #10b981, #34d399);
+-                border-radius: 2px;
+-                transition: width 0.3s ease;
+-            }
+-
+-            /* ── Header Icon Buttons ── */
+-            .hdr-icon-btn {
+-                display: inline-flex;
+-                align-items: center;
+-                justify-content: center;
+-                width: 30px;
+-                height: 30px;
++                max-height: 60vh;
++                object-fit: contain;
+@@ -808,107 +140,4 @@
+-                border: 1px solid transparent;
+-                background: transparent;
+-                color: var(--text-tertiary);
+-                cursor: pointer;
+-                transition: all 0.15s;
+-                flex-shrink: 0;
+-                padding: 0;
+-            }
+-            .hdr-icon-btn:hover {
+-                background: var(--bg-hover);
+-                border-color: var(--border);
+-                color: var(--text-primary);
+-            }
+-            .hdr-icon-btn.danger:hover {
+-                background: rgba(239,68,68,0.08);
+-                border-color: rgba(239,68,68,0.2);
+-                color: #ef4444;
+-            }
+-            .hdr-icon-btn.success { color: #10b981; }
+-            .hdr-icon-btn svg { width: 16px; height: 16px; }
+-
+-            /* ── Icon Buttons (upload, view toggle) ── */
+-            .icon-btn {
+-                display: inline-flex;
+-                align-items: center;
+-                justify-content: center;
+-                width: 30px;
+-                height: 30px;
+-                border-radius: var(--radius-md);
+-                border: 1px solid var(--border-strong);
+-                background: var(--bg-elevated);
+-                color: var(--text-secondary);
+-                cursor: pointer;
+-                transition: all var(--transition);
+-                flex-shrink: 0;
+-            }
+-            .icon-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+-            .icon-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+-            .icon-btn svg { width: 15px; height: 15px; }
+-
+-            /* ── List View ── */
+-            .notes-list {
+-                display: flex;
+-                flex-direction: column;
+-                gap: 2px;
+-                overflow-y: auto;
+-                flex: 1;
+-            }
+-            .list-row {
+-                display: flex;
+-                align-items: center;
+-                gap: 10px;
+-                padding: 8px 12px;
+-                border-radius: var(--radius-md);
+-                border: 1px solid transparent;
+-                background: var(--bg-surface);
+-                cursor: pointer;
+-                transition: all 0.15s;
+-                min-height: 40px;
+-            }
+-            .list-row:hover { border-color: var(--border); background: var(--bg-elevated); }
+-            .list-row-icon { flex-shrink: 0; color: var(--text-tertiary); }
+-            .list-row-icon svg { width: 15px; height: 15px; }
+-            .list-row-title {
+-                flex: 1;
+-                font-size: 13px;
+-                font-weight: 500;
+-                color: var(--text-primary);
+-                white-space: nowrap;
+-                overflow: hidden;
+-                text-overflow: ellipsis;
+-            }
+-            .list-row-preview {
+-                font-size: 12px;
+-                color: var(--text-tertiary);
+-                white-space: nowrap;
+-                overflow: hidden;
+-                text-overflow: ellipsis;
+-                max-width: 200px;
+-            }
+-            .list-row-type {
+-                font-size: 10px;
+-                font-weight: 600;
+-                padding: 2px 6px;
+-                border-radius: 10px;
+-                text-transform: uppercase;
+-                letter-spacing: 0.04em;
+-                flex-shrink: 0;
+-            }
+-            .list-row-type.text { background: rgba(99,102,241,0.1); color: #6366f1; }
+-            .list-row-type.image { background: rgba(16,185,129,0.1); color: #10b981; }
+-            .list-row-type.doc { background: rgba(245,158,11,0.1); color: #f59e0b; }
+-            .list-row-date { font-size: 11px; color: var(--text-tertiary); flex-shrink: 0; min-width: 70px; text-align: right; }
+-            .list-row-actions { display: flex; gap: 4px; flex-shrink: 0; opacity: 0; transition: opacity 0.15s; }
+-            .list-row:hover .list-row-actions { opacity: 1; }
+-            .row-action-btn {
+-                display: inline-flex; align-items: center; justify-content: center;
+-                width: 24px; height: 24px;
+-                border-radius: 4px; border: none;
+-                background: transparent; color: var(--text-tertiary);
+-                cursor: pointer; transition: all 0.15s;
+-                padding: 0;
+-            }
+-            .row-action-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+-            .row-action-btn.delete:hover { color: #ef4444; background: rgba(239,68,68,0.08); }
+-            .row-action-btn svg { width: 13px; height: 13px; }
+-        `
++                margin-bottom: var(--space-md);
++            }
++
++`
+@@ -924 +153,4 @@
+-        uploadProgress: { type: Object }
++        uploadProgress: { type: Object },
++        targetNoteId: { type: String },
++        pinPromptNoteId: { type: String },
++        pinPromptShortcutName: { type: String }
+@@ -935,0 +168,3 @@
++        this.targetNoteId = null;
++        this.pinPromptNoteId = null;
++        this.pinPromptShortcutName = '';
+@@ -936,0 +172,14 @@
++    }
++
++    updated(changedProperties) {
++        super.updated && super.updated(changedProperties);
++        if (changedProperties.has('targetNoteId') && this.targetNoteId) {
++            this.expandedNoteId = this.targetNoteId;
++            // Optionally scroll to it
++            setTimeout(() => {
++                const noteEl = this.shadowRoot.getElementById(`note-${this.targetNoteId}`);
++                if (noteEl) {
++                    noteEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
++                }
++            }, 100);
++        }
+@@ -1222,2 +471,3 @@
+-                const imgTag = `<img src="${event.target.result}" alt="${file.name}" style="max-width:100%;border-radius:6px;margin:8px 0;"/>`;
+-                document.execCommand('insertHTML', false, imgTag);
++                const viewerHtml = `<div class="doc-viewer-wrapper" contenteditable="false" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%; min-height: 400px; background:transparent;">
++                    <img src="${event.target.result}" alt="${file.name}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2);"/>
++                </div>`;
+@@ -1225,6 +475,2 @@
+-                    this.syncLineNumbersSynchronously(editor.innerHTML);
+-                    const index = this.notes.findIndex(n => n.id === this.expandedNoteId);
+-                    if (index > -1) {
+-                        this.notes[index] = { ...this.notes[index], content: editor.innerHTML };
+-                        this.saveNotes(true);
+-                    }
++                    editor.innerHTML = viewerHtml;
++                    this._saveEditorContent(editor);
+@@ -1307,0 +554,42 @@
++
++    togglePin(e, note) {
++        e.stopPropagation();
++        if (note.pinned) {
++            note.pinned = false;
++            note.shortcutName = null;
++            this.saveNotes();
++        } else {
++            this.pinPromptNoteId = note.id;
++            this.pinPromptShortcutName = note.title || 'Pinned Note';
++            this.requestUpdate();
++        }
++    }
++
++    confirmPin() {
++        if (!this.pinPromptNoteId) return;
++        const note = this.notes.find(n => n.id === this.pinPromptNoteId);
++        if (note) {
++            note.pinned = true;
++            note.shortcutName = this.pinPromptShortcutName.trim() || note.title || 'Pinned Note';
++            this.saveNotes();
++            this.showToast('Shortcut pinned to Home!');
++        }
++        this.pinPromptNoteId = null;
++        this.pinPromptShortcutName = '';
++        this.requestUpdate();
++    }
++
++    showToast(msg) {
++        this._toastMessage = msg;
++        this.requestUpdate();
++        setTimeout(() => {
++            this._toastMessage = null;
++            this.requestUpdate();
++        }, 3000);
++    }
++
++    cancelPin() {
++        this.pinPromptNoteId = null;
++        this.pinPromptShortcutName = '';
++        this.requestUpdate();
++    }
+@@ -1775,0 +1064,3 @@
++                                    <button class="row-action-btn" title=${note.pinned ? 'Unpin from Home' : 'Pin to Home'} @click=${e => this.togglePin(e, note)} style="color: ${note.pinned ? '#3b82f6' : 'inherit'};">
++                                        <svg viewBox="0 0 24 24" fill="${note.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 11.24V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v5.24a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
++                                    </button>
+@@ -1791 +1082 @@
+-                                <div class="note-card" @click=${() => this.expandedNoteId = note.id}>
++                                <div class="note-card" id="note-${note.id}" @click=${() => this.expandedNoteId = note.id}>
+@@ -1803,0 +1095,3 @@
++                                            <button class="action-btn" title=${note.pinned ? 'Unpin from Home' : 'Pin to Home'} @click=${e => this.togglePin(e, note)} style="color: ${note.pinned ? '#3b82f6' : 'inherit'};">
++                                                <svg viewBox="0 0 24 24" fill="${note.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 11.24V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v5.24a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
++                                            </button>
+@@ -1819,0 +1114,37 @@
++                
++                <!-- Pin Shortcut Prompt Overlay -->
++                ${this.pinPromptNoteId ? html`
++                    <div class="modal-overlay" @click=${() => this.cancelPin()} style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;">
++                        <div class="modal-content" @click=${e => e.stopPropagation()} style="background:var(--bg-surface, white);padding:24px;border-radius:12px;width:300px;box-shadow:0 10px 25px rgba(0,0,0,0.1);">
++                            <h3 style="margin:0 0 16px 0;font-size:16px;color:var(--text-primary, #0f172a);">Pin Shortcut</h3>
++                            <p style="margin:0 0 12px 0;font-size:13px;color:var(--text-muted, #64748b);">Enter a short name for this pinned item:</p>
++                            <input type="text" 
++                                .value=${this.pinPromptShortcutName} 
++                                @input=${e => this.pinPromptShortcutName = e.target.value}
++                                @keyup=${e => e.key === 'Enter' && this.confirmPin()}
++                                style="width:100%;padding:10px;border:1px solid var(--border, #e2e8f0);border-radius:8px;background:var(--bg-elevated, white);color:var(--text-primary, black);font-size:14px;margin-bottom:20px;outline:none;"
++                                autofocus
++                            />
++                            <div style="display:flex;justify-content:flex-end;gap:8px;">
++                                <button @click=${() => this.cancelPin()} style="padding:8px 16px;border:none;background:transparent;color:var(--text-muted, #64748b);cursor:pointer;border-radius:6px;font-weight:500;">Cancel</button>
++                                <button @click=${() => this.confirmPin()} style="padding:8px 16px;border:none;background:#3b82f6;color:white;cursor:pointer;border-radius:6px;font-weight:500;">Pin</button>
++                            </div>
++                        </div>
++                    </div>
++                ` : ''}
++
++                <!-- Toast Notification -->
++                ${this._toastMessage ? html`
++                    <div style="position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; font-weight: 500; font-size: 14px; box-shadow: 0 10px 25px rgba(16,185,129,0.3); z-index: 10000; animation: fade-in-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
++                        <div style="display:flex; align-items:center; gap:8px;">
++                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
++                            ${this._toastMessage}
++                        </div>
++                    </div>
++                    <style>
++                        @keyframes fade-in-up {
++                            from { opacity: 0; transform: translate(-50%, 20px); }
++                            to { opacity: 1; transform: translate(-50%, 0); }
++                        }
++                    </style>
++                ` : ''}

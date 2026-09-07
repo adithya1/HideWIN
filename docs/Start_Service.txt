@@ -1,0 +1,25 @@
+Because we restructured everything into a professional Microservices architecture, you now have two ways to boot up the entire system.
+
+Option 1: The Docker Way (Recommended)
+This is the easiest way. It will boot the API, the Cloud Relay, and the Nginx Web Server all at once in the background.
+
+Open a terminal in your root Hide-WIN folder.
+Run this command:
+bash
+
+
+docker-compose up --build
+(That's it! Docker handles downloading all dependencies and starting all three servers).
+
+Option 2: The Manual Local Scripts
+If you do not have Docker Desktop running, you can use the unified batch scripts I created for you. Open three separate command prompt windows and run these:
+
+Start the API: Double-click scripts\start_api.bat (Runs on port 8000)
+Start the Relay: Double-click scripts\start_relay.bat (Runs on port 9000)
+Start the Web UI: Double-click scripts\start_ui.bat (Runs on port 3000)
+Where to access everything:
+Because the UI is now cleanly separated into standard MVC folders, you can access your frontends in your browser here:
+
+Admin Dashboard: http://localhost:3000/Admin/index.html
+Guest Invite Room: http://localhost:3000/Guest/index.html
+(Note: If you want to bypass your community router to test this from your phone, simply double-click hidewin-cloud-relay/start_tunnel.bat to get your public loca.lt URL!)
