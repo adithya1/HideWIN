@@ -1,0 +1,35 @@
+name: Regression Test Pipeline
+
+# Using workflow_dispatch to prevent email spam while scaffolding. 
+# Once ready, switch to 'on: push: branches: [main]'
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-asyncio passlib pydantic pydantic-settings fastapi httpx PyJWT
+          
+      - name: Run unit tests
+        run: pytest tests/unit
+        
+      - name: Run negative tests
+        run: pytest tests/negative
+        
+      - name: Run regression tests
+        run: pytest tests/regression
+        
+      - name: Run full test suite
+        run: pytest
