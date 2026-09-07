@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "api-service.fullname" . }}-netpol
+spec:
+  podSelector:
+    matchLabels:
+      app: api-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow traffic only from the Ingress Controller (ALB)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # Allow traffic to Aurora Postgres, Valkey, and AWS APIs
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/16 # Internal VPC
+      ports:
+        - protocol: TCP
+          port: 5432 # Postgres
+        - protocol: TCP
+          port: 6379 # Redis
+        - protocol: TCP
+          port: 443  # AWS APIs
