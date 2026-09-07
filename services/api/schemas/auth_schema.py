@@ -16,3 +16,9 @@ from pydantic import BaseModel, EmailStr
 
 class SendOtpRequest(BaseModel):
     email: EmailStr
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str

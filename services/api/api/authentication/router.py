@@ -44,3 +44,16 @@ from services.api.api.authentication.service import OTPService
 async def send_otp(body: SendOtpRequest, db: AsyncSession = Depends(get_db)):
     result = OTPService.send_otp(body.email, db)
     return result
+from services.api.schemas.auth_schema import ForgotPasswordRequest, ResetPasswordRequest
+from services.api.api.authentication.password_service import PasswordService
+
+@router.post("/forgot-password")
+async def forgot_password(body: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    return await PasswordService.request_password_reset(body.email, db)
+
+@router.post("/reset-password")
+async def reset_password(body: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    try:
+        return await PasswordService.reset_password(body.token, body.new_password, db)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
