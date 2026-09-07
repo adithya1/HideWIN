@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-websockets
-faster-whisper
-python-dotenv
-numpy
-groq
