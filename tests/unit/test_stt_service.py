@@ -13,10 +13,10 @@ from services.api.core.config import settings
 def test_factory_returns_groq_if_key_set(monkeypatch):
     monkeypatch.setattr(settings, "GROQ_API_KEY", "fake_key")
     # Patch the groq import so it doesn't try to load real credentials
-    with patch("services.api.services.stt_service.AsyncGroq") as mock_groq:
+    with patch("services.api.services.stt_service.GroqTranscriber.__init__", return_value=None) as mock_groq_init:
         transcriber = STTServiceFactory.get_transcriber()
         assert isinstance(transcriber, GroqTranscriber)
-        mock_groq.assert_called_once_with(api_key="fake_key")
+        mock_groq_init.assert_called_once_with(api_key="fake_key")
 
 def test_factory_returns_local_if_no_key(monkeypatch):
     monkeypatch.setattr(settings, "GROQ_API_KEY", "")

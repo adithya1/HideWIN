@@ -15,7 +15,7 @@ def transcribe_audio_chunk(model, audio_np):
         language="en", 
         condition_on_previous_text=False
     )
-    text = " ".join([seg.text for seg in segments]).strip()
+    text = " ".join([seg.text.strip() for seg in segments]).strip()
     return text
 
 class BaseTranscriber(ABC):

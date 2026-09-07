@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     JWT_EXPIRE_MINUTES: int = 60
     LOG_LEVEL: str = "INFO"
 
+    # STT Settings
+    GROQ_API_KEY: str = ""
+    MODEL_SIZE: str = "base.en"
+    DEVICE: str = "auto"
+    COMPUTE_TYPE: str = "default"
+
     class Config:
         env_file = ".env"
 
