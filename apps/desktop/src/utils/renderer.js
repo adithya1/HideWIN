@@ -316,7 +316,7 @@ async function startCapture(screenshotIntervalSeconds = 5, imageQuality = 'mediu
                         video: false,
                     });
                     console.log('macOS microphone capture started');
-                    setupLinuxMicProcessing(micStream);
+                    setupRealtimeWebSocket(micStream);
                 } catch (micError) {
                     console.warn('Failed to get microphone access on macOS:', micError);
                 }
@@ -376,7 +376,7 @@ async function startCapture(screenshotIntervalSeconds = 5, imageQuality = 'mediu
                     console.log('Linux microphone capture started');
 
                     // Setup audio processing for microphone on Linux
-                    setupLinuxMicProcessing(micStream);
+                    setupRealtimeWebSocket(micStream);
                 } catch (micError) {
                     console.warn('Failed to get microphone access on Linux:', micError);
                     // Continue without microphone if permission denied
@@ -422,7 +422,7 @@ async function startCapture(screenshotIntervalSeconds = 5, imageQuality = 'mediu
                         video: false,
                     });
                     console.log('Windows microphone capture started');
-                    setupLinuxMicProcessing(micStream);
+                    setupRealtimeWebSocket(micStream);
                 } catch (micError) {
                     console.warn('Failed to get microphone access on Windows:', micError);
                     hideWin.setStatus('Microphone access denied! Check Windows Privacy settings.');
@@ -536,6 +536,76 @@ function stopLocalSpeechRecognition() {
         try { speechRecognitionInstance.stop(); } catch (e) {}
         speechRecognitionInstance = null;
     }
+}
+
+
+let sttWebSocket = null;
+
+function setupRealtimeWebSocket(micStream) {
+    console.log("Replacing Silero VAD with Realtime FastAPI WebSocket...");
+    
+    if (sttWebSocket) {
+        sttWebSocket.close();
+    }
+
+    sttWebSocket = new WebSocket("ws://localhost:8000/ws/transcribe");
+    
+    const wsAudioContext = new AudioContext({ sampleRate: 24000 });
+    const source = wsAudioContext.createMediaStreamSource(micStream);
+    const processor = wsAudioContext.createScriptProcessor(4096, 1, 1);
+    
+    sttWebSocket.onopen = () => {
+        console.log("[WS] Connected to real-time STT backend.");
+        source.connect(processor);
+        // Connect to destination so the script processor actually ticks
+        // But we mute the gain so it doesn't feed back to speakers
+        const gainNode = wsAudioContext.createGain();
+        gainNode.gain.value = 0;
+        processor.connect(gainNode);
+        gainNode.connect(wsAudioContext.destination);
+    };
+    
+    sttWebSocket.onclose = () => {
+        console.log("[WS] Disconnected from STT backend.");
+        processor.disconnect();
+        source.disconnect();
+    };
+
+    sttWebSocket.onerror = (e) => {
+        console.error("[WS] STT WebSocket Error:", e);
+    };
+    
+    processor.onaudioprocess = (e) => {
+        if (sttWebSocket.readyState === WebSocket.OPEN) {
+            const inputData = e.inputBuffer.getChannelData(0);
+            
+            // Convert Float32 (-1.0 to 1.0) into Int16 PCM (expected by python audioop)
+            const pcmData = new Int16Array(inputData.length);
+            for (let i = 0; i < inputData.length; i++) {
+                pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
+            }
+            
+            sttWebSocket.send(pcmData.buffer);
+        }
+    };
+    
+    sttWebSocket.onmessage = (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            if (data.transcript) {
+                const uiPrefix = data.is_final ? "🗣️ " : "⏳ ";
+                console.log("[WS] Realtime Transcript:", data);
+                
+                // Route to UI
+                const assistant = document.getElementById('appRoot')?.shadowRoot.querySelector('assistant-view');
+                if (assistant) {
+                    assistant.setStatus(uiPrefix + data.transcript);
+                }
+            }
+        } catch (err) {
+            console.error("[WS] Parse error:", err);
+        }
+    };
 }
 
 function setupLinuxMicProcessing(micStream) {
