@@ -19,7 +19,7 @@ def test_signup_invalid_email():
 
 def test_signup_duplicate_email():
     mock_session = AsyncMock()
-    mock_result = AsyncMock()
+    mock_result = MagicMock()
     mock_result.scalars.return_value.first.return_value = User(id=1, email="exists@example.com")
     mock_session.execute.return_value = mock_result
     app.dependency_overrides[get_db] = lambda: mock_session
@@ -31,7 +31,7 @@ def test_signup_duplicate_email():
 
 def test_login_unknown_user():
     mock_session = AsyncMock()
-    mock_result = AsyncMock()
+    mock_result = MagicMock()
     mock_result.scalars.return_value.first.return_value = None
     mock_session.execute.return_value = mock_result
     app.dependency_overrides[get_db] = lambda: mock_session
@@ -43,7 +43,7 @@ def test_login_unknown_user():
 
 def test_login_wrong_password():
     mock_session = AsyncMock()
-    mock_result = AsyncMock()
+    mock_result = MagicMock()
     # User exists but password hashes won't match
     hashed = AuthenticationService.get_password_hash("real_password")
     mock_result.scalars.return_value.first.return_value = User(id=1, email="test@example.com", hashed_password=hashed)
