@@ -1,0 +1,25 @@
+name: Terraform Infrastructure
+
+on:
+  pull_request:
+    paths:
+      - 'infrastructure/terraform/**'
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        
+      - name: Terraform Init
+        run: terraform init
+        working-directory: infrastructure/terraform/environments/staging
+        
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: infrastructure/terraform/environments/staging
+        
+      # The plan is added as a PR comment in a real implementation

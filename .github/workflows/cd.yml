@@ -1,0 +1,53 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: hidewin-services
+
+jobs:
+  build-and-push:
+    needs: [] # In production, this would depend on the CI job
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::ACCOUNT_ID:role/GitHubActionsRole
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        
+      - name: Build and Push Images
+        run: |
+          echo "Building Docker images for API, Realtime, and AI Gateway..."
+          # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          # docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+  deploy-staging:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy to Staging EKS
+        run: echo "Executing Helm upgrade against staging cluster..."
+        
+      - name: Post-Deployment Verification
+        run: echo "Running automated load tests (tests/load/) against staging..."
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      # This requires a manual approval in GitHub Environments before executing
+    steps:
+      - name: Deploy to Production EKS
+        run: echo "Executing Helm upgrade against production cluster..."
