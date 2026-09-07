@@ -451,7 +451,7 @@ function incrementCharUsage(provider, model, charCount) {
 // Ordered list of Gemini models to try (most preferred first).
 // gemini-2.5-flash-lite has been discontinued — do NOT add it back.
 const GEMINI_MODEL_FALLBACK_LIST = [
-    'gemini-flash-latest',
+    'gemini-2.5-flash',
     'gemini-3-flash-preview',
 ];
 

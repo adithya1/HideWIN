@@ -277,6 +277,7 @@ function getDefaultKeybinds() {
         moveLeft: isMac ? 'Alt+Left' : 'Ctrl+Left',
         moveRight: isMac ? 'Alt+Right' : 'Ctrl+Right',
         toggleVisibility: isMac ? 'Cmd+\\' : 'Ctrl+\\',
+        toggleClickThrough: isMac ? 'Cmd+/' : 'Ctrl+/',
         setMouseDetectable: isMac ? 'Cmd+Alt+A' : 'Ctrl+Alt+A',
         setMouseUndetectable: isMac ? 'Cmd+Alt+S' : 'Ctrl+Alt+S',
         bossKey: isMac ? 'Cmd+Shift+X' : 'Ctrl+Shift+X',
