@@ -15,6 +15,8 @@ function getLocalAi() {
 }
 
 const { sendToAiProxy } = require('./ai_proxy_client');
+const { formatSpeakerResults, stripThinkingTags, extractInterviewerQuestion, trimConversationHistoryForGemma } = require('./gemini.textutils');
+
 
 // Provider mode: 'byok', 'cloud', or 'local'
 let currentProviderMode = 'byok';
@@ -141,16 +143,7 @@ function resolveProfileContext() {
     return { promptKey, fullPromptContext, profileName };
 }
 
-function formatSpeakerResults(results) {
-    let text = '';
-    for (const result of results) {
-        if (result.transcript && result.speakerId) {
-            const speakerLabel = result.speakerId === 1 ? 'Interviewer' : 'Candidate';
-            text += `[${speakerLabel}]: ${result.transcript}\n`;
-        }
-    }
-    return text;
-}
+// formatSpeakerResults -> see gemini.textutils.js
 
 module.exports.formatSpeakerResults = formatSpeakerResults;
 
@@ -315,33 +308,11 @@ function hasGroqKey() {
     return key && key.trim() != ''
 }
 
-function trimConversationHistoryForGemma(history, maxChars=42000) {
-    if(!history || history.length === 0) return [];
-    let totalChars = 0;
-    const trimmed = [];
+// trimConversationHistoryForGemma -> see gemini.textutils.js
 
-    for(let i = history.length - 1; i >= 0; i--) {
-        const turn = history[i];
-        const turnChars = (turn.content || '').length;
+// stripThinkingTags -> see gemini.textutils.js
 
-        if(totalChars + turnChars > maxChars) break;
-        totalChars += turnChars;
-        trimmed.unshift(turn);
-    }
-    return trimmed;
-}
-
-function stripThinkingTags(text) {
-    return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
-}
-
-function extractInterviewerQuestion(text) {
-    if (!text || typeof text !== 'string') return '';
-    const lines = text.split('\n');
-    const interviewerLines = lines.filter(line => line.includes('[Interviewer]:') || !line.includes('[Candidate]:'));
-    const combined = interviewerLines.join(' ').replace(/\[Interviewer\]:\s*/gi, '').replace(/\[Candidate\]:\s*/gi, '').trim();
-    return combined || text.replace(/^\[(Interviewer|Candidate)\]:\s*/gi, '').trim();
-}
+// extractInterviewerQuestion -> see gemini.textutils.js
 
 async function sendToGroq(transcription) {
     if (!transcription || transcription.trim() === '') {
