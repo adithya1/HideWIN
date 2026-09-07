@@ -67,3 +67,26 @@ def test_send_invites_success(monkeypatch):
     
     # Cleanup overrides
     app.dependency_overrides.clear()
+def test_oauth_unsupported_provider():
+    response = client.get("/auth/sso/github/login")
+    assert response.status_code == 400
+    assert "Unsupported provider: github" in response.text
+
+@pytest.mark.asyncio
+async def test_google_login_not_configured(monkeypatch):
+    class MockDb:
+        async def execute(self, *args, **kwargs):
+            class MockResult:
+                def scalars(self):
+                    class MockScalars:
+                        def first(self): return None
+                    return MockScalars()
+            return MockResult()
+    from services.api.core.database import get_db
+    async def mock_get_db(): yield MockDb()
+    app.dependency_overrides[get_db] = mock_get_db
+    
+    response = client.get("/auth/google/login")
+    assert response.status_code == 503
+    assert "Google OAuth not configured" in response.text
+    app.dependency_overrides.clear()

@@ -69,3 +69,26 @@ async def send_invites(
     current_user: User = Depends(get_current_user)
 ):
     return await InvitationService.send_invites(body.emails, current_user, db)
+from fastapi.responses import RedirectResponse
+from services.api.api.authentication.oauth.google import GoogleOAuthService
+
+@router.get("/google/login")
+async def google_login(db: AsyncSession = Depends(get_db)):
+    url = await GoogleOAuthService.get_login_url(db)
+    return RedirectResponse(url=url)
+
+@router.get("/google/callback")
+async def google_callback(code: str, db: AsyncSession = Depends(get_db)):
+    user = await GoogleOAuthService.handle_callback(code, db)
+    access_token = AuthenticationService.create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/sso/{provider}/login")
+async def oauth_login(provider: str, db: AsyncSession = Depends(get_db)):
+    if provider == "google": return await google_login(db=db)
+    raise HTTPException(status_code=400, detail=f"Unsupported provider: {provider}")
+
+@router.get("/sso/{provider}/callback")
+async def oauth_callback(provider: str, code: str, db: AsyncSession = Depends(get_db)):
+    if provider == "google": return await google_callback(code=code, db=db)
+    raise HTTPException(status_code=400, detail=f"Unsupported provider: {provider}")
