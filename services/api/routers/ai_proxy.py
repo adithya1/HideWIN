@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File
 from groq import AsyncGroq
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-from src.lib.database import get_db
-from core.redis import redis_manager
-import db_models as models
+from services.api.core.database import get_db
+from services.api.core.redis import redis_manager
+from services.api import db_models as models
 import hmac
 import hashlib
 import json
@@ -279,7 +279,7 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
     import json
     import random
     import groq
-    from core.redis import redis_manager
+    from services.api.core.redis import redis_manager
     
     # Try up to 3 keys if we hit 429 Rate Limits
     for attempt in range(max_retries):
