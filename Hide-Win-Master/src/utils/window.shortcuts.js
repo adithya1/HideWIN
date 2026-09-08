@@ -1,8 +1,10 @@
 'use strict';
 // Keybind registration + window IPC handlers, extracted from window.js
 
-const { ipcMain, globalShortcut, BrowserWindow } = require('electron');
+const { ipcMain, globalShortcut, BrowserWindow, screen } = require('electron');
 const storage = require('../storage');
+
+let isWindowIpcRegistered = false;
 
 function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessionRef) {
     const isMac = process.platform === 'darwin';
@@ -167,6 +169,8 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
                     
                     // Clear backend storage
                     const storage = require('../storage');
+
+let isWindowIpcRegistered = false;
                     storage.clearAll();
                     
                     // Force quit
