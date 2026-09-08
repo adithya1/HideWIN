@@ -1,4 +1,4 @@
-version: '3.8'
+﻿version: '3.8'
 
 services:
   api:
@@ -10,28 +10,12 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/hidewin
       - REDIS_URL=redis://redis:6379/0
-      - S3_ENDPOINT=http://minio:9000
       - ENVIRONMENT=development
     ports:
       - "8000:8000"
-    command: uvicorn run_api:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - postgres
-      - redis
-      - minio
-
-  realtime:
-    build:
-      context: ./services/realtime
-      dockerfile: Dockerfile
-    volumes:
-      - ./services/realtime:/app
-    environment:
-      - REDIS_URL=redis://redis:6379/0
-    ports:
-      - "8001:8001"
-    command: npm run dev
-    depends_on:
       - redis
 
   postgres:
@@ -46,38 +30,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
-    image: valkey/valkey:7.2-alpine
+    image: redis:7-alpine
     ports:
       - "6379:6379"
-
-  minio:
-    image: minio/minio
-    command: server /data --console-address ":9001"
-    environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=password
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     volumes:
-      - minio_data:/data
-
-  localstack:
-    image: localstack/localstack
-    ports:
-      - "4566:4566"
-    environment:
-      - SERVICES=s3,sqs,secretsmanager,kms
-      - DEBUG=1
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-    ports:
-      - "5050:80"
+      - redis_data:/data
 
 volumes:
   postgres_data:
-  minio_data:
+  redis_data:
