@@ -823,8 +823,6 @@ let oralAudioTimer = null;
 let isProcessingOralAudio = false;
 
 
-let oralAudioChunks = [];
-let totalOralPcmBytes = 0;
 
 function appendOralAudioPcm(pcmBuffer) {
     if (!pcmBuffer || pcmBuffer.length === 0) return;
