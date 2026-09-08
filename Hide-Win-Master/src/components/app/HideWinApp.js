@@ -1,5 +1,6 @@
 import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 import { renderTopToolbar, renderLiveBar, renderCurrentView } from './HideWinAppRenderers.js';
+import { bindAppEvents, unbindAppEvents } from './HideWinAppEvents.js';
 import { appStyles } from './HideWinApp.styles.js';
 import { MainView } from '../views/MainView.js';
 import { CustomizeView } from '../views/CustomizeView.js';
