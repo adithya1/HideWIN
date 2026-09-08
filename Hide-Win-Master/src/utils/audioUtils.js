@@ -51,3 +51,10 @@ function arrayBufferToBase64(buffer) {
     }
     return btoa(binary);
 }
+
+
+module.exports = {
+    float32ToWavBlob,
+    convertFloat32ToInt16,
+    arrayBufferToBase64
+};
