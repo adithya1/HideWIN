@@ -12,7 +12,7 @@ function ensureQuestionMark(text) {
 }
 // renderer.js
 const { ipcRenderer } = require('electron');
-const { float32ToWavBlob, convertFloat32ToInt16, arrayBufferToBase64 } = require('./audioUtils.js');
+const { float32ToWavBlob, convertFloat32ToInt16, arrayBufferToBase64 } = require('./utils/audioUtils.js');
 
 // Global logger override to send all logs to main process file
 const origLog = console.log;
