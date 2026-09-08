@@ -1,0 +1,2 @@
+@echo off
+node -e "const fs=require('fs'); const file='Hide-Win-Master/src/index.js'; let content=fs.readFileSync(file, 'utf8'); content=content.replace(/app\.commandLine\.appendSwitch\('disable-features', 'PointerLockRequiresUserGesture'\);/, pp.commandLine.appendSwitch('disable-features', 'PointerLockRequiresUserGesture');\napp.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');); fs.writeFileSync(file, content);"

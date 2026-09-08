@@ -1,0 +1,14 @@
+﻿<script>
+window.addEventListener('unhandledrejection', function(e) {
+    let reason = e.reason;
+    let msg = reason;
+    if (reason instanceof Error) msg = reason.stack || reason.message;
+    else if (reason && typeof reason === 'object') {
+        try { msg = JSON.stringify(reason, Object.getOwnPropertyNames(reason)); } catch(ex) { msg = String(reason); }
+    }
+    console.error('UNHANDLED_REJECTION_DETAIL:', msg);
+});
+window.addEventListener('error', function(e) {
+    console.error('GLOBAL_ERROR_DETAIL:', e.error ? e.error.stack : e.message);
+});
+</script>

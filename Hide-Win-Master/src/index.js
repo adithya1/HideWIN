@@ -27,6 +27,7 @@ if (require('electron-squirrel-startup')) {
 
 // Bypass Pointer Lock user gesture requirement so Ctrl+Alt+M global shortcut can trigger it immediately
 app.commandLine.appendSwitch('disable-features', 'PointerLockRequiresUserGesture');
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
 const { createWindow, createSessionWindow, updateGlobalShortcuts } = require('./utils/window');
 const { setupGeminiIpcHandlers, stopMacOSAudioCapture, sendToRenderer } = require('./utils/gemini');

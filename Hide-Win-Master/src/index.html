@@ -1,13 +1,19 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
     <head>
 <script>
-window.onerror = function(message, source, lineno, colno, error) { console.error('GLOBAL_ERROR:', message, source, lineno, colno, error);
-    if (window.hideWin && window.hideWin.ipcRenderer) {
-        window.hideWin.ipcRenderer.send('log-error', message + ' at ' + source + ':' + lineno);
-    }
+window.onerror = function(message, source, lineno, colno, error) { 
+    console.error('GLOBAL_ERROR_DETAIL:', message, source, lineno, colno, error ? error.stack : '');
 };
-window.addEventListener('unhandledrejection', function(e) { console.error('UNHANDLED_REJECTION:', e.reason); });
+window.addEventListener('unhandledrejection', function(e) {
+    let reason = e.reason;
+    let msg = reason;
+    if (reason instanceof Error) msg = reason.stack || reason.message;
+    else if (reason && typeof reason === 'object') {
+        try { msg = JSON.stringify(reason, Object.getOwnPropertyNames(reason)); } catch(ex) { msg = String(reason); }
+    }
+    console.error('UNHANDLED_REJECTION_DETAIL:', msg);
+});
 </script>
         <meta http-equiv="content-security-policy" content="script-src 'self' 'unsafe-inline'" />
         <title>HideWin</title>
@@ -96,3 +102,4 @@ window.addEventListener('unhandledrejection', function(e) { console.error('UNHAN
         <hide-win-app id="appRoot"></hide-win-app>
     </body>
 </html>
+
