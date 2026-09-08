@@ -1,15 +1,9 @@
 ﻿@echo off
-echo Starting React Web UI...
-cd ..\Hide-Win-Web
-call npm install
+echo Starting Hide-WIN Electron Desktop App...
+cd ..\Hide-Win-Master
+call npm start
 if %errorlevel% neq 0 (
-    echo [ERROR] npm install failed!
-    pause
-    exit /b %errorlevel%
-)
-call npm run dev
-if %errorlevel% neq 0 (
-    echo [ERROR] npm run dev failed!
+    echo [ERROR] npm start failed!
     pause
     exit /b %errorlevel%
 )

@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 echo Starting Hide-WIN Backend API...
-cd ..\hidewin-fastapi
-uvicorn run_api:app --host 0.0.0.0 --port 8000 --reload
+cd ..\services\api
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
