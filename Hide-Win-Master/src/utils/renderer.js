@@ -1523,7 +1523,7 @@ async function initSileroVAD(mediaStream) {
         vadInstance.start();
         console.log("VAD started");
     } catch (error) {
-        console.error("Failed to initialize VAD:", error);
+        console.error("Failed to initialize VAD:", error.message || error.stack || String(error));
     }
 }
 
