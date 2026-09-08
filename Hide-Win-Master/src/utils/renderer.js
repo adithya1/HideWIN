@@ -1430,39 +1430,30 @@ async function initSileroVAD(mediaStream) {
     
     // We must pass the correct base URL for WASM assets
     // Since we copied them to src/assets, we configure ort:
-    window.ort = window.ort || {};
+        window.ort = window.ort || {};
     window.ort.env = window.ort.env || {};
     window.ort.env.wasm = window.ort.env.wasm || {};
-    const path = require('path');
     const rootDir = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-    window.ort.env.wasm.wasmPaths = rootDir + 'assets/';
+    
+    // In Electron with nodeIntegration, ONNX runtime detects Node and uses fs.readFileSync
+    // So we MUST provide native Windows paths instead of file:/// URLs for the model.
+        let nativeDir = rootDir.replace('file:///', '');
+    nativeDir = decodeURIComponent(nativeDir);
+    
+    // Node.js fs accepts forward slashes on Windows just fine
+    const nativeModelPath = nativeDir + 'silero_vad_legacy.onnx';
+    const nativeWorkletPath = nativeDir + 'assets/vad.worklet.bundle.min.js';
+    
+    // Fallback: supply native paths directly
+    window.ort.env.wasm.wasmPaths = nativeDir + 'assets/';
     window.ort.env.wasm.numThreads = 1;
-
-    try {
-        const fs = require('fs');
-        let wasmFilePath = rootDir.replace('file:///', '');
-        if (process.platform === 'win32') {
-            wasmFilePath = wasmFilePath.replace(/\//g, '\\');
-        }
-        wasmFilePath = decodeURIComponent(wasmFilePath);
-        wasmFilePath = path.join(wasmFilePath, 'assets', 'ort-wasm-simd.wasm');
-        
-        console.log('[Renderer] Preloading WASM binary from:', wasmFilePath);
-        const wasmBuffer = fs.readFileSync(wasmFilePath);
-        const wasmArrayBuffer = wasmBuffer.buffer.slice(wasmBuffer.byteOffset, wasmBuffer.byteOffset + wasmBuffer.byteLength);
-        
-        // Feed the ArrayBuffer directly to Emscripten so it doesn't try to fetch it via XHR
-        window.ort.env.wasm.wasmBinary = new Uint8Array(wasmArrayBuffer);
-    } catch (e) {
-        console.error('[Renderer] Failed to preload WASM binary:', e);
-    }
 
     try {
         vadInstance = await vad.MicVAD.new({
             stream: mediaStream,
             baseAssetPath: rootDir,
-            workletURL: rootDir + 'assets/vad.worklet.bundle.min.js',
-            modelURL: rootDir + 'silero_vad_legacy.onnx',
+            workletURL: nativeWorkletPath,
+            modelURL: nativeModelPath,
             positiveSpeechThreshold: 0.6,
             negativeSpeechThreshold: 0.35,
             redemptionFrames: 5,
