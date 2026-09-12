@@ -324,7 +324,7 @@ function setupGeneralIpcHandlers() {
 
     ipcMain.handle('check-session-status', () => {
     return {
-        active: sessionWindow && !sessionWindow.isDestroyed()
+        active: typeof sessionWindow !== 'undefined' && sessionWindow && !sessionWindow.isDestroyed()
     };
 });
 

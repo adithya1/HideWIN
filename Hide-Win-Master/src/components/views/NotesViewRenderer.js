@@ -1,4 +1,4 @@
-import { html } from '../../../assets/lit-core-2.7.4.min.js';
+import { html } from '../../assets/lit-core-2.7.4.min.js';
 
 export function render() {
         const filteredNotes = this.notes.filter(note => {
@@ -378,7 +378,6 @@ export function render() {
 </style>
 `;
     }
-}
 
-customElements.define('notes-view', NotesView);
+
 

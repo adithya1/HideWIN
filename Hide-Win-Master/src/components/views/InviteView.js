@@ -1,4 +1,4 @@
-﻿import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 import { render } from './InviteViewRenderer.js';
 import { inviteStyles } from './InviteView.styles.js';
 
@@ -592,3 +592,7 @@ export class InviteView extends LitElement {
     render() {
         return render.call(this);
     }
+
+}
+customElements.define('invite-view', InviteView);
+

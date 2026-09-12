@@ -517,3 +517,7 @@ export class AssistantView extends LitElement {
     render() {
         return render.call(this);
     }
+
+}
+customElements.define('assistant-view', AssistantView);
+

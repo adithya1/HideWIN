@@ -1,4 +1,4 @@
-import { html } from '../../../assets/lit-core-2.7.4.min.js';
+import { html } from '../../assets/lit-core-2.7.4.min.js';
 
 export function render() {
         return html`
@@ -296,9 +296,8 @@ export function render() {
             </div>
         `;
     }
-}
 
-customElements.define('assistant-view', AssistantView);
+
 
 
 export function _startWaveformAnimation() {
@@ -424,6 +423,7 @@ export function _startWaveformAnimation() {
         };
 
         this._animFrame = requestAnimationFrame(draw);
+
     }
 
 

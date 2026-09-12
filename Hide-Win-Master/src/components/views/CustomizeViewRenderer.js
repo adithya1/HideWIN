@@ -1,4 +1,4 @@
-import { html } from '../../../assets/lit-core-2.7.4.min.js';
+import { html } from '../../assets/lit-core-2.7.4.min.js';
 
 export function render() {
         return html`
@@ -122,7 +122,3 @@ export function render() {
             ` : ''}
         `;
     }
-}
-
-customElements.define('customize-view', CustomizeView);
-

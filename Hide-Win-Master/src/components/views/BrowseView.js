@@ -338,6 +338,8 @@ export class BrowseView extends LitElement {
                         id="wv-${tab.id}"
                         class="${this.activeTabId === tab.id ? '' : 'hidden'}"
                         src="${tab.url}"
+                        allowpopups
+                        @new-window=${e => { e.preventDefault(); this.addTab(e.url); }}
                         @did-start-loading=${e => this.handleWebviewEvent(tab.id, 'did-start-loading', e)}
                         @did-stop-loading=${e => this.handleWebviewEvent(tab.id, 'did-stop-loading', e)}
                         @page-title-updated=${e => this.handleWebviewEvent(tab.id, 'page-title-updated', e)}

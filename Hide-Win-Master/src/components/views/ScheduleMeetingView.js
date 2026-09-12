@@ -1,4 +1,4 @@
-﻿import { LitElement, html, css } from '../../assets/lit-core-2.7.4.min.js';
+import { LitElement, html, css } from '../../assets/lit-core-2.7.4.min.js';
 import { scheduleMeetingStyles } from './ScheduleMeetingView.styles.js';
 
 
@@ -446,12 +446,12 @@ export class ScheduleMeetingView extends LitElement {
             return `<b>You are invited to a HideWIN Meeting!</b><br><br><b>Topic:</b> ${title}<br><b>Time:</b> ${time}<br><br><b>Join Meeting:</b><br><a href="${joinLink}">${joinLink}</a><br><br><b>Meeting ID:</b> ${this.createdMeeting.id}<br><b>Passcode:</b> ${passcode}`;
         }
         
-        return `📅 You are invited to a HideWIN Meeting!
+        return `?? You are invited to a HideWIN Meeting!
 
 Topic: ${title}
 Time: ${time}
 
-🔗 Join Meeting:
+?? Join Meeting:
 ${joinLink}
 
 Meeting ID: ${this.createdMeeting.id}

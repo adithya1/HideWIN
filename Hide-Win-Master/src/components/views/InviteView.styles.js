@@ -1,4 +1,4 @@
-import { css } from '../../../assets/lit-core-2.7.4.min.js';
+import { css } from '../../assets/lit-core-2.7.4.min.js';
 import { unifiedPageStyles } from './sharedPageStyles.js';
 
 export const inviteStyles = [
@@ -386,5 +386,6 @@ export const inviteStyles = [
                 cursor: pointer;
             }
 
-            .checkbox-label input[type="checkbox"
+            .checkbox-label input[type="checkbox"] {}
+    `
 ];

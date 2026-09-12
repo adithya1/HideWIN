@@ -1,5 +1,4 @@
-import { html } from '../../../assets/lit-core-2.7.4.min.js';
-
+import { html } from '../../assets/lit-core-2.7.4.min.js';
 export function render() {
         return html`
             <div class="notes-container">
@@ -10,7 +9,6 @@ export function render() {
                 </div>
             ` : ''}
             <div class="invite-container">
-
                     ${!this.activeChannelId ? (this.prefillChannelId ? html`
                         <div style="display: flex; height: 100vh; align-items: center; justify-content: center; flex-direction: column; margin-top: -60px;">
                             <div style="width: 40px; height: 40px; border: 4px solid #f3f4f6; border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
@@ -34,7 +32,6 @@ export function render() {
                         </div>
                     `) : html`
                         <div class="posh-meeting-container">
-
                                 <!-- Glassmorphism Tools Overlay -->
                                 ${this.showToolsOverlay ? html`
                                     <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); z-index: 50; display: flex; flex-direction: column; animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
@@ -53,7 +50,6 @@ export function render() {
                                         </div>
                                     </div>
                                 ` : ''}
-
                             <div class="meeting-top-bar">
                                 <div class="top-bar-left">
                                     <div class="meeting-timer">
@@ -155,7 +151,6 @@ export function render() {
                                     </div>
                                 ` : ''}
                                 
-
                                 ${this.activeSidebar === 'chat' ? html`
                                     <div class="meeting-sidebar">
                                         <div class="sidebar-header">
@@ -227,15 +222,3 @@ export function render() {
             </div>
         `;
     }
-}
-
-customElements.define('invite-view', InviteView);
-
-
-
-
-
-
-
-
-

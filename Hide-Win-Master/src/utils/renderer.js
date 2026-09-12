@@ -26,9 +26,9 @@ console.warn = (...args) => { origWarn(...args); ipcRenderer.send('renderer-log'
 const originalLog = console.log;
 const originalWarn = console.warn;
 const originalError = console.error;
-console.log = (...args) => { originalLog(...args); ipcRenderer.send('log-message', '[Renderer Log] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')); };
-console.warn = (...args) => { originalWarn(...args); ipcRenderer.send('log-message', '[Renderer Warn] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')); };
-console.error = (...args) => { originalError(...args); ipcRenderer.send('log-message', '[Renderer Error] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')); };
+console.log = (...args) => { originalLog(...args); ipcRenderer.send('log-message', '[Renderer Log] ' + args.map(a => a instanceof Error ? a.stack : (typeof a === 'object' ? JSON.stringify(a) : a)).join(' ')); };
+console.warn = (...args) => { originalWarn(...args); ipcRenderer.send('log-message', '[Renderer Warn] ' + args.map(a => a instanceof Error ? a.stack : (typeof a === 'object' ? JSON.stringify(a) : a)).join(' ')); };
+console.error = (...args) => { originalError(...args); ipcRenderer.send('log-message', '[Renderer Error] ' + args.map(a => a instanceof Error ? a.stack : (typeof a === 'object' ? JSON.stringify(a) : a)).join(' ')); };
 
 let mediaStream = null;
 let screenshotInterval = null;
@@ -1483,7 +1483,7 @@ async function initSileroVAD(mediaStream) {
                     const response = await fetch('http://localhost:8000/api/ai-proxy/stream-audio-to-llm', {
                         method: 'POST',
                         headers: {
-                            'X-STT-Model': getSettings().transcriptionModel || 'whisper-large-v3-turbo'
+                            'X-STT-Model': 'whisper-large-v3-turbo'
                         },
                         body: formData
                     });
@@ -1502,7 +1502,7 @@ async function initSileroVAD(mediaStream) {
                         window.dispatchEvent(new CustomEvent('ai-token-stream', { detail: chunk }));
                     }
                 } catch (err) {
-                    console.error("VAD Processing Error:", err);
+                    console.error("VAD Processing Error:", err.message || err);
                 }
             },
             

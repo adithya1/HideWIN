@@ -881,3 +881,7 @@ export class NotesView extends LitElement {
     render() {
         return render.call(this);
     }
+
+}
+customElements.define('notes-view', NotesView);
+

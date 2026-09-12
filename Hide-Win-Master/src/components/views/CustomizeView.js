@@ -822,3 +822,8 @@ export class CustomizeView extends LitElement {
     render() {
         return render.call(this);
     }
+
+}
+
+customElements.define('customize-view', CustomizeView);
+
