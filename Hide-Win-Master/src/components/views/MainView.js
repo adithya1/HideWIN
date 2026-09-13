@@ -22,6 +22,7 @@ export class MainView extends LitElement {
         _selectedModeCategory: { state: true },
         _modeCategoryError: { state: true },
         _profileError: { state: true },
+        homeNotes: { state: true },
 
         // Internal state
         _mode: { state: true },
@@ -113,6 +114,10 @@ export class MainView extends LitElement {
             // Load profiles
             this._profiles = await hideWin.storage.getProfiles().catch(() => []);
 
+            // Load pinned notes
+            const allNotes = await hideWin.storage.getNotes().catch(() => []);
+            this.homeNotes = allNotes.filter(n => n.pinned);
+
             // Load history sessions
             this._loadingSessions = true;
             this.requestUpdate();
@@ -141,6 +146,7 @@ export class MainView extends LitElement {
         // Listen for profile updates from other views
         this._profilesListener = () => this._loadFromStorage();
         window.addEventListener('profiles-updated', this._profilesListener);
+        window.addEventListener('notes-updated', this._profilesListener);
 
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
@@ -176,6 +182,7 @@ export class MainView extends LitElement {
         document.removeEventListener('keydown', this.boundKeydownHandler);
         document.removeEventListener('click', this._handleOutsideClick);
         window.removeEventListener('profiles-updated', this._profilesListener);
+        window.removeEventListener('notes-updated', this._profilesListener);
         if (this._clockInterval) {
             clearInterval(this._clockInterval);
             this._clockInterval = null;

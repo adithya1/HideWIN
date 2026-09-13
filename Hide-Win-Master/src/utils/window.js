@@ -655,6 +655,13 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
         });
         
         blockerProcess.on('exit', () => { blockerProcess = null; });
+        
+        require('electron').app.on('will-quit', () => {
+            if (blockerProcess) {
+                try { blockerProcess.stdin.write("UNLOCK\n"); } catch (e) {}
+                try { blockerProcess.kill(); } catch (e) {}
+            }
+        });
     };
 
     const startStealthMode = () => {

@@ -1462,12 +1462,14 @@ async function initSileroVAD(mediaStream) {
             onSpeechStart: () => {
                 console.log("VAD: Speech started");
                 // Update Overlay UI state via HideWinApp
-                document.getElementById('appRoot')?.shadowRoot.querySelector('assistant-view')?.setStatus('Listening...');
+                const view = document.getElementById('appRoot')?.shadowRoot.querySelector('assistant-view');
+                if (view) view.statusText = 'Listening...';
             },
 
             onSpeechEnd: async (audioFloat32) => {
                 console.log("VAD: Speech ended. Processing audio...");
-                document.getElementById('appRoot')?.shadowRoot.querySelector('assistant-view')?.setStatus('Processing audio...');
+                const view = document.getElementById('appRoot')?.shadowRoot.querySelector('assistant-view');
+                if (view) view.statusText = 'Processing audio...';
 
                 const wavBlob = float32ToWavBlob(audioFloat32, 16000);
                 const formData = new FormData();

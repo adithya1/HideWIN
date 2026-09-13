@@ -458,6 +458,7 @@ export class NotesView extends LitElement {
             note.pinned = true;
             note.shortcutName = this.pinPromptShortcutName.trim() || note.title || 'Pinned Note';
             this.saveNotes();
+            window.dispatchEvent(new CustomEvent('notes-updated'));
             this.showToast('Shortcut pinned to Home!');
         }
         this.pinPromptNoteId = null;
@@ -535,7 +536,7 @@ export class NotesView extends LitElement {
         let title = baseTitle;
         let counter = 1;
         // Check if any note has this title (ignoring the current note if provided)
-        while (this.notes.some(n => n.id !== ignoreNoteId && n.title.toLowerCase() === title.toLowerCase())) {
+        while (this.notes.some(n => n.id !== ignoreNoteId && (n.title || '').toLowerCase() === title.toLowerCase())) {
             // Check if baseTitle already has an extension
             const dotIdx = baseTitle.lastIndexOf('.');
             if (dotIdx > 0) {
