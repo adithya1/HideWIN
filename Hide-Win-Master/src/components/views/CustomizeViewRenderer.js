@@ -1,4 +1,4 @@
-import { html } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { html } from '../../assets/lit-core-2.7.4.min.js';
 
 export function render() {
         return html`
@@ -104,7 +104,7 @@ export function render() {
             </div>
 
             ${this._showSignOutModal ? html`
-                <div class="modal-backdrop" @click=${() => { this._showSignOutModal = false; this.requestUpdate(); }} style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+                <div class="modal-backdrop" @click=${() => { this._showSignOutModal = false; this.requestUpdate(); }} style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center; ">
                     <div class="modal-content" @click=${e => e.stopPropagation()} style="background: white; width: 400px; padding: 32px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; animation: slideUp 0.2s ease-out;">
                         <h2 style="margin-top: 0; font-size: 20px; color: var(--text-primary); font-weight: 600; margin-bottom: 12px;">Sign Out</h2>
                         <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 32px; line-height: 1.5;">
@@ -122,3 +122,4 @@ export function render() {
             ` : ''}
         `;
     }
+

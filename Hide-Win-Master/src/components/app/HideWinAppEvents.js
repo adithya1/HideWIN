@@ -57,9 +57,9 @@ export function bindAppEvents() {
                 const assistantView = this.shadowRoot.querySelector('assistant-view');
                 
                 const toggles = [
-                    ...Array.from(this.shadowRoot.querySelectorAll('.mouse-toggle-container')),
-                    ...(mainView && mainView.shadowRoot ? Array.from(mainView.shadowRoot.querySelectorAll('.mouse-toggle-container')) : []),
-                    ...(assistantView && assistantView.shadowRoot ? Array.from(assistantView.shadowRoot.querySelectorAll('.mouse-toggle-container')) : [])
+                    ...Array.from(this.shadowRoot.querySelectorAll('.mouse-toggle-container, .mouse-toggle-wrapper')),
+                    ...(mainView && mainView.shadowRoot ? Array.from(mainView.shadowRoot.querySelectorAll('.mouse-toggle-container, .mouse-toggle-wrapper')) : []),
+                    ...(assistantView && assistantView.shadowRoot ? Array.from(assistantView.shadowRoot.querySelectorAll('.mouse-toggle-container, .mouse-toggle-wrapper')) : [])
                 ];
                 
                 // Find all visible toggles

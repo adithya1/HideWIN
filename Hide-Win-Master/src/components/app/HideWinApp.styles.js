@@ -171,7 +171,7 @@ export const appStyles =     css`
 
         :host(.is-session-window) .app-shell {
             background: var(--bg-app);
-            border-radius: 12px;
+            border-radius: 6px;
             border: 1px solid transparent;
             animation: border-glow 6s ease-in-out infinite;
         }
@@ -186,7 +186,7 @@ export const appStyles =     css`
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border);
             -webkit-app-region: drag;
-            backdrop-filter: blur(12px);
+            
             padding: 0 8px;
         }
 
@@ -229,7 +229,7 @@ export const appStyles =     css`
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            background: var(--bg-surface);
             box-shadow: 0 0 6px rgba(59,130,246,0.6);
             flex-shrink: 0;
         }
@@ -255,7 +255,7 @@ export const appStyles =     css`
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
             background: rgba(255, 255, 255, 0.03);
             color: var(--text-secondary);
             display: flex;
@@ -264,13 +264,13 @@ export const appStyles =     css`
             cursor: default;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 0;
-            backdrop-filter: blur(8px);
+            
         }
 
         .win-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-hover);
             color: var(--text-primary);
-            border-color: rgba(255, 255, 255, 0.2);
+            border-color: var(--border-strong);
             transform: scale(1.05);
         }
 
@@ -375,7 +375,7 @@ export const appStyles =     css`
             gap: 8px;
             background: #f1f5f9;
             padding: 4px 8px 4px 12px;
-            border-radius: 20px;
+            border-radius: 8px;
             border: 1px solid #e2e8f0;
             pointer-events: auto !important; /* Ensure it stays clickable in click-through mode */
             cursor: pointer;
@@ -383,8 +383,8 @@ export const appStyles =     css`
         }
         :host-context(html[data-theme='dark']) .mouse-toggle-container,
         html[data-theme='dark'] .mouse-toggle-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background: var(--bg-hover);
+            border-color: var(--bg-hover);
         }
         .mouse-toggle-label {
             font-size: 13px;
@@ -397,7 +397,7 @@ export const appStyles =     css`
         }
         :host-context(html[data-theme='dark']) .mouse-toggle-label,
         html[data-theme='dark'] .mouse-toggle-label {
-            color: #94a3b8;
+            color: var(--text-muted);
         }
         .mouse-toggle-switch {
             position: relative;
@@ -413,7 +413,7 @@ export const appStyles =     css`
             background: #475569;
         }
         .mouse-toggle-container.undetectable .mouse-toggle-switch {
-            background: #3b82f6;
+            background: var(--accent);
         }
         .mouse-toggle-knob {
             position: absolute;
@@ -441,7 +441,7 @@ export const appStyles =     css`
             background: rgba(99, 102, 241, 0.05);
             border: 1px solid rgba(99, 102, 241, 0.2);
             padding: 4px 10px;
-            border-radius: 12px;
+            border-radius: 6px;
             margin-left: 8px;
             display: inline-flex;
             align-items: center;
@@ -450,7 +450,7 @@ export const appStyles =     css`
         }
         .stealth-note kbd {
             background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--bg-hover);
             border-radius: 4px;
             padding: 1px 4px;
             font-family: var(--font-mono);

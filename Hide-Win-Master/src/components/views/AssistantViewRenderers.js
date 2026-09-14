@@ -1,9 +1,9 @@
-import { html } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { html } from '../../assets/lit-core-2.7.4.min.js';
 
 export function render() {
         return html`
             ${this.isThemeMenuOpen ? html`
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center;" @click=${() => { this.isThemeMenuOpen = false; this.requestUpdate(); }}>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);  z-index: 2000; display: flex; align-items: center; justify-content: center;" @click=${() => { this.isThemeMenuOpen = false; this.requestUpdate(); }}>
                     <div style="background: var(--bg-primary, rgba(30,32,38,0.95)); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; width: 300px; max-width: 90%; box-shadow: 0 12px 32px rgba(0,0,0,0.4);" @click=${e => e.stopPropagation()}>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <h3 style="margin: 0; font-size: 16px; color: var(--text-primary);">Session Theme Settings</h3>
@@ -98,7 +98,7 @@ export function render() {
                         What to say?
                         ${this.isWhatToSayEnabled ? html`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : ''}
                     </button>
-                    <span class="suggestion-dot" style="color: rgba(255,255,255,0.2); font-size: 16px; align-self: center;">·</span>
+                    <span class="suggestion-dot" style="color: rgba(255,255,255,0.2); font-size: 16px; align-self: center;">Â·</span>
                     <!-- Follow-ups Button -->
                     <button class="suggestion-chip ${this.isFollowUpsEnabled ? 'active' : ''}" @click=${this.handleFollowUps} style="font-size: 13px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.8;">
@@ -107,7 +107,7 @@ export function render() {
                         Follow-ups
                         ${this.isFollowUpsEnabled ? html`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : ''}
                     </button>
-                    <span class="suggestion-dot" style="color: rgba(255,255,255,0.2); font-size: 16px; align-self: center;">·</span>
+                    <span class="suggestion-dot" style="color: rgba(255,255,255,0.2); font-size: 16px; align-self: center;">Â·</span>
                     
                     <!-- Refresh Button -->
                     <button class="suggestion-chip ${this.isRefreshing ? 'active' : ''}" @click=${this.handleRefreshAction} style="font-size: 13px; transition: all 0.2s ease;">
@@ -117,14 +117,14 @@ export function render() {
                         </svg>
                         ${this.isRefreshing ? 'Refreshing...' : (this.refreshSuccess ? 'Done!' : 'Refresh')}
                     </button>
-                    <span class="suggestion-dot" style="color: rgba(255,255,255,0.2); font-size: 16px; align-self: center;">·</span>
+                    <span class="suggestion-dot" style="color: rgba(255,255,255,0.2); font-size: 16px; align-self: center;">Â·</span>
 
                     <!-- Notes Button -->
                     <button class="suggestion-chip ${this.isNotesOpening ? 'active' : ''}" @click=${this.handleNotesAction} style="font-size: 13px; transition: all 0.2s ease;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" style="opacity: 0.8;"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="14 2 14 8 20 8"/><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="16" y1="13" x2="8" y2="13"/><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="16" y1="17" x2="8" y2="17"/><polyline fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="10 9 9 9 8 9"/></svg>
                         Notes
                     </button>
-                    <span class="suggestion-dot" style="color: rgba(255,255,255,0.2); font-size: 16px; align-self: center;">·</span>
+                    <span class="suggestion-dot" style="color: rgba(255,255,255,0.2); font-size: 16px; align-self: center;">Â·</span>
 
                     </div>
                     <button class="scroll-btn right" @click=${(e) => e.currentTarget.parentElement.querySelector('.suggestion-chips').scrollBy({ left: 200, behavior: 'smooth' })}>
@@ -137,7 +137,7 @@ export function render() {
                     <textarea
                         id="textInput"
                         class="premium-input"
-                        placeholder="Ask about your screen or conversation, or ^ ↵ for Assist"
+                        placeholder="Ask about your screen or conversation, or ^ â†µ for Assist"
                         @keydown=${this.handleTextKeydown}
                         rows="2"
                         style="flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 13.5px; outline: none; resize: none; line-height: 1.4; padding: 2px 0; font-family: inherit;"
@@ -225,7 +225,7 @@ export function render() {
                             data-tooltip="Select AI Profile"
                             @click=${(e) => { e.stopPropagation(); this.isProfileMenuOpen = !this.isProfileMenuOpen; this.isModeMenuOpen = false; }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                            ${this.profileNotification ? html`<span style="color: #10b981; font-weight: 500;">${this.profileNotification} ✔</span>` : ''}
+                            ${this.profileNotification ? html`<span style="color: #10b981; font-weight: 500;">${this.profileNotification} âœ”</span>` : ''}
                         </div>
                         
                         ${this.isProfileMenuOpen ? html`
@@ -371,7 +371,7 @@ export function _startWaveformAnimation() {
 
             ctx.clearRect(0, 0, w, h);
 
-            // ── Particle border ──
+            // â”€â”€ Particle border â”€â”€
             ctx.fillStyle = dangerColor;
             for (let i = 0; i < PARTICLE_COUNT; i++) {
                 const s = seeds[i];
@@ -392,7 +392,7 @@ export function _startWaveformAnimation() {
                 ctx.fill();
             }
 
-            // ── Waveform ──
+            // â”€â”€ Waveform â”€â”€
             const midY = h / 2;
             const waves = [
                 { freq: 3, amp: 0.35, speed: 2.5, opacity: 0.9, width: 1.8 },
@@ -425,5 +425,6 @@ export function _startWaveformAnimation() {
         this._animFrame = requestAnimationFrame(draw);
 
     }
+
 
 

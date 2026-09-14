@@ -1,4 +1,4 @@
-import { html } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { html } from '../../assets/lit-core-2.7.4.min.js';
 export function render() {
         return html`
             <div class="notes-container">
@@ -34,7 +34,7 @@ export function render() {
                         <div class="posh-meeting-container">
                                 <!-- Glassmorphism Tools Overlay -->
                                 ${this.showToolsOverlay ? html`
-                                    <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); z-index: 50; display: flex; flex-direction: column; animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+                                    <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.7);  z-index: 50; display: flex; flex-direction: column; animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
                                         <div style="display: flex; background: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(0,0,0,0.1); padding: 0 24px;">
                                             <button style="padding: 16px 24px; border: none; background: transparent; font-weight: 600; font-size: 14px; color: ${this.activeToolTab === 'notes' ? '#3b82f6' : '#6b7280'}; border-bottom: 3px solid ${this.activeToolTab === 'notes' ? '#3b82f6' : 'transparent'}; cursor: pointer;" @click=${() => this.activeToolTab = 'notes'}>AI Notes</button>
                                             <button style="padding: 16px 24px; border: none; background: transparent; font-weight: 600; font-size: 14px; color: ${this.activeToolTab === 'browser' ? '#3b82f6' : '#6b7280'}; border-bottom: 3px solid ${this.activeToolTab === 'browser' ? '#3b82f6' : 'transparent'}; cursor: pointer;" @click=${() => this.activeToolTab = 'browser'}>Browser</button>
@@ -162,7 +162,7 @@ export function render() {
                                                 ${this.chatMessages.length === 0 ? html`<div style="color: #6b7280; font-size: 13px; text-align: center; margin-top: 20px;">No messages yet. Start the conversation!</div>` : ''}
                                                 ${this.chatMessages.map(m => html`
                                                     <div style="display: flex; flex-direction: column; align-items: ${m.sender === 'You (Host)' ? 'flex-end' : 'flex-start'};">
-                                                        <span style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">${m.sender} • ${m.time}</span>
+                                                        <span style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">${m.sender} â€¢ ${m.time}</span>
                                                         <div style="background: ${m.sender === 'You (Host)' ? '#dbeafe' : '#f3f4f6'}; color: #1f2937; padding: 8px 12px; border-radius: 8px; font-size: 13px; max-width: 90%; word-break: break-word;">
                                                             ${m.text}
                                                         </div>
@@ -222,3 +222,4 @@ export function render() {
             </div>
         `;
     }
+

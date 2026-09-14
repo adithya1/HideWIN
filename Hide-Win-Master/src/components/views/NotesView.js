@@ -51,9 +51,9 @@ export class NotesView extends LitElement {
 
             .upload-progress-card {
                 background: rgba(38, 40, 48, 0.6);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                
+                -webkit-
+                border: 1px solid var(--bg-hover);
                 border-radius: var(--radius-lg);
                 padding: var(--space-md);
                 display: flex;
@@ -123,7 +123,7 @@ export class NotesView extends LitElement {
                 position: absolute;
                 top: 0; left: 0; right: 0; bottom: 0;
                 background: rgba(15, 23, 42, 0.95);
-                backdrop-filter: blur(8px);
+                
                 z-index: 100;
                 display: flex;
                 flex-direction: column;
@@ -139,7 +139,7 @@ export class NotesView extends LitElement {
                 align-items: center;
                 justify-content: space-between;
                 padding-bottom: var(--space-md);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid var(--bg-hover);
                 margin-bottom: var(--space-md);
             }
             .expanded-title {
@@ -1087,7 +1087,7 @@ export class NotesView extends LitElement {
                                 <span class="list-row-type ${typeClass}">${note.ext || typeClass}</span>
                                 <span class="list-row-date">${note.createdAt}</span>
                                 <div class="list-row-actions">
-                                    <button class="row-action-btn" title=${note.pinned ? 'Unpin from Home' : 'Pin to Home'} @click=${e => this.togglePin(e, note)} style="color: ${note.pinned ? '#3b82f6' : 'inherit'};">
+                                    <button class="row-action-btn" title=${note.pinned ? 'Unpin from Home' : 'Pin to Home'} @click=${e => this.togglePin(e, note)} style="color: ${note.pinned ? 'var(--accent)' : 'inherit'};">
                                         <svg viewBox="0 0 24 24" fill="${note.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 11.24V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v5.24a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
                                     </button>
                                     <button class="row-action-btn" title="Copy" @click=${e => this.copyNoteContent(note, e)}>
@@ -1118,7 +1118,7 @@ export class NotesView extends LitElement {
                                     <div class="card-footer">
                                         <span class="card-date">${note.createdAt}</span>
                                         <div class="card-actions">
-                                            <button class="action-btn" title=${note.pinned ? 'Unpin from Home' : 'Pin to Home'} @click=${e => this.togglePin(e, note)} style="color: ${note.pinned ? '#3b82f6' : 'inherit'};">
+                                            <button class="action-btn" title=${note.pinned ? 'Unpin from Home' : 'Pin to Home'} @click=${e => this.togglePin(e, note)} style="color: ${note.pinned ? 'var(--accent)' : 'inherit'};">
                                                 <svg viewBox="0 0 24 24" fill="${note.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 11.24V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v5.24a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
                                             </button>
                                             <button class="action-btn" title="Copy" @click=${e => this.copyNoteContent(note, e)}>
@@ -1141,8 +1141,8 @@ export class NotesView extends LitElement {
                 <!-- Pin Shortcut Prompt Overlay -->
                 ${this.pinPromptNoteId ? html`
                     <div class="modal-overlay" @click=${() => this.cancelPin()} style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;">
-                        <div class="modal-content" @click=${e => e.stopPropagation()} style="background:var(--bg-surface, white);padding:24px;border-radius:12px;width:300px;box-shadow:0 10px 25px rgba(0,0,0,0.1);">
-                            <h3 style="margin:0 0 16px 0;font-size:16px;color:var(--text-primary, #0f172a);">Pin Shortcut</h3>
+                        <div class="modal-content" @click=${e => e.stopPropagation()} style="background:var(--bg-surface, white);padding:24px;border-radius: 6px;width:300px;box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+                            <h3 style="margin:0 0 16px 0;font-size:16px;color:var(--text-primary, var(--text-primary));">Pin Shortcut</h3>
                             <p style="margin:0 0 12px 0;font-size:13px;color:var(--text-muted, #64748b);">Enter a short name for this pinned item:</p>
                             <input type="text" 
                                 .value=${this.pinPromptShortcutName} 
@@ -1153,7 +1153,7 @@ export class NotesView extends LitElement {
                             />
                             <div style="display:flex;justify-content:flex-end;gap:8px;">
                                 <button @click=${() => this.cancelPin()} style="padding:8px 16px;border:none;background:transparent;color:var(--text-muted, #64748b);cursor:pointer;border-radius:6px;font-weight:500;">Cancel</button>
-                                <button @click=${() => this.confirmPin()} style="padding:8px 16px;border:none;background:#3b82f6;color:white;cursor:pointer;border-radius:6px;font-weight:500;">Pin</button>
+                                <button @click=${() => this.confirmPin()} style="padding:8px 16px;border:none;background:var(--accent);color:white;cursor:pointer;border-radius:6px;font-weight:500;">Pin</button>
                             </div>
                         </div>
                     </div>
@@ -1161,7 +1161,7 @@ export class NotesView extends LitElement {
 
                 <!-- Toast Notification -->
                 ${this._toastMessage ? html`
-                    <div style="position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; font-weight: 500; font-size: 14px; box-shadow: 0 10px 25px rgba(16,185,129,0.3); z-index: 10000; animation: fade-in-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
+                    <div style="position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 500; font-size: 14px; box-shadow: 0 10px 25px rgba(16,185,129,0.3); z-index: 10000; animation: fade-in-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
                         <div style="display:flex; align-items:center; gap:8px;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                             ${this._toastMessage}

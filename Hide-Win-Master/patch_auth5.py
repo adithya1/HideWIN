@@ -1,7 +1,11 @@
-import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+﻿import re
 
-export class AuthView extends LitElement {
-    static styles = css`
+fpath = r'c:\Users\akula\Downloads\Hide-WIN\Hide-Win-Master\src\components\views\AuthView.js'
+with open(fpath, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# Replace EVERYTHING in static styles = css` ... `;
+new_styles = '''
         :host {
             display: block;
             width: 100%;
@@ -342,180 +346,12 @@ export class AuthView extends LitElement {
             border-radius: 50%;
             z-index: 1;
         }
-`;
+'''
 
-    static properties = {
-        _isWaiting: { state: true },
-        step: { state: true },
-        email: { state: true },
-        otp: { state: true },
-        loading: { state: true },
-        error: { state: true },
-        successMsg: { state: true }
-    };
+content = re.sub(r'    static styles = css`.*?`;', '    static styles = css`' + new_styles + '`;', content, flags=re.DOTALL)
 
-    constructor() {
-        super();
-        this._isWaiting = false;
-        this.step = 'email';
-        this.email = '';
-        this.otp = '';
-        this.loading = false;
-        this.error = '';
-        this.successMsg = '';
-    }
-
-    _handleMinimize() {
-        this.dispatchEvent(new CustomEvent('minimize', { bubbles: true, composed: true }));
-    }
-
-    _handleMaximize() {
-        if (window.require) {
-            const { ipcRenderer } = window.require('electron');
-            ipcRenderer.invoke('window-maximize');
-        }
-    }
-
-    _handleClose() {
-        if (window.require) {
-            const { ipcRenderer } = window.require('electron');
-            ipcRenderer.invoke('quit-application');
-        }
-    }
-
-    async _handleSendOtp(e) {
-        if (e) e.preventDefault();
-        this.loading = true;
-        this.error = '';
-        
-        try {
-            const response = await fetch('http://localhost:8000/api/auth/send-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: this.email })
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to send OTP');
-            }
-            
-            this.successMsg = 'We found your account. Enter your password or the OTP sent to your email.';
-            this.step = 'otp';
-        } catch (err) {
-            this.error = err.message || 'Failed to connect to server';
-        } finally {
-            this.loading = false;
-        }
-    }
-
-    async _handleVerifyOtp(e) {
-        if (e) e.preventDefault();
-        this.loading = true;
-        this.error = '';
-        
-        try {
-            const response = await fetch('http://localhost:8000/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: this.email, password: this.otp })
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Invalid code. Please try again.');
-            }
-            
-            const data = await response.json();
-            const token = data.token;
-            
-            // Success - save token
-            if (window.hideWin && window.hideWin.storage) {
-                const creds = await window.hideWin.storage.getCredentials() || {};
-                await window.hideWin.storage.setCredentials({ ...creds, jwtToken: token, hashkey: 'fallback-hash' });
-            }
-            
-            if (window.hideWin && window.hideWin.ipcRenderer) {
-                window.hideWin.ipcRenderer.send('deep-link-auth-success', {
-                    token: token,
-                    hash: 'fallback-hash',
-                    user: null
-                });
-            }
-            
-            this.dispatchEvent(new CustomEvent('auth-success', {
-                detail: { token: token },
-                bubbles: true,
-                composed: true
-            }));
-            
-        } catch (err) {
-            this.error = err.message;
-        } finally {
-            this.loading = false;
-        }
-    }
-
-    _handleSSO(provider) {
-        if (window.require) {
-            const { ipcRenderer } = window.require('electron');
-            ipcRenderer.invoke('open-external', `http://localhost:8000/auth/sso/${provider.toLowerCase()}/login`);
-        } else {
-            window.location.href = `http://localhost:8000/auth/sso/${provider.toLowerCase()}/login`;
-        }
-    }
-
-
-                async _handleContinue(e) {
-        if (e) e.preventDefault();
-        console.log("Forcing dev bypass from Continue button!");
-        return this._handleDevBypass(e || new Event('click'));
-    }
-
-    async _handleDevBypass(e) {
-        if (e) e.preventDefault();
-        console.log("Safely dispatching auth-success to force login...");
-        
-        this.dispatchEvent(new CustomEvent('auth-success', {
-            detail: {
-                token: 'dev-bypass-token',
-                hash: 'dev-bypass-hash',
-                user: { name: 'Admin', role: 'admin' }
-            },
-            bubbles: true,
-            composed: true
-        }));
-    }
-
-    async _handleTokenSubmit() {
-        const input = this.shadowRoot.querySelector('.token-input');
-        if (!input || !input.value.trim()) return;
-        
-        const token = input.value.trim();
-        
-        if (window.hideWin && window.hideWin.storage) {
-            const creds = await window.hideWin.storage.getCredentials();
-            await window.hideWin.storage.setCredentials({ ...creds, jwtToken: token, hashkey: 'fallback-hash' });
-        }
-        
-        // Dispatch global custom event that HideWinApp can catch
-        if (window.hideWin && window.hideWin.ipcRenderer) {
-            window.hideWin.ipcRenderer.send('deep-link-auth-success', {
-                token: token,
-                hash: 'fallback-hash',
-                user: null
-            });
-        }
-        
-        this.dispatchEvent(new CustomEvent('auth-success', {
-            detail: { token: token },
-            bubbles: true,
-            composed: true
-        }));
-    }
-
-
-
+# Replace EVERYTHING in render() { ... }
+new_render = '''
     render() {
         return html`
             <div class="drag-region"></div>
@@ -616,7 +452,10 @@ export class AuthView extends LitElement {
             </div>
         `;
     }
+'''
 
-}
+content = re.sub(r'    render\(\) \{.*', new_render + '\n}\n\ncustomElements.define(\'auth-view\', AuthView);\n', content, flags=re.DOTALL)
 
-customElements.define('auth-view', AuthView);
+with open(fpath, 'w', encoding='utf-8') as f:
+    f.write(content)
+print("Updated AuthView.js CSS and Layout for 2026 responsiveness.")

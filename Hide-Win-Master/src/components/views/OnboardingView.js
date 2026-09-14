@@ -1,4 +1,4 @@
-import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 
 export class OnboardingView extends LitElement {
     static styles = css`
@@ -88,7 +88,7 @@ export class OnboardingView extends LitElement {
             border: 1px solid rgba(0, 0, 0, 0.12);
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(8px);
+            
             color: #111111;
             font-size: 13px;
             font-family: var(--font);
@@ -351,3 +351,4 @@ export class OnboardingView extends LitElement {
 }
 
 customElements.define('onboarding-view', OnboardingView);
+

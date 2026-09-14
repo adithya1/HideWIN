@@ -1,4 +1,4 @@
-import { html } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { html } from '../../assets/lit-core-2.7.4.min.js';
 
 export function renderTopToolbar() {
         if (this.windowType === 'session') return '';
@@ -33,7 +33,7 @@ export function renderTopToolbar() {
                     <div style="display: flex; align-items: center; gap: 8px; position: relative;">
                         ${this.sessionActive ? html`
                             <button class="pause-btn ${this.isPaused ? 'paused' : 'active'}" @click=${() => this.togglePause()}>
-                                ${this.isPaused ? '▶ Resume' : '⏸ Pause'}
+                                ${this.isPaused ? 'â–¶ Resume' : 'â¸ Pause'}
                             </button>
                         ` : ''}
                         
@@ -82,7 +82,7 @@ export function renderLiveBar() {
 
         return html`
             <div class="live-bar" style="display: flex; justify-content: center; align-items: flex-start; padding: 0; margin-top: 4px; background: transparent; border-bottom: none; position: relative; z-index: 10; -webkit-app-region: drag;">
-                <div style="display: flex; align-items: center; background: rgba(30,32,38,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); border-radius: 28px; padding: 4px 6px; gap: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.6);">
+                <div style="display: flex; align-items: center; background: var(--bg-surface);  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 4px 6px; gap: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.6);">
                     
                     <!-- Drag Handle / Logo Icon -->
                     <div style="width: 32px; height: 32px; border-radius: 50%; background-image: url('./assets/images/media_1786601281022.png'); background-size: auto 32px; background-position: left center; background-repeat: no-repeat; margin-left: 4px; transform: scale(1.35); transform-origin: left center;">
@@ -228,12 +228,12 @@ export function renderCurrentView() {
                     return html`
                         <div style="display: flex; flex-direction: column; height: 100%;">
                             <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); padding: 6px 12px; border-bottom: 1px solid var(--border);">
-                                <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);">📝 Reference Notes & Diagrams</span>
+                                <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);">ðŸ“ Reference Notes & Diagrams</span>
                                 <button
                                     style="padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: default; border-radius: 4px; border: 1px solid var(--accent); background: var(--accent); color: #fff;"
                                     @click=${() => { this.showLiveNotes = false; this.requestUpdate(); }}
                                 >
-                                    ← Return to AI Live Session
+                                    â† Return to AI Live Session
                                 </button>
                             </div>
                             <div style="flex: 1; overflow: hidden;">
@@ -328,5 +328,6 @@ export function renderCurrentView() {
                 return html`<div>Unknown view: ${this.currentView}</div>`;
         }
     }
+
 
 

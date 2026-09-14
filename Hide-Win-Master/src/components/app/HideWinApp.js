@@ -1,4 +1,4 @@
-import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 import { renderTopToolbar, renderLiveBar, renderCurrentView } from './HideWinAppRenderers.js';
 import { bindAppEvents, unbindAppEvents } from './HideWinAppEvents.js';
 import { appStyles } from './HideWinApp.styles.js';
@@ -243,7 +243,7 @@ export class HideWinApp extends LitElement {
         }
     }
 
-    // ── Timer ──
+    // â”€â”€ Timer â”€â”€
 
     _startTimer() {
         this._stopTimer();
@@ -270,7 +270,7 @@ export class HideWinApp extends LitElement {
         return `${pad(m)}:${pad(s)}`;
     }
 
-    // ── Status & Responses ──
+    // â”€â”€ Status & Responses â”€â”€
 
     setStatus(text) {
         this.statusText = text;
@@ -310,7 +310,7 @@ export class HideWinApp extends LitElement {
         this.requestUpdate();
     }
 
-    // ── Navigation ──
+    // â”€â”€ Navigation â”€â”€
 
     async navigate(view, params = null) {
         if (this.currentView === 'assistant' && view === 'ai-customize') {
@@ -426,7 +426,7 @@ export class HideWinApp extends LitElement {
         this.requestUpdate();
     }
 
-    // ── Session start ──
+    // â”€â”€ Session start â”€â”€
 
     async handleStart(modeCategory, profileId = '') {
         if (!modeCategory || modeCategory === 'undefined' || modeCategory === 'null') {
@@ -588,13 +588,13 @@ export class HideWinApp extends LitElement {
         }
     }
 
-    // ── Settings handlers ──
+    // â”€â”€ Settings handlers â”€â”€
 
     async handleProfileChange(profile) {
         this.selectedProfile = profile;
         await hideWin.storage.updatePreference('selectedProfile', profile);
         const pObj = this.profiles.find(p => p.id === profile);
-        this.setStatus(`Profile selected: ${pObj ? pObj.name.split(' ')[0] : 'AI'} ✔`);
+        this.setStatus(`Profile selected: ${pObj ? pObj.name.split(' ')[0] : 'AI'} âœ”`);
     }
 
     async handleTranscriptionLanguageChange(language) {
@@ -640,7 +640,7 @@ export class HideWinApp extends LitElement {
         // Instantly display question card on screen
         this.addNewResponse({
             question: message,
-            answer: '⏳ *Generating response...*'
+            answer: 'â³ *Generating response...*'
         });
 
         const result = await window.hideWin.sendTextMessage(message);
@@ -648,7 +648,7 @@ export class HideWinApp extends LitElement {
             this.setStatus('Error sending message: ' + (result.error || 'Unknown error'));
             this.updateCurrentResponse({
                 question: message,
-                answer: `⚠️ **Unable to generate response**: ${result.error || 'Please ensure your Google Gemini API key is entered in Settings.'}`
+                answer: `âš ï¸ **Unable to generate response**: ${result.error || 'Please ensure your Google Gemini API key is entered in Settings.'}`
             });
         } else {
             this.setStatus('Generating response...');
@@ -687,7 +687,7 @@ export class HideWinApp extends LitElement {
         }
     }
 
-    // ── Helpers ──
+    // â”€â”€ Helpers â”€â”€
 
     _isLiveMode() {
         return this.currentView === 'assistant';
@@ -790,7 +790,7 @@ export class HideWinApp extends LitElement {
         window.addEventListener('mouseup', handleMouseUp);
     }
 
-    // ── Render ──
+    // â”€â”€ Render â”€â”€
 
     renderCurrentView() {
         return renderCurrentView.call(this);
@@ -895,7 +895,7 @@ export class HideWinApp extends LitElement {
         if (this.isMainWindowMinimized) {
             return html`
                 <div class="live-bar" style="display: flex; justify-content: center; align-items: flex-start; padding: 0; background: transparent; position: relative; width: 100%; height: 100%; -webkit-app-region: drag;">
-                    <div style="display: flex; align-items: center; background: rgba(30,32,38,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); border-radius: 28px; padding: 4px 6px; gap: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.6); margin-top: 4px;">
+                    <div style="display: flex; align-items: center; background: var(--bg-surface);  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 4px 6px; gap: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.6); margin-top: 4px;">
                         
                         <!-- Logo Icon -->
                         <div style="width: 32px; height: 32px; border-radius: 50%; background-image: url('./assets/images/small_icon.png'); background-size: auto 32px; background-position: center; background-repeat: no-repeat; margin-left: 4px;">
@@ -1047,7 +1047,7 @@ export class HideWinApp extends LitElement {
 
             
             ${this.showProfileModal ? html`
-                <div class="modal-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:99999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+                <div class="modal-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:99999; display:flex; align-items:center; justify-content:center; ">
                     <div class="modal-content" style="position:relative; width:90%; max-width:900px; height:90%; background:var(--bg-app); border-radius:12px; border:1px solid var(--border); overflow:hidden; display:flex; flex-direction:column; box-shadow:0 10px 40px rgba(0,0,0,0.6);">
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid var(--border); background:var(--bg-surface);">
                             <h3 style="margin:0; font-size:15px; font-weight:600; color:var(--text-primary);">Create / Edit Profile</h3>
@@ -1070,3 +1070,4 @@ export class HideWinApp extends LitElement {
 }
 
 customElements.define('hide-win-app', HideWinApp);
+

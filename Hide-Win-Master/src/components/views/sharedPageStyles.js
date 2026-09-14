@@ -19,120 +19,23 @@ export const unifiedPageStyles = css`
         background: transparent;
     }
 
-        /* GLOBAL POSH LEAN SCROLLBAR FOR ALL VIEWS */
-        ::-webkit-scrollbar {
-            width: 10px !important;
-            height: 10px !important;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent !important;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #c1c1c1 !important;
-            border-radius: 10px !important;
-            border: 3px solid transparent !important;
-            background-clip: padding-box !important;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: #a8a8a8 !important;
-        }
-        ::-webkit-scrollbar-button:single-button {
-            background-color: transparent !important;
-            display: block !important;
-            height: 12px !important;
-            width: 10px !important;
-        }
-        ::-webkit-scrollbar-button:single-button:vertical:decrement {
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c1c1c1'><path d='M7 14l5-5 5 5z'/></svg>") !important;
-            background-size: 8px !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-        }
-        ::-webkit-scrollbar-button:single-button:vertical:increment {
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c1c1c1'><path d='M7 10l5 5 5-5z'/></svg>") !important;
-            background-size: 8px !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-        }
-
-    * {
-        font-family: var(--font);
-        box-sizing: border-box;
-        cursor: default;
-        user-select: none;
-    }
-
-    :host {
-        display: block;
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-        background: transparent;
-    }
-
-    ::-webkit-scrollbar {
-        width: 14px;
-        height: 14px;
-    }
-    ::-webkit-scrollbar-track {
-        background: transparent;
-        border-left: 1px solid rgba(0,0,0,0.05);
-    }
-    ::-webkit-scrollbar-thumb {
-        background-color: #c1c1c1;
-        border-radius: 10px;
-        border: 3px solid #f3f3f3;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: #a8a8a8;
-    }
-    ::-webkit-scrollbar-button:single-button {
-        background-color: transparent;
-        display: block;
-        height: 14px;
-        width: 14px;
-    }
-    ::-webkit-scrollbar-button:single-button:vertical:decrement {
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1a1'><path d='M7 14l5-5 5 5z'/></svg>");
-        background-size: 12px;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    ::-webkit-scrollbar-button:single-button:vertical:increment {
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1a1'><path d='M7 10l5 5 5-5z'/></svg>");
-        background-size: 12px;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-
-    .page-container {
-        padding: var(--space-xl) var(--space-lg);
-        max-width: 640px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-lg);
-    }
-
-    
-    /* Unified Toolbar Styles for Notes, Profiles, History */
-    .notes-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: var(--space-sm) var(--space-md); border-radius: 16px; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 4px 24px -8px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.5); flex-wrap: wrap; color: #0f172a; margin-bottom: var(--space-md); }
+        .notes-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); background: var(--bg-elevated);  -webkit- padding: var(--space-sm) var(--space-md); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-wrap: wrap; color: var(--text-primary); margin-bottom: var(--space-md); }
     .toolbar-actions { display: flex; align-items: center; gap: 8px; }
-    .notes-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 12px; font-size: var(--font-size-xs); font-weight: 600; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.2); background: #ffffff; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.05); }
-    .notes-btn:hover { background: #f8fafc; border-color: #3b82f6; transform: translateY(-1px); }
-    .notes-btn.primary { background: #185fc4; color: white; border: none; box-shadow: 0 4px 14px rgba(24, 95, 196, 0.4); }
-    .notes-btn.primary:hover { background: #1550a6; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(24, 95, 196, 0.6) !important; }
+    .notes-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; font-size: var(--font-size-xs); font-weight: 600; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.2); background: #ffffff; color: var(--text-primary); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.05); }
+    .notes-btn:hover { background: #f8fafc; border-color: var(--accent); transform: translateY(-1px); }
+    .notes-btn.primary { background: var(--accent); color: white; border: none; box-shadow: 0 4px 14px rgba(24, 95, 196, 0.4); }
+    .notes-btn.primary:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(24, 95, 196, 0.6) !important; }
     .notes-btn.danger:hover { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
     .notes-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: #64748b; cursor: pointer; transition: all 0.2s; }
-    .icon-btn:hover { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-    .icon-btn.active { background: #ffffff; border-color: rgba(59, 130, 246, 0.3); color: #3b82f6; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1); }
+    .icon-btn:hover { background: rgba(59, 130, 246, 0.1); color: var(--accent); }
+    .icon-btn.active { background: #ffffff; border-color: rgba(59, 130, 246, 0.3); color: var(--accent); box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1); }
     .icon-btn svg { width: 18px; height: 18px; }
-    .search-box { display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.05); border-radius: 12px; padding: 4px 10px; min-width: 180px; transition: all 0.2s; height: 42px; box-sizing: border-box; }
-    .search-box:focus-within { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), inset 0 2px 4px rgba(59, 130, 246, 0.05); }
+    .search-box { display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.05); border-radius: 6px; padding: 4px 10px; min-width: 180px; transition: all 0.2s; height: 42px; box-sizing: border-box; }
+    .search-box:focus-within { border-color: var(--accent); background: #ffffff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), inset 0 2px 4px rgba(59, 130, 246, 0.05); }
     .search-box svg { width: 14px; height: 14px; color: #64748b; flex-shrink: 0; }
-    .search-input { background: transparent; border: none; color: #0f172a; width: 100%; font-size: var(--font-size-sm); outline: none; box-shadow: none; padding: 0; }
-    .search-input::placeholder { color: #94a3b8; }
+    .search-input { background: transparent; border: none; color: var(--text-primary); width: 100%; font-size: var(--font-size-sm); outline: none; box-shadow: none; padding: 0; }
+    .search-input::placeholder { color: var(--text-muted); }
     .grid-viewport { flex: 1; overflow-y: auto; padding-right: 4px; }
     .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: var(--space-md); padding-bottom: 20px; }
     .notes-list { display: flex; flex-direction: column; gap: var(--space-sm); overflow-y: auto; }
@@ -161,15 +64,15 @@ export const unifiedPageStyles = css`
         display: flex;
         flex-direction: column;
         gap: var(--space-md);
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        background: var(--bg-elevated);
+        
+        -webkit-
         border: 1px solid rgba(59, 130, 246, 0.2);
-        border-radius: 16px;
+        border-radius: 8px;
         padding: 24px;
-        box-shadow: 0 4px 24px -8px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        color: #0f172a;
+        color: var(--text-primary);
     }
 
     .section:hover {
@@ -234,7 +137,7 @@ export const unifiedPageStyles = css`
     }
 
     .form-label {
-        color: #334155;
+        color: var(--text-secondary);
         font-size: var(--font-size-sm);
         font-weight: 600;
         white-space: nowrap;
@@ -254,13 +157,13 @@ export const unifiedPageStyles = css`
     
 
     input::placeholder, textarea::placeholder {
-        color: #94a3b8;
+        color: var(--text-muted);
     }
 
     select {
         cursor: default;
         appearance: none;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='rgba(255,255,255,0.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
         background-position: right 12px center;
         background-repeat: no-repeat;
         background-size: 14px;
@@ -268,7 +171,7 @@ export const unifiedPageStyles = css`
     }
 
     option {
-        background-color: #1e1e24;
+        background-color: var(--bg-surface);
         color: var(--text-primary);
     }
 
@@ -304,8 +207,8 @@ export const unifiedPageStyles = css`
         cursor: not-allowed;
         box-shadow: none;
         transform: none;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: var(--bg-hover);
+        border: 1px solid var(--bg-hover);
         color: var(--text-muted);
     }
 
@@ -318,10 +221,10 @@ export const unifiedPageStyles = css`
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--bg-hover);
         padding: 6px 12px;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        border: 1px solid var(--border);
         pointer-events: auto !important; /* Ensure it stays clickable in click-through mode */
         cursor: pointer;
         transition: all 0.2s ease;
@@ -342,8 +245,8 @@ export const unifiedPageStyles = css`
         position: relative;
         width: 36px;
         height: 20px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
+        background: var(--bg-hover);
+        border-radius: 6px;
         transition: background 0.3s ease, box-shadow 0.3s ease;
         pointer-events: none;
         box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
@@ -351,7 +254,7 @@ export const unifiedPageStyles = css`
 
     /* When Click-Through is ON (Undetectable), the toggle is Active (Blue) */
     .mouse-toggle-container.undetectable .mouse-toggle-switch {
-        background: #3b82f6;
+        background: var(--accent);
         box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 0 8px rgba(59, 130, 246, 0.4);
     }
 
@@ -378,7 +281,7 @@ export const unifiedPageStyles = css`
         background: rgba(99, 102, 241, 0.08);
         border: 1px solid rgba(99, 102, 241, 0.2);
         padding: 6px 12px;
-        border-radius: 12px;
+        border-radius: 6px;
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -386,13 +289,13 @@ export const unifiedPageStyles = css`
     }
     .stealth-note kbd {
         background: rgba(0,0,0,0.4);
-        border: 1px solid rgba(255,255,255,0.1);
+        border: 1px solid var(--bg-hover);
         border-radius: 6px;
         padding: 2px 6px;
         font-family: var(--font-mono);
         font-size: 11px;
         color: var(--accent);
-        box-shadow: inset 0 -1px 0 rgba(255,255,255,0.1);
+        box-shadow: inset 0 -1px 0 var(--bg-hover);
     }
 
     .mouse-toggle-container.undetectable .mouse-toggle-knob {
@@ -409,23 +312,23 @@ export const unifiedPageStyles = css`
     }
 
     /* EXACT NOTES LIST/GRID UI FOR 100% CONSISTENCY */
-    .note-card { display: flex; flex-direction: column; background: rgba(38, 40, 48, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 16px; gap: 8px; position: relative; cursor: default; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-height: 150px; max-height: 260px; overflow: hidden; box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05); }
-    .note-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12); }
+    .note-card { display: flex; flex-direction: column; background: var(--bg-surface);  -webkit- border: 1px solid var(--border); border-radius: 8px; padding: 16px; gap: 8px; position: relative; cursor: default; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-height: 150px; max-height: 260px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .note-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid var(--border-strong); }
     .card-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
     .card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
     .card-type-badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; background: rgba(99, 102, 241, 0.15); color: var(--accent); }
     .card-content { flex: 1; font-size: 12px; color: var(--text-secondary); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; margin-top: 4px; }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--bg-hover); }
     .card-date { font-size: 10px; color: var(--text-muted); }
     .card-actions { display: flex; gap: 4px; }
     .action-btn { background: transparent; border: none; padding: 4px; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
-    .action-btn:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+    .action-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
     .action-btn.delete:hover { background: rgba(239, 68, 68, 0.2); color: #f87171; }
     .action-btn svg { width: 14px; height: 14px; }
 
     .list-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid transparent; background: var(--bg-surface); cursor: pointer; transition: all 0.15s; min-height: 40px; }
-    .list-row:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255,255,255,0.1); }
-    .list-row-icon { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted); }
+    .list-row:hover { background: var(--bg-hover); border-color: var(--bg-hover); }
+    .list-row-icon { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: var(--bg-hover); color: var(--text-muted); }
     .list-row-icon svg { width: 14px; height: 14px; }
     .list-row-title { font-size: 13px; font-weight: 500; color: var(--text-primary); min-width: 120px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .list-row-preview { flex: 1; font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -434,9 +337,10 @@ export const unifiedPageStyles = css`
     .list-row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
     .list-row:hover .list-row-actions { opacity: 1; }
     .row-action-btn { background: transparent; border: none; padding: 4px; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: all 0.2s; }
-    .row-action-btn:hover { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .row-action-btn:hover { background: rgba(59, 130, 246, 0.1); color: var(--accent); }
     .row-action-btn.delete:hover { background: rgba(239, 68, 68, 0.2); color: #f87171; }
     .row-action-btn svg { width: 14px; height: 14px; }
 
 `;
+
 

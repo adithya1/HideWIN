@@ -1,4 +1,4 @@
-import { css } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { css } from '../../assets/lit-core-2.7.4.min.js';
 
 export const assistantStyles =     css`
         :host {
@@ -29,9 +29,9 @@ export const assistantStyles =     css`
             pointer-events: none !important;
         }
 
-        /* ── Response area ── */
+        /* â”€â”€ Response area â”€â”€ */
 
-        /* ── Response area & Q&A Stream ── */
+        /* â”€â”€ Response area & Q&A Stream â”€â”€ */
 
         .response-container {
             flex: 1;
@@ -53,7 +53,7 @@ export const assistantStyles =     css`
             padding-bottom: 20px;
         }
 
-        /* ── Chat Bubbles ── */
+        /* â”€â”€ Chat Bubbles â”€â”€ */
         .chat-row-user {
             display: flex;
             justify-content: flex-end;
@@ -117,7 +117,7 @@ export const assistantStyles =     css`
             display: inline-block;
         }
 
-        /* ── Markdown ── */
+        /* â”€â”€ Markdown â”€â”€ */
 
         .response-container h1,
         .response-container h2,
@@ -186,7 +186,7 @@ export const assistantStyles =     css`
             display: block;
         }
 
-        /* ── Code Blocks and Line Numbers ── */
+        /* â”€â”€ Code Blocks and Line Numbers â”€â”€ */
         .code-line {
             display: flex;
             align-items: stretch;
@@ -371,7 +371,7 @@ export const assistantStyles =     css`
             background-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* 🎨 Bottom input bar & Chips 🎨 */
+        /* ðŸŽ¨ Bottom input bar & Chips ðŸŽ¨ */
 
         .input-area-wrapper {
             display: flex;
@@ -434,7 +434,7 @@ export const assistantStyles =     css`
             opacity: 0;
             pointer-events: none;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(8px);
+            
             z-index: 10;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
@@ -665,8 +665,8 @@ export const assistantStyles =     css`
             left: 50%;
             transform: translateX(-50%);
             background: rgba(30, 30, 35, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            
+            -webkit-
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 8px;
@@ -746,3 +746,4 @@ export const assistantStyles =     css`
             transform: translateY(1px);
         }
     `;
+

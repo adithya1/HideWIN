@@ -1,4 +1,4 @@
-﻿import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 
 export class MainView extends LitElement {
     static styles = css`
@@ -20,25 +20,246 @@ export class MainView extends LitElement {
         background: transparent;
     }
 
-        @media (max-width: 650px) {
-            .home-container {
-                padding: 16px;
-            }
-        }
-        .action-bar-wrapper { display: flex; align-items: center; border-radius: 50px; background: var(--bg-surface); padding: 8px 12px 8px 24px; width: 100%; max-width: 850px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        @media (max-width: 650px) {
-            .action-bar-wrapper { flex-direction: column; border-radius: 16px; padding: 16px; gap: 12px; }
-            .action-bar-wrapper .action-dropdown { max-width: 100% !important; width: 100%; }
-            .action-bar-wrapper .action-spacer { display: none; }
-            .action-bar-wrapper .divider { width: 100%; margin: 4px 0; }
-            .action-bar-wrapper .action-buttons { width: 100%; justify-content: space-between; flex-direction: column; }
-            .action-bar-wrapper .action-buttons button { width: 100%; margin-top: 8px; }
-        }
+        
         * {
             font-family: var(--font);
             cursor: default;
             user-select: none;
             box-sizing: border-box;
+        }
+
+        /* MASTER RESPONSIVE ARCHITECTURE (2026 DESKTOP UI)          */
+        /* ========================================================= */
+        
+        .home-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center the layout container */
+            padding: clamp(16px, 4vh, 40px) clamp(16px, 4vw, 60px);
+            box-sizing: border-box;
+            background: var(--bg-app);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* --------------------------------------------------------- */
+        /* HEADER & NAVIGATION */
+        /* --------------------------------------------------------- */
+        .home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Safe readable width */
+            margin-bottom: clamp(16px, 3vh, 32px);
+        }
+
+        /* --------------------------------------------------------- */
+        /* TOOLBAR (FLEX-BASED RESPONSIVE) */
+        /* --------------------------------------------------------- */
+        .action-bar-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: clamp(12px, 2vw, 24px);
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto clamp(16px, 3vh, 24px) auto;
+            padding: 10px 24px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        /* Dropdowns */
+        .action-dropdown {
+            flex: 0 1 auto;
+            min-width: 160px;
+            max-width: 220px;
+            position: relative;
+        }
+
+        .action-dropdown-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 12px;
+            height: 38px;
+            background: transparent;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .action-dropdown-content:hover, .action-dropdown-content:focus-within {
+            background: rgba(100, 116, 139, 0.05);
+            border: 1px solid var(--text-muted);
+        }
+
+        .action-dropdown-content span {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Mouse Detect */
+        .mouse-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding-left: clamp(12px, 2vw, 24px);
+            border-left: 1px solid var(--border); /* Clean separation */
+            flex-shrink: 0;
+        }
+
+        /* Start Button */
+        .action-buttons-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .primary-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 20px;
+            height: 38px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.1s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            white-space: nowrap;
+        }
+        
+        .primary-action-btn:hover { background: #2563eb; }
+        .primary-action-btn:active { transform: scale(0.98); }
+        .primary-action-btn svg { width: 16px; height: 16px; }
+
+        /* Popups */
+        .child-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 100%;
+            min-width: 200px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            z-index: 100;
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        /* --------------------------------------------------------- */
+        /* PINNED SHORTCUTS */
+        /* --------------------------------------------------------- */
+        .pinned-shortcuts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .pinned-shortcut-card {
+            width: 100px;
+            height: 90px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-surface);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        
+        .pinned-shortcut-card:hover {
+            transform: translateY(-2px);
+            background: rgba(100, 116, 139, 0.05);
+            border-color: var(--text-muted);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* --------------------------------------------------------- */
+        /* RESPONSIVE BREAKPOINTS (Fluid Architecture)               */
+        /* --------------------------------------------------------- */
+        
+        /* COMPACT (2-Row Reflow) */
+        @media (max-width: 680px) {
+            .action-bar-wrapper {
+                flex-wrap: wrap;
+                padding: 12px 16px;
+                max-width: 500px;
+            }
+            .action-dropdown {
+                flex: 1 1 40%;
+                min-width: 140px;
+            }
+            .mouse-toggle-wrapper {
+                flex: 1 1 40%;
+                border-left: none;
+                padding-left: 0;
+                justify-content: flex-start;
+            }
+            .action-buttons-wrapper {
+                flex: 1 1 40%;
+                justify-content: flex-end;
+            }
+        }
+
+        /* SMALL (Vertical Stack) */
+        @media (max-width: 500px) {
+            .action-bar-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .action-dropdown {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+            .mouse-toggle-wrapper {
+                justify-content: space-between;
+                margin-top: 8px;
+            }
+            .action-buttons-wrapper {
+                justify-content: stretch;
+                margin-top: 8px;
+            }
+            .primary-action-btn { width: 100%; }
         }
 
         @keyframes errorShake {
@@ -66,12 +287,14 @@ export class MainView extends LitElement {
         }
 
         :host {
-            height: 100%;
+            min-height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: var(--space-xl) var(--space-lg);
+            justify-content: flex-start;
+            padding: var(--space-md);
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .form-wrapper {
@@ -108,16 +331,16 @@ export class MainView extends LitElement {
             flex-direction: column;
             gap: 10px;
             padding: 16px 20px;
-            border-radius: 12px;
+            border-radius: 6px;
             border: 1px solid rgba(99, 102, 241, 0.2);
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
+            background: var(--bg-surface);
             cursor: default;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .cloud-promo:hover {
             border-color: rgba(99, 102, 241, 0.4);
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+            background: var(--bg-surface);
             box-shadow: 0 0 30px rgba(99, 102, 241, 0.1), 0 0 60px rgba(139, 92, 246, 0.05);
             transform: translateY(-2px);
         }
@@ -128,14 +351,14 @@ export class MainView extends LitElement {
             right: -20%;
             width: 140px;
             height: 140px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            background: transparent;
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
 
         .cloud-promo:hover .cloud-promo-glow {
             opacity: 1;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+            background: transparent;
         }
 
         .cloud-promo-header {
@@ -186,10 +409,10 @@ export class MainView extends LitElement {
         input, select, textarea {
             background: rgba(255, 255, 255, 0.04);
             color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
             padding: 10px 14px;
             width: 100%;
-            border-radius: 12px;
+            border-radius: 6px;
             font-size: var(--font-size-sm);
             font-family: var(--font);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -205,7 +428,7 @@ export class MainView extends LitElement {
             outline: none;
             border-color: rgba(99, 102, 241, 0.5);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--border);
         }
 
         input::placeholder, textarea::placeholder {
@@ -228,7 +451,7 @@ export class MainView extends LitElement {
         }
 
         option {
-            background-color: #1e1e24;
+            background-color: var(--bg-surface);
             color: var(--text-primary);
         }
 
@@ -277,9 +500,9 @@ export class MainView extends LitElement {
         .start-button {
             width: 100%;
             padding: 14px 40px;
-            border-radius: 12px;
+            border-radius: 6px;
             border: none;
-            background: #185fc4;
+            background: var(--accent);
             color: white;
             font-size: 15px;
             font-weight: 600;
@@ -294,7 +517,7 @@ export class MainView extends LitElement {
 
         .start-button:hover:not(:disabled) {
             transform: translateY(-2px);
-            background: #1550a6;
+            background: var(--accent-hover);
             box-shadow: 0 6px 20px rgba(24, 95, 196, 0.6) !important;
         }
 
@@ -321,8 +544,8 @@ export class MainView extends LitElement {
             cursor: not-allowed;
             box-shadow: none !important;
             transform: none;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--bg-hover);
+            border: 1px solid var(--bg-hover);
             color: var(--text-muted);
         }
 
@@ -559,22 +782,6 @@ export class MainView extends LitElement {
             line-height: var(--line-height);
         }
 
-        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ NEW HOME LAYOUT ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
-        .home-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
-            padding: 40px 60px;
-            box-sizing: border-box;
-            background: var(--bg-app);
-            overflow-y: auto;
-            overflow-x: hidden;
-            position: relative;
-        }
-
         .home-header {
             display: flex;
             justify-content: space-between;
@@ -608,15 +815,15 @@ export class MainView extends LitElement {
             justify-content: center;
         }
         .refresh-btn:hover {
-            background: rgba(255,255,255,0.05);
+            background: var(--bg-hover);
             color: var(--text-primary);
         }
 
         .start-btn-blue {
-            background: #3b82f6;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 100px;
+            border-radius: 8px;
             padding: 10px 24px;
             font-size: 15px;
             font-weight: 600;
@@ -641,7 +848,7 @@ export class MainView extends LitElement {
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: #3b82f6;
+            background: var(--accent);
             color: white;
             display: flex;
             align-items: center;
@@ -664,11 +871,11 @@ export class MainView extends LitElement {
             background: transparent;
         }
         .pinned-shortcuts-container::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.1);
+            background: var(--bg-hover);
             border-radius: 4px;
         }
         .pinned-shortcuts-container::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.2);
+            background: var(--border-strong);
         }
 
         .pinned-shortcut-card {
@@ -680,8 +887,8 @@ export class MainView extends LitElement {
             top: 12px;
             right: 12px;
             background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.1);
+            
+            border: 1px solid var(--bg-hover);
             border-radius: 50%;
             width: 28px;
             height: 28px;
@@ -712,7 +919,7 @@ export class MainView extends LitElement {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
+            
             display: flex;
             align-items: center;
             justify-content: center;
@@ -723,7 +930,7 @@ export class MainView extends LitElement {
         .modal-content {
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: 8px;
             padding: 24px;
             width: 340px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
@@ -1226,16 +1433,16 @@ export class MainView extends LitElement {
         const displayProfileName = isProfileValid ? profileOptions.find(p => (p.id || p.name) === this.selectedProfile).name : 'Select Profile';
 
         // Dynamic border color based on validation error
-        const borderColor = this._modeCategoryError ? '#ef4444' : 'var(--accent, #3b82f6)';
+        const borderColor = this._modeCategoryError ? '#ef4444' : 'var(--accent, var(--accent))';
         const outlineColor = this._modeCategoryError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)';
 
         return html`
-            <div style="display: flex; flex-direction: column; align-items: center; margin: 24px 0 40px 0; width: 100%;">
-                <div class="action-bar-wrapper" style="border: 1px solid ${borderColor === 'var(--accent, #3b82f6)' ? 'var(--border)' : borderColor}; box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 0 4px ${outlineColor};">
+            <div style="display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; width: 100%;">
+                <div class="action-bar-wrapper">
                     
                     <!-- Mode Select (Custom Dropdown) -->
-                      <div class="action-dropdown" style="flex: 1; min-width: 100px; max-width: 220px; display: flex; flex-direction: column; position: relative;" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
-                        <div style="display: flex; align-items: center; gap: 12px; padding: 6px 0; cursor: pointer; width: 100%;">
+                      <div class="action-dropdown" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
+                        <div class="action-dropdown-content">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -1246,7 +1453,7 @@ export class MainView extends LitElement {
                         </div>
                         
                         ${this.isModeMenuOpen ? html`
-                            <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: -12px; width: calc(100% + 24px); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
+                            <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: -12px; width: calc(100% + 24px); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
                                 ${MODES.slice(1).map(m => html`
                                     <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: ${this._selectedModeCategory === m.value ? 'var(--accent)' : 'var(--text-primary)'}; background: ${this._selectedModeCategory === m.value ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;" 
                                         @mouseover=${e => { if (this._selectedModeCategory !== m.value) e.currentTarget.style.background = 'var(--bg-hover)'; }}
@@ -1266,10 +1473,10 @@ export class MainView extends LitElement {
                         ` : ''}
                     </div>
 
-                    <div style="width: 1px; height: 32px; background: var(--border); margin: 0 20px;"></div>
+                    
 
                     <!-- Profile Select (Custom Dropdown) -->
-                      <div class="action-dropdown" style="flex: 1; min-width: 100px; max-width: 220px; display: flex; flex-direction: column; position: relative;" @click=${(e) => { 
+                      <div class="action-dropdown" @click=${(e) => { 
                         e.stopPropagation(); 
                         if (!this._selectedModeCategory) {
                             this._modeCategoryError = true;
@@ -1281,7 +1488,7 @@ export class MainView extends LitElement {
                         this.isModeMenuOpen = false; 
                         this.requestUpdate(); 
                     }}>
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; cursor: pointer; width: 100%; gap: 8px;">
+                        <div class="action-dropdown-content">
                             <span style="font-size: 15px; font-weight: ${isProfileValid ? '600' : '500'}; color: ${isProfileValid ? 'var(--text-primary)' : 'var(--text-muted)'}; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 ${displayProfileName}
                             </span>
@@ -1291,7 +1498,7 @@ export class MainView extends LitElement {
                         </div>
                         
                         ${this.isProfileMenuOpen ? html`
-                            <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: -12px; width: calc(100% + 24px); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
+                            <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: -12px; width: calc(100% + 24px); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
                                 <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: ${!isProfileValid ? 'var(--accent)' : 'var(--text-primary)'}; background: ${!isProfileValid ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;" 
                                     @mouseover=${e => { if (isProfileValid) e.currentTarget.style.background = 'var(--bg-hover)'; }}
                                     @mouseout=${e => { if (isProfileValid) e.currentTarget.style.background = 'transparent'; }}
@@ -1333,12 +1540,12 @@ export class MainView extends LitElement {
                     </div>
                     <div style="width: 1px; height: 32px; background: var(--border); margin: 0 12px;"></div>
 
-                    <!-- Mouse Toggle (Centered with pointer-events fix and fixed width) -->
-                    <div class="mouse-toggle-container stealth-tooltip" data-tooltip="Stealth Mode" style="pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 0 8px; margin-right: 8px; width: 130px; max-width: 130px; flex-shrink: 0;" @click=${() => this.onToggleClickThrough && this.onToggleClickThrough()}>
-                        <span style="font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; transition: color 0.2s; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <!-- Mouse Toggle -->
+                    <div class="mouse-toggle-wrapper stealth-tooltip" data-tooltip="Stealth Mode" @click=${(e) => { e.stopPropagation(); this.onToggleClickThrough && this.onToggleClickThrough(); }} style="pointer-events: auto; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap;">
                             ${this.isClickThrough ? 'Mouse Un-Detect' : 'Mouse Detect'}
                         </span>
-                        <div style="width: 42px; height: 22px; border-radius: 6px; background: ${this.isClickThrough ? 'var(--bg-elevated)' : 'var(--text-muted)'}; border: 1px solid var(--border); position: relative; transition: all 0.3s ease; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+                        <div style="width: 42px; height: 22px; border-radius: 6px; background: ${this.isClickThrough ? 'var(--bg-elevated)' : 'var(--text-muted)'}; border: 1px solid var(--border); position: relative; transition: all 0.3s ease; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); flex-shrink: 0;">
                             <div style="width: 18px; height: 18px; border-radius: 4px; background: #ffffff; position: absolute; top: 1px; left: ${this.isClickThrough ? '21px' : '1px'}; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
                                 <div style="width: 10px; height: 10px; border-radius: 2px; background: ${this.isClickThrough ? 'var(--bg-elevated)' : 'var(--text-muted)'}; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
                                     <div style="width: 5px; height: 1.5px; background: #ffffff; border-radius: 1px; transform: rotate(-45deg);"></div>
@@ -1348,9 +1555,9 @@ export class MainView extends LitElement {
                     </div>
 
                     <!-- Start/Active Buttons -->
-                    <div style="display: flex; gap: 12px; margin-left: 12px;">
+                    <div class="action-buttons-wrapper">
                         ${this._sessionState === 'active' ? html`
-                            <button class="start-btn-blue" @click=${() => this._handleStart()} style="border-radius: 40px; padding: 14px 40px; display: flex; align-items: center; gap: 8px; border: none; outline: none; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); color: var(--accent); font-weight: 600; font-size: 15px; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s;">
+                            <button class="primary-action-btn" @click=${() => this._handleStart()} >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                                     <rect x="6" y="4" width="4" height="16" rx="1"></rect>
                                     <rect x="14" y="4" width="4" height="16" rx="1"></rect>
@@ -1358,14 +1565,14 @@ export class MainView extends LitElement {
                                 <span>Started</span>
                             </button>
                         ` : this._sessionState === 'paused' ? html`
-                            <button class="start-btn-blue" @click=${() => this._handleStart()} style="border-radius: 40px; padding: 14px 40px; display: flex; align-items: center; gap: 8px; border: none; outline: none; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5); font-weight: 600; font-size: 15px; letter-spacing: 0.5px; cursor: pointer;">
+                            <button class="primary-action-btn" @click=${() => this._handleStart()} >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                                     <path d="M8 5v14l11-7z" />
                                 </svg>
                                 <span>Resume</span>
                             </button>
                         ` : html`
-                            <button class="start-btn-blue" @click=${() => this._handleStart()} style="border-radius: 40px; padding: 14px 40px; display: flex; align-items: center; gap: 8px; border: none; outline: none; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5); font-weight: 600; font-size: 15px; letter-spacing: 0.5px; cursor: pointer;">
+                            <button class="primary-action-btn" @click=${() => this._handleStart()} >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                                     <path d="M8 5v14l11-7z" />
                                 </svg>
@@ -1384,7 +1591,7 @@ export class MainView extends LitElement {
                                 ${this._sessionTimerText || '00:00'}
                             </span>
                         </div>
-                        <button class="start-btn-blue" @click=${() => this._handleEndSessionCompletely()} style="border-radius: 8px; padding: 0 24px; height: 40px; background: var(--danger, #ef4444); display: flex; align-items: center; justify-content: center; gap: 8px; border: none; outline: none; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4); cursor: pointer; transition: transform 0.2s;">
+                        <button class="primary-action-btn" @click=${() => this._handleEndSessionCompletely()} >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                                 <rect x="5" y="5" width="14" height="14" rx="2" ry="2"></rect>
                             </svg>
@@ -1510,13 +1717,13 @@ export class MainView extends LitElement {
 
                 ${this._renderActionBar()}
 
-                <div class="home-subtext" style="margin-top: 16px; font-weight: 600; color: var(--text-primary);">
+                <div class="home-subtext" style="font-size: 14px; font-weight: 600; color: var(--text-primary); text-align: center; margin-top: clamp(8px, 2vh, 24px); margin-bottom: 0;">
                     Pinned Shortcuts
                 </div>
 
-                <div class="pinned-shortcuts-container" style="width: 100%; max-width: 850px; max-height: 270px; overflow-y: auto; overflow-x: auto; overflow-y: hidden; display: flex; flex-direction: row; flex-wrap: nowrap; gap: 16px; margin-top: 8px; padding: 24px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-surface); box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                    <div class="pinned-shortcut-card" @click=${() => this.onNavigate('notes')} style="flex-shrink: 0; width: 100px; height: 100px; background: transparent; border: 2px dashed var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative;" onmouseover="this.style.background='rgba(59, 130, 246, 0.05)'; this.style.borderColor='rgba(59, 130, 246, 0.4)'; this.style.transform='translateY(-4px)';" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--border)'; this.style.transform='translateY(0)';">
-                        <div style="width: 24px; height: 24px; border-radius: 50%; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; color: #3b82f6; transition: transform 0.2s;">
+                <div class="pinned-shortcuts-container">
+                    <div class="pinned-shortcut-card" @click=${() => this.onNavigate('notes')} style="flex-shrink: 0; width: 100px; height: 100px; background: transparent; border: 2px dashed var(--border); border-radius: 6px; padding: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative;" onmouseover="this.style.background='rgba(59, 130, 246, 0.05)'; this.style.borderColor='rgba(59, 130, 246, 0.4)'; this.style.transform='translateY(-4px)';" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--border)'; this.style.transform='translateY(0)';">
+                        <div style="width: 24px; height: 24px; border-radius: 50%; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent); transition: transform 0.2s;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         </div>
                         <div style="font-size: 11px; font-weight: 500; color: var(--text-primary); text-align: center;">
@@ -1524,12 +1731,12 @@ export class MainView extends LitElement {
                         </div>
                     </div>
                     ${pinnedNotes.map(note => html`
-                        <div class="pinned-shortcut-card" @click=${() => this.openNoteViewer(note)} style="flex-shrink: 0; width: 100px; height: 100px; background: rgba(120, 120, 120, 0.05); border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; gap: 8px; position: relative;" onmouseover="this.style.background='rgba(120, 120, 120, 0.08)'; this.style.transform='translateY(-4px)'; this.style.borderColor='rgba(99, 102, 241, 0.4)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.1), 0 0 0 1px rgba(99,102,241,0.2)';" onmouseout="this.style.background='rgba(120, 120, 120, 0.05)'; this.style.transform='translateY(0)'; this.style.borderColor='var(--border)'; this.style.boxShadow='none';">
+                        <div class="pinned-shortcut-card" @click=${() => this.openNoteViewer(note)} style="flex-shrink: 0; width: 100px; height: 100px; background: rgba(120, 120, 120, 0.05); border: 1px solid var(--border); border-radius: 6px; padding: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; gap: 8px; position: relative;" onmouseover="this.style.background='rgba(120, 120, 120, 0.08)'; this.style.transform='translateY(-4px)'; this.style.borderColor='rgba(99, 102, 241, 0.4)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.1), 0 0 0 1px rgba(99,102,241,0.2)';" onmouseout="this.style.background='rgba(120, 120, 120, 0.05)'; this.style.transform='translateY(0)'; this.style.borderColor='var(--border)'; this.style.boxShadow='none';">
                             <button class="unpin-btn" title="Unpin from Home" @click=${(e) => { e.stopPropagation(); this._noteToUnpin = note; }} style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; padding: 0;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                             <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
-                                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: #3b82f6;">
+                                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: var(--accent);">
                                     ${note.type === 'image' ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`}
                                 </div>
                             </div>
@@ -1555,7 +1762,7 @@ export class MainView extends LitElement {
                                 This will remove "<strong>${this._noteToUnpin.shortcutName || this._noteToUnpin.title}</strong>" from your Home screen. The note itself will not be deleted.
                             </p>
                             <div style="display:flex; justify-content:center; gap: 12px; width: 100%;">
-                                <button @click=${() => this.cancelUnpin()} style="flex: 1; padding: 10px 16px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-primary); cursor: pointer; border-radius: 8px; font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cancel</button>
+                                <button @click=${() => this.cancelUnpin()} style="flex: 1; padding: 10px 16px; border: 1px solid var(--border-color); background: var(--bg-hover); color: var(--text-primary); cursor: pointer; border-radius: 8px; font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='var(--bg-hover)'">Cancel</button>
                                 <button @click=${() => this.confirmUnpin()} style="flex: 1; padding: 10px 16px; border: none; background: #ef4444; color: white; cursor: pointer; border-radius: 8px; font-weight: 500; transition: background 0.2s; box-shadow: 0 4px 12px rgba(239,68,68,0.3);" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Unpin</button>
                             </div>
                         </div>
@@ -1611,21 +1818,21 @@ export class MainView extends LitElement {
                                 color: var(--text-secondary);
                             }
                             .fullscreen-viewer .doc-page-btn:hover {
-                                background: rgba(255,255,255,0.05);
+                                background: var(--bg-hover);
                             }
                         </style>
                         <div class="modal-overlay" @click=${() => this.closeNoteViewer()} style="background:rgba(0,0,0,0.9); z-index: 9999;">
                             <div class="modal-content fullscreen-viewer" @click=${e => e.stopPropagation()} style="display: flex; flex-direction: column; padding: 0; overflow: hidden;">
                                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border-color); background: var(--bg-elevated);">
                                     <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary);">${viewingNote.title || 'Untitled Note'}</h3>
-                                    <button @click=${() => this.closeNoteViewer()} style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; padding:8px; border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                                    <button @click=${() => this.closeNoteViewer()} style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; padding:8px; border-radius:8px;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                     </button>
                                 </div>
                                 <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column;">
                                     ${viewingNote.type === 'image' && viewingNote.imageData ? html`
                                         <div style="flex: 1; display:flex; justify-content:center; align-items:center; padding: 24px; background: rgba(0,0,0,0.2);">
-                                            <img src=${viewingNote.imageData} style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);" />
+                                            <img src=${viewingNote.imageData} style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
                                         </div>
                                     ` : html`
                                         <div style="flex: 1; width: 100%; height: 100%; line-height: 1.6; color: var(--text-secondary); font-size: 14px; white-space: pre-wrap; ${viewingNote.content?.includes('doc-viewer-wrapper') ? 'padding: 0;' : 'padding: 24px;'}" .innerHTML=${viewingNote.content || '<em>No content</em>'}></div>

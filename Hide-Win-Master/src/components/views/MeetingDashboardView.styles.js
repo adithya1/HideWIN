@@ -1,4 +1,4 @@
-import { css } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { css } from '../../assets/lit-core-2.7.4.min.js';
 import { unifiedPageStyles } from './sharedPageStyles.js';
 
 export const meetingDashboardStyles = [
@@ -12,8 +12,8 @@ export const meetingDashboardStyles = [
                 position: fixed;
                 inset: 0;
                 background: rgba(0, 0, 0, 0.4);
-                backdrop-filter: blur(4px);
-                -webkit-backdrop-filter: blur(4px);
+                
+                -webkit-
                 z-index: 10000;
                 display: flex;
                 align-items: center;
@@ -360,3 +360,4 @@ export const meetingDashboardStyles = [
 
         `
 ];
+

@@ -1,4 +1,4 @@
-import { css } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { css } from '../../assets/lit-core-2.7.4.min.js';
 import { unifiedPageStyles } from './sharedPageStyles.js';
 
 export const aiCustomizeStyles = [
@@ -23,7 +23,7 @@ export const aiCustomizeStyles = [
                 overflow: hidden;
             }
 
-            /* ── Top Header Banner with Big Create Button ── */
+            /* â”€â”€ Top Header Banner with Big Create Button â”€â”€ */
             .profiles-header-banner {
                 display: flex;
                 align-items: center;
@@ -64,7 +64,7 @@ export const aiCustomizeStyles = [
             }
 
             
-            .notes-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: var(--space-sm) var(--space-md); border-radius: 16px; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 4px 24px -8px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.5); flex-wrap: wrap; color: #0f172a; margin-bottom: var(--space-md); }
+            .notes-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); background: rgba(255, 255, 255, 0.85);  -webkit- padding: var(--space-sm) var(--space-md); border-radius: 16px; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 4px 24px -8px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.5); flex-wrap: wrap; color: #0f172a; margin-bottom: var(--space-md); }
             .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: #64748b; cursor: pointer; transition: all 0.2s; }
             .icon-btn:hover { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
             .icon-btn.active { background: #ffffff; border-color: rgba(59, 130, 246, 0.3); color: #3b82f6; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1); }
@@ -116,7 +116,7 @@ export const aiCustomizeStyles = [
                 color: #94a3b8;
             }
 
-            /* ── Grid Viewport ── */
+            /* â”€â”€ Grid Viewport â”€â”€ */
             .grid-viewport {
                 flex: 1;
                 overflow-y: auto;
@@ -130,7 +130,7 @@ export const aiCustomizeStyles = [
                 padding-bottom: 20px;
             }
 
-            /* ── User Profile Card ── */
+            /* â”€â”€ User Profile Card â”€â”€ */
             .profile-card {
                 display: flex;
                 flex-direction: column;
@@ -292,13 +292,13 @@ export const aiCustomizeStyles = [
                 background: rgba(239, 68, 68, 0.15);
             }
 
-            /* ── 800x800 Focus Window Modal ── */
+            /* â”€â”€ 800x800 Focus Window Modal â”€â”€ */
             .modal-backdrop {
                 position: fixed;
                 inset: 0;
                 z-index: 99999;
                 background: rgba(0, 0, 0, 0.3);
-                backdrop-filter: blur(4px);
+                
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -423,3 +423,4 @@ export const aiCustomizeStyles = [
         }
     `
 ];
+
