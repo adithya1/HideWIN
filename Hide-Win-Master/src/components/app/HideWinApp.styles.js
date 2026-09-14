@@ -1,4 +1,4 @@
-import { css } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { css } from '../../assets/lit-core-2.7.4.min.js';
 
 export const appStyles =     css`
         * {
@@ -125,7 +125,7 @@ export const appStyles =     css`
             cursor: se-resize;
         }
 
-        /* ── Full app shell: top drag bar + horizontal top toolbar + main content ── */
+        /* â”€â”€ Full app shell: top drag bar + horizontal top toolbar + main content â”€â”€ */
 
         .app-shell {
             display: flex;
@@ -285,6 +285,59 @@ export const appStyles =     css`
             display: none;
         }
 
+                .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: 1px solid transparent;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background: rgba(120, 120, 120, 0.1);
+            color: var(--text-primary);
+        }
+        .nav-item.active {
+            background: var(--bg-elevated);
+            border-color: var(--border);
+            color: var(--accent);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .nav-item svg {
+            width: 16px;
+            height: 16px;
+        }
+        @media (max-width: 600px) {
+            .nav-item {
+                padding: 8px;
+            }
+            .nav-item .nav-label {
+                display: none;
+            }
+            /* Show label on hover if possible, or just let tooltip handle it */
+            .nav-item:hover::after {
+                content: attr(title);
+                position: absolute;
+                top: 100%;
+                margin-top: 4px;
+                background: var(--bg-elevated);
+                border: 1px solid var(--border);
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                color: var(--text-primary);
+                white-space: nowrap;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                pointer-events: none;
+            }
+        }
         .horizontal-nav {
             display: flex;
             align-items: center;
@@ -387,3 +440,4 @@ export const appStyles =     css`
             color: var(--accent);
         }
     `;
+

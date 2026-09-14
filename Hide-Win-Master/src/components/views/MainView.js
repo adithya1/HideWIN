@@ -1,9 +1,758 @@
-import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
-import { mainViewStyles } from './MainView.styles.js';
+﻿import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 
 export class MainView extends LitElement {
-    static styles = mainViewStyles;
+    static styles = css`
+        * {
+            font-family: var(--font);
+            cursor: default;
+            user-select: none;
+            box-sizing: border-box;
+        }
 
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+        .error-shake {
+            animation: errorShake 0.4s ease-in-out;
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.5) !important;
+        }
+
+        @keyframes slideDownFade {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .child-dropdown {
+            animation: slideDownFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .child-dropdown::-webkit-scrollbar {
+            display: none;
+        }
+
+        :host {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl) var(--space-lg);
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .page-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .page-title .mode-suffix {
+            opacity: 0.5;
+        }
+
+        .page-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin-bottom: var(--space-md);
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Cloud promo card Ã¢â€â‚¬Ã¢â€â‚¬ */
+
+        .cloud-promo {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
+            cursor: default;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cloud-promo:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.1), 0 0 60px rgba(139, 92, 246, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .cloud-promo-glow {
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .cloud-promo:hover .cloud-promo-glow {
+            opacity: 1;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+        }
+
+        .cloud-promo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cloud-promo-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.02em;
+        }
+
+        .cloud-promo-arrow {
+            color: var(--accent);
+            font-size: 16px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cloud-promo:hover .cloud-promo-arrow {
+            transform: translateX(4px);
+        }
+
+        .cloud-promo-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Form controls Ã¢â€â‚¬Ã¢â€â‚¬ */
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .form-label {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px 14px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: var(--font-size-sm);
+            font-family: var(--font);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        input:hover:not(:focus), select:hover:not(:focus), textarea:hover:not(:focus) {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        input.error {
+            border-color: var(--danger, #EF4444);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+
+        select {
+            cursor: default;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='rgba(255,255,255,0.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 14px;
+            padding-right: 32px;
+        }
+
+        option {
+            background-color: #1e1e24;
+            color: var(--text-primary);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.5;
+        }
+
+        .form-hint {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+
+        .form-hint a, .form-hint span.link {
+            color: var(--accent);
+            text-decoration: none;
+            cursor: default;
+        }
+
+        .form-hint span.link:hover {
+            text-decoration: underline;
+        }
+
+        .whisper-label-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .whisper-spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: whisper-spin 0.8s linear infinite;
+        }
+
+        @keyframes whisper-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Start button Ã¢â€â‚¬Ã¢â€â‚¬ */
+
+        .start-button {
+            width: 100%;
+            padding: 14px 40px;
+            border-radius: 12px;
+            border: none;
+            background: #185fc4;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 14px rgba(24, 95, 196, 0.4);
+        }
+
+        .start-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: #1550a6;
+            box-shadow: 0 6px 20px rgba(24, 95, 196, 0.6) !important;
+        }
+
+        .start-button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .start-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none !important;
+            transform: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
+        .form-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Divider Ã¢â€â‚¬Ã¢â€â‚¬ */
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin: var(--space-sm) 0;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider-text {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            text-transform: lowercase;
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Mode switch links Ã¢â€â‚¬Ã¢â€â‚¬ */
+
+        .mode-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-lg);
+        }
+
+        .mode-link {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            cursor: default;
+            background: none;
+            border: none;
+            padding: 0;
+            transition: color var(--transition);
+        }
+
+        .mode-link:hover {
+            color: var(--text-primary);
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Mode option cards Ã¢â€â‚¬Ã¢â€â‚¬ */
+
+        .mode-cards {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .mode-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            cursor: default;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .mode-card:hover {
+            border-color: var(--text-muted);
+            background: var(--bg-hover);
+        }
+
+        .mode-card-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+        }
+
+        .mode-card-desc {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            line-height: var(--line-height);
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Title row with help Ã¢â€â‚¬Ã¢â€â‚¬ */
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+        .brand-logo {
+            width: 120px;
+            height: 32px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: left center;
+            display: inline-block;
+            background-image: url('./assets/images/media_1786601281073.png');
+        }
+        :host-context(html[data-theme='dark']) .brand-logo,
+        html[data-theme='dark'] .brand-logo {
+            background-image: url('./assets/images/media_1786601281022.png');
+        }
+
+        .title-row .page-title {
+            margin-bottom: 0;
+        }
+
+        .help-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: default;
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .help-btn:hover {
+            color: var(--text-secondary);
+        }
+
+        .help-btn * {
+            pointer-events: none;
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ Help content Ã¢â€â‚¬Ã¢â€â‚¬ */
+
+        .help-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .help-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .help-section-title {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+        }
+
+        .help-section-text {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            line-height: var(--line-height);
+        }
+
+        .help-code {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            background: var(--bg-hover);
+            padding: 6px 8px;
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .help-link {
+            color: var(--accent);
+            cursor: default;
+            text-decoration: none;
+        }
+
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+        .help-models {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .help-model {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .help-model-name {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-primary);
+        }
+
+        .help-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0;
+        }
+
+        .help-cloud-btn {
+            background: #e8e8e8;
+            color: #111111;
+            border: none;
+            padding: 10px var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+            font-family: var(--font);
+            font-weight: var(--font-weight-semibold);
+            cursor: default;
+            width: 100%;
+            transition: opacity 0.15s;
+        }
+
+        .help-cloud-btn:hover {
+            opacity: 0.9;
+        }
+
+        .help-warn {
+            font-size: var(--font-size-xs);
+            color: var(--warning);
+            line-height: var(--line-height);
+        }
+
+        /* Ã¢â€â‚¬Ã¢â€â‚¬ NEW HOME LAYOUT Ã¢â€â‚¬Ã¢â€â‚¬ */
+        .home-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            background: var(--bg-app);
+            overflow: hidden;
+        }
+
+        .home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+        }
+
+        .start-btn-blue {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 100px;
+            padding: 10px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .start-btn-blue:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+        }
+
+        .meetings-left-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .avatar-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .home-subtext {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .pinned-shortcuts-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .pinned-shortcuts-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .pinned-shortcuts-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        .pinned-shortcuts-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .pinned-shortcut-card {
+            position: relative;
+        }
+
+        .unpin-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .pinned-shortcut-card:hover .unpin-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .unpin-btn:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            transform: scale(1.1) !important;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            width: 340px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            animation: slideUpFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--text-primary);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .history-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+        }
+
+        .history-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-group-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .history-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .history-row:hover {
+            background: var(--bg-hover);
+        }
+
+        .history-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+    `;
 
     static properties = {
         onStart: { type: Function },
@@ -22,7 +771,6 @@ export class MainView extends LitElement {
         _selectedModeCategory: { state: true },
         _modeCategoryError: { state: true },
         _profileError: { state: true },
-        homeNotes: { state: true },
 
         // Internal state
         _mode: { state: true },
@@ -37,8 +785,10 @@ export class MainView extends LitElement {
         _ollamaModel: { state: true },
         _whisperModel: { state: true },
         _showLocalHelp: { state: true },
-        _sessions: { state: true },
-        _loadingSessions: { state: true },
+        _notes: { state: true },
+        _loadingNotes: { state: true },
+        _noteToUnpin: { state: true },
+        _viewingNoteId: { state: true },
         isModeMenuOpen: { type: Boolean, state: true },
         isProfileMenuOpen: { type: Boolean, state: true }
     };
@@ -79,8 +829,10 @@ export class MainView extends LitElement {
         this._mouseX = -1;
         this._mouseY = -1;
 
-        this._sessions = [];
-        this._loadingSessions = false;
+        this._notes = [];
+        this._loadingNotes = false;
+        this._noteToUnpin = null;
+        this._viewingNoteId = null;
 
         this.boundKeydownHandler = this._handleKeydown.bind(this);
         this._loadFromStorage();
@@ -115,14 +867,14 @@ export class MainView extends LitElement {
             this._profiles = await hideWin.storage.getProfiles().catch(() => []);
 
             // Load pinned notes
-            const allNotes = await hideWin.storage.getNotes().catch(() => []);
+            const allNotes = (await hideWin.storage.getNotes().catch(() => [])) || [];
             this.homeNotes = allNotes.filter(n => n.pinned);
 
-            // Load history sessions
-            this._loadingSessions = true;
+            // Load pinned notes (shortcuts)
+            this._loadingNotes = true;
             this.requestUpdate();
-            this._sessions = await hideWin.storage.getAllSessions().catch(() => []);
-            this._loadingSessions = false;
+            this._notes = await hideWin.storage.getNotes().catch(() => []);
+            this._loadingNotes = false;
 
             this.requestUpdate();
         } catch (e) {
@@ -254,7 +1006,7 @@ export class MainView extends LitElement {
         }
     }
 
-    // ── Persistence ──
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Persistence Ã¢â€â‚¬Ã¢â€â‚¬
 
     async _saveMode(mode) {
         this._mode = mode;
@@ -325,7 +1077,7 @@ export class MainView extends LitElement {
         }
     }
 
-    // ── Start ──
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Start Ã¢â€â‚¬Ã¢â€â‚¬
 
     _handleStart() {
         if (this.isInitializing) return;
@@ -378,7 +1130,7 @@ export class MainView extends LitElement {
         return new Date(dateString).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
     }
 
-    // ── Render helpers ──
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Render helpers Ã¢â€â‚¬Ã¢â€â‚¬
 
     _renderStartButton() {
         return html`
@@ -413,11 +1165,11 @@ export class MainView extends LitElement {
         `;
     }
 
-    // ── Cloud mode ──
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Cloud mode Ã¢â€â‚¬Ã¢â€â‚¬
     // Cloud UI intentionally disabled. Backend cloud wiring is still present in
     // the codebase, but the renderer no longer exposes this setup path.
 
-    // ── Mode + Profile selectors (rendered before Start button in all modes) ──
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Mode + Profile selectors (rendered before Start button in all modes) Ã¢â€â‚¬Ã¢â€â‚¬
 
     _renderActionBar() {
         const MODES = [
@@ -448,7 +1200,7 @@ export class MainView extends LitElement {
                 <div style="display: flex; align-items: center; border: 1px solid ${borderColor === 'var(--accent, #3b82f6)' ? 'var(--border)' : borderColor}; box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 0 4px ${outlineColor}; border-radius: 50px; background: var(--bg-surface); padding: 8px 12px 8px 24px; width: 100%; max-width: 850px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);">
                     
                     <!-- Mode Select (Custom Dropdown) -->
-                    <div style="width: 220px; flex-shrink: 0; flex-grow: 0; display: flex; flex-direction: column; position: relative;" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
+                    <div style="flex: 1; min-width: 100px; max-width: 220px; display: flex; flex-direction: column; position: relative;" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
                         <div style="display: flex; align-items: center; gap: 12px; padding: 6px 0; cursor: pointer; width: 100%;">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
                                 <circle cx="11" cy="11" r="8"></circle>
@@ -483,7 +1235,7 @@ export class MainView extends LitElement {
                     <div style="width: 1px; height: 32px; background: var(--border); margin: 0 20px;"></div>
 
                     <!-- Profile Select (Custom Dropdown) -->
-                    <div style="width: 220px; flex-shrink: 0; flex-grow: 0; display: flex; flex-direction: column; position: relative;" @click=${(e) => { 
+                    <div style="flex: 1; min-width: 100px; max-width: 220px; display: flex; flex-direction: column; position: relative;" @click=${(e) => { 
                         e.stopPropagation(); 
                         if (!this._selectedModeCategory) {
                             this._modeCategoryError = true;
@@ -617,7 +1369,7 @@ export class MainView extends LitElement {
         `;
     }
 
-    // ── BYOK mode ──
+    // Ã¢â€â‚¬Ã¢â€â‚¬ BYOK mode Ã¢â€â‚¬Ã¢â€â‚¬
 
     _renderByokMode() {
         return html`
@@ -628,7 +1380,7 @@ export class MainView extends LitElement {
         `;
     }
 
-    // ── Local AI mode ──
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Local AI mode Ã¢â€â‚¬Ã¢â€â‚¬
 
     _renderLocalMode() {
         return html`
@@ -677,15 +1429,34 @@ export class MainView extends LitElement {
         `;
     }
 
-    render() {
-        const groupedSessions = {};
-        if (this._sessions && this._sessions.length > 0) {
-            this._sessions.forEach(session => {
-                const group = this._formatDateGroup(session.updatedAt || session.createdAt);
-                if (!groupedSessions[group]) groupedSessions[group] = [];
-                groupedSessions[group].push(session);
-            });
+    async confirmUnpin() {
+        if (!this._noteToUnpin) return;
+        const note = this._notes.find(n => n.id === this._noteToUnpin.id);
+        if (note) {
+            note.pinned = false;
+            note.shortcutName = null;
+            await hideWin.storage.saveNotes(this._notes);
+            window.dispatchEvent(new CustomEvent('notes-updated'));
+            this._notes = await hideWin.storage.getNotes().catch(() => []);
+            this.requestUpdate();
         }
+        this._noteToUnpin = null;
+    }
+
+    cancelUnpin() {
+        this._noteToUnpin = null;
+    }
+
+    openNoteViewer(note) {
+        this._viewingNoteId = note.id;
+    }
+
+    closeNoteViewer() {
+        this._viewingNoteId = null;
+    }
+
+    render() {
+        const pinnedNotes = (this._notes || []).filter(n => n.pinned);
 
         return html`
             <div class="home-container">
@@ -697,43 +1468,144 @@ export class MainView extends LitElement {
                     </div>
 
                     <div class="header-right">
-                        <div style="display:flex; flex-direction:column; align-items:center; margin-right: 16px;">
+                        <div style="display:flex; flex-direction:column; align-items:center;">
                             <span class="meetings-left-text" style="font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7);">Unlimited sessions left</span>
-                        </div>
-                        
-                        <div class="avatar-circle">
-                            AV
                         </div>
                     </div>
                 </div>
 
                 ${this._renderActionBar()}
 
-                <div style="margin-top: 32px; padding: 0 16px;">
-                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; padding-left: 8px;">Pinned Shortcuts</div>
-                    <div class="pinned-shortcuts-container" style="display: grid; grid-template-columns: repeat(auto-fill, 90px); gap: 16px; padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-surface); box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto;">
-                        
-                        <div class="pinned-shortcut-card" @click=${() => this.onNavigate('notes')} style="width: 90px; height: 90px; background: transparent; border: 2px dashed var(--border); border-radius: 12px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s ease;">
-                            <div style="width: 20px; height: 20px; border-radius: 50%; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; color: #3b82f6;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </div>
-                            <div style="font-size: 10px; font-weight: 500; color: var(--text-primary); text-align: center;">Add</div>
-                        </div>
-
-                        ${this.homeNotes ? this.homeNotes.map(note => html`<div class="pinned-shortcut-card" @click=${() => this.openNoteViewer(note)} style="width: 90px; height: 90px; background: rgba(120, 120, 120, 0.05); border: 1px solid var(--border); border-radius: 12px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: all 0.2s ease;">
-                                <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
-                                    <div style="width: 20px; height: 20px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: #3b82f6;">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                    </div>
-                                </div>
-                                <div style="font-size: 10px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;">${note.title}</div>
-                                <div style="font-size: 8px; font-weight: 500; color: var(--text-secondary); text-align: center; margin-top: auto;">TEXT NOTE</div>
-                            </div>`) : ''}
-                    </div>
+                <div class="home-subtext" style="margin-top: 16px; font-weight: 600; color: var(--text-primary);">
+                    Pinned Shortcuts
                 </div>
+
+                <div class="pinned-shortcuts-container" style="width: 100%; max-width: 850px; max-height: 270px; overflow-y: auto; overflow-x: auto; overflow-y: hidden; display: flex; flex-direction: row; flex-wrap: nowrap; gap: 16px; margin-top: 8px; padding: 24px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-surface); box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                    <div class="pinned-shortcut-card" @click=${() => this.onNavigate('notes')} style="flex-shrink: 0; width: 100px; height: 100px; background: transparent; border: 2px dashed var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative;" onmouseover="this.style.background='rgba(59, 130, 246, 0.05)'; this.style.borderColor='rgba(59, 130, 246, 0.4)'; this.style.transform='translateY(-4px)';" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--border)'; this.style.transform='translateY(0)';">
+                        <div style="width: 24px; height: 24px; border-radius: 50%; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; color: #3b82f6; transition: transform 0.2s;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </div>
+                        <div style="font-size: 11px; font-weight: 500; color: var(--text-primary); text-align: center;">
+                            Add
+                        </div>
+                    </div>
+                    ${pinnedNotes.map(note => html`
+                        <div class="pinned-shortcut-card" @click=${() => this.openNoteViewer(note)} style="flex-shrink: 0; width: 100px; height: 100px; background: rgba(120, 120, 120, 0.05); border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; gap: 8px; position: relative;" onmouseover="this.style.background='rgba(120, 120, 120, 0.08)'; this.style.transform='translateY(-4px)'; this.style.borderColor='rgba(99, 102, 241, 0.4)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.1), 0 0 0 1px rgba(99,102,241,0.2)';" onmouseout="this.style.background='rgba(120, 120, 120, 0.05)'; this.style.transform='translateY(0)'; this.style.borderColor='var(--border)'; this.style.boxShadow='none';">
+                            <button class="unpin-btn" title="Unpin from Home" @click=${(e) => { e.stopPropagation(); this._noteToUnpin = note; }} style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; padding: 0;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                            <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+                                <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: #3b82f6;">
+                                    ${note.type === 'image' ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`}
+                                </div>
+                            </div>
+                            <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: auto; text-align: center; width: 100%;">
+                                ${note.shortcutName || note.title || 'Untitled Note'}
+                            </div>
+                            <div style="font-size: 9px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 100%;">
+                                ${note.type === 'image' ? 'Image Note' : note.ext || 'Text Note'}
+                            </div>
+                        </div>
+                    `)}
+                </div>
+
+                <!-- Unpin Confirmation Modal -->
+                ${this._noteToUnpin ? html`
+                    <div class="modal-overlay" @click=${() => this.cancelUnpin()}>
+                        <div class="modal-content" @click=${e => e.stopPropagation()} style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 32px;">
+                            <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            </div>
+                            <h3 style="margin:0 0 12px 0; font-size: 18px; font-weight: 600;">Unpin Shortcut?</h3>
+                            <p style="margin:0 0 24px 0; font-size: 14px; color: var(--text-muted); line-height: 1.5;">
+                                This will remove "<strong>${this._noteToUnpin.shortcutName || this._noteToUnpin.title}</strong>" from your Home screen. The note itself will not be deleted.
+                            </p>
+                            <div style="display:flex; justify-content:center; gap: 12px; width: 100%;">
+                                <button @click=${() => this.cancelUnpin()} style="flex: 1; padding: 10px 16px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-primary); cursor: pointer; border-radius: 8px; font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cancel</button>
+                                <button @click=${() => this.confirmUnpin()} style="flex: 1; padding: 10px 16px; border: none; background: #ef4444; color: white; cursor: pointer; border-radius: 8px; font-weight: 500; transition: background 0.2s; box-shadow: 0 4px 12px rgba(239,68,68,0.3);" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Unpin</button>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Inline Viewer Modal -->
+                ${this._viewingNoteId ? (() => {
+                    const viewingNote = this._notes.find(n => n.id === this._viewingNoteId);
+                    if (!viewingNote) return '';
+                    return html`
+                        <style>
+                            .modal-content.fullscreen-viewer {
+                                width: 100vw !important;
+                                height: 100vh !important;
+                                border-radius: 0 !important;
+                                background: var(--bg-surface);
+                            }
+                            .fullscreen-viewer .doc-viewer-wrapper {
+                                width: 100%;
+                                height: 100%;
+                                display: flex;
+                                flex-direction: column;
+                            }
+                            .fullscreen-viewer .doc-viewer-body {
+                                flex: 1;
+                                display: flex;
+                                height: 100%;
+                            }
+                            .fullscreen-viewer .doc-viewer-sidebar {
+                                display: none !important;
+                            }
+                            .fullscreen-viewer .doc-viewer-embed {
+                                flex: 1;
+                                width: 100%;
+                                height: 100%;
+                                border: none;
+                            }
+                            .fullscreen-viewer .doc-sidebar-header {
+                                padding: 12px 16px;
+                                font-weight: 600;
+                                font-size: 14px;
+                                color: var(--text-primary);
+                                border-bottom: 1px solid var(--border-color);
+                            }
+                            .fullscreen-viewer .doc-page-btn {
+                                padding: 8px 16px;
+                                border: none;
+                                background: transparent;
+                                width: 100%;
+                                text-align: left;
+                                cursor: pointer;
+                                color: var(--text-secondary);
+                            }
+                            .fullscreen-viewer .doc-page-btn:hover {
+                                background: rgba(255,255,255,0.05);
+                            }
+                        </style>
+                        <div class="modal-overlay" @click=${() => this.closeNoteViewer()} style="background:rgba(0,0,0,0.9); z-index: 9999;">
+                            <div class="modal-content fullscreen-viewer" @click=${e => e.stopPropagation()} style="display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border-color); background: var(--bg-elevated);">
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary);">${viewingNote.title || 'Untitled Note'}</h3>
+                                    <button @click=${() => this.closeNoteViewer()} style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; padding:8px; border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                </div>
+                                <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column;">
+                                    ${viewingNote.type === 'image' && viewingNote.imageData ? html`
+                                        <div style="flex: 1; display:flex; justify-content:center; align-items:center; padding: 24px; background: rgba(0,0,0,0.2);">
+                                            <img src=${viewingNote.imageData} style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);" />
+                                        </div>
+                                    ` : html`
+                                        <div style="flex: 1; width: 100%; height: 100%; line-height: 1.6; color: var(--text-secondary); font-size: 14px; white-space: pre-wrap; ${viewingNote.content?.includes('doc-viewer-wrapper') ? 'padding: 0;' : 'padding: 24px;'}" .innerHTML=${viewingNote.content || '<em>No content</em>'}></div>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                })() : ''}
             </div>
         `;
     }
 }
 
 customElements.define('main-view', MainView);
+
+
