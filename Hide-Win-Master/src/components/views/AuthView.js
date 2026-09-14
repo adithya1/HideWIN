@@ -7,14 +7,34 @@ export class AuthView extends LitElement {
             width: 100%;
             height: 100vh;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #ffffff;
-            color: #0f172a;
+            background: #f9fafb; /* Soft minimal background */
+            color: #111827;
             overflow: hidden;
             box-sizing: border-box;
+            position: relative;
         }
 
-        * {
-            box-sizing: inherit;
+        * { box-sizing: inherit; }
+
+        /* Global-style Scrollbar inside Shadow DOM */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 114, 128, 0.8);
+        }
+
+        /* Modals block scroll */
+        :host([modal-open]) {
+            overflow: hidden;
         }
 
         .window-controls {
@@ -44,162 +64,126 @@ export class AuthView extends LitElement {
             justify-content: center;
             background: transparent;
             border: none;
-            color: #64748b;
+            color: #6b7280;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.2s;
         }
+        .control-btn:hover { background: rgba(0,0,0,0.05); color: #111827; }
+        .control-btn.close:hover { background: #ef4444; color: white; }
+        .control-btn svg { width: 12px; height: 12px; }
 
-        .control-btn:hover {
-            background: rgba(0,0,0,0.05);
-            color: #0f172a;
-        }
-
-        .control-btn.close:hover {
-            background: #ef4444;
-            color: white;
-        }
-
-        .control-btn svg {
-            width: 12px;
-            height: 12px;
-        }
-
-        .auth-container {
+        /* Centered Authentication Layout */
+        .auth-layout {
             display: flex;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .auth-left {
-            flex: 1 1 100%;
-            display: flex;
-            flex-direction: column;
-            padding: clamp(24px, 6vw, 64px);
             align-items: center;
             justify-content: center;
+            height: 100vh; overflow: hidden;
+            padding: 12px;
         }
 
-        .auth-right {
-            display: none;
-            flex: 1 1 50%;
-            background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
-            position: relative;
-            overflow: hidden;
-            align-items: center;
-            justify-content: center;
-            padding: 48px;
-        }
-
-        @media (min-width: 850px) {
-            .auth-left { flex: 0 0 50%; }
-            .auth-right { display: flex; }
-        }
-
-        @media (min-width: 1100px) {
-            .auth-left { flex: 0 0 40%; }
-            .auth-right { flex: 1; }
-        }
-
-        .auth-form-wrapper {
+        .auth-card {
+            background: #ffffff;
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0,0,0,0.02);
+            border: 1px solid #f3f4f6;
+            padding: clamp(16px, 3vw, 24px);
             display: flex;
             flex-direction: column;
             z-index: 95;
+            position: relative;
         }
 
         .brand-logo {
             display: flex;
-            align-items: center;
-            margin-bottom: 40px;
+            justify-content: center;
+            margin-bottom: 16px;
         }
-
         .brand-logo img {
-            height: 44px; /* Real HideWin logo size */
+            height: 40px;
             width: auto;
             object-fit: contain;
         }
 
         .welcome-title {
-            font-size: clamp(24px, 4vw, 32px);
-            font-weight: 700;
-            color: #0f172a;
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+            text-align: center;
             margin: 0 0 8px 0;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
         }
 
         .welcome-subtitle {
-            font-size: clamp(14px, 2vw, 16px);
-            color: #64748b;
-            margin: 0 0 32px 0;
-            font-weight: 400;
+            font-size: 15px;
+            color: #6b7280;
+            text-align: center;
+            margin: 0 0 8px 0;
             line-height: 1.5;
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin-bottom: 24px;
+            gap: 8px;
+            margin-bottom: 12px;
             width: 100%;
         }
 
         .input-label {
             font-size: 13px;
-            font-weight: 600;
-            color: #334155;
+            font-weight: 500;
+            color: #374151;
         }
 
         .input-field {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #cbd5e1;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 15px;
-            color: #0f172a;
+            color: #111827;
             outline: none;
             transition: all 0.2s ease;
             background: #ffffff;
         }
-
         .input-field:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-        
-        .input-field::placeholder {
-            color: #94a3b8;
-        }
+        .input-field::placeholder { color: #9ca3af; }
 
         .error-message {
-            color: #ef4444;
+            color: #dc2626;
             font-size: 13px;
             margin-top: -12px;
             margin-bottom: 16px;
             font-weight: 500;
+            text-align: center;
         }
 
         .success-message {
             background: #f0fdf4;
             color: #166534;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: 8px;
             border: 1px solid #bbf7d0;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             font-size: 14px;
             font-weight: 500;
+            text-align: center;
         }
 
-        .btn-continue {
+        .btn-primary {
             width: 100%;
-            padding: 14px;
-            background: #0f172a;
+            padding: 10px 14px;
+            background: #111827;
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -207,144 +191,163 @@ export class AuthView extends LitElement {
             justify-content: center;
             gap: 8px;
         }
-
-        .btn-continue:hover:not(:disabled) {
-            background: #1e293b;
+        .btn-primary:hover:not(:disabled) {
+            background: #1f2937;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
         }
-
-        .btn-continue:active:not(:disabled) {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
         }
-
-        .btn-continue:disabled {
-            background: #94a3b8;
+        .btn-primary:disabled {
+            background: #9ca3af;
             cursor: not-allowed;
-            opacity: 0.7;
         }
 
         .divider {
             display: flex;
             align-items: center;
             text-align: center;
-            margin: 32px 0;
-            color: #94a3b8;
-            font-size: 13px;
+            margin: 12px 0;
+            color: #9ca3af;
+            font-size: 12px;
             font-weight: 500;
         }
-
         .divider::before, .divider::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e5e7eb;
         }
+        .divider::before { margin-right: 16px; }
+        .divider::after { margin-left: 16px; }
 
-        .divider:not(:empty)::before { margin-right: 16px; }
-        .divider:not(:empty)::after { margin-left: 16px; }
-
-        .sso-buttons {
+        .sso-row {
             display: flex;
-            flex-direction: column;
             gap: 12px;
             width: 100%;
+            margin-bottom: 12px;
         }
 
         .sso-btn {
-            width: 100%;
-            padding: 12px;
+            flex: 1;
+            padding: 9px 14px;
             background: #ffffff;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 14px;
-            font-weight: 600;
-            color: #334155;
+            font-weight: 500;
+            color: #374151;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.2s ease;
         }
-
         .sso-btn:hover {
-            background: #f8fafc;
-            border-color: #94a3b8;
+            background: #f9fafb;
+            border-color: #9ca3af;
         }
-
-        .sso-btn:active {
-            background: #f1f5f9;
-        }
-
+        .sso-btn:active { background: #f3f4f6; }
         .sso-btn svg, .sso-btn img {
             width: 18px;
             height: 18px;
         }
 
-        .terms-text {
-            margin-top: 48px;
-            font-size: 12px;
-            color: #94a3b8;
+        /* Stack SSO buttons on small screens */
+        @media (max-width: 480px) {
+            .sso-row { flex-direction: column; }
+        }
+
+        .footer {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #6b7280;
             text-align: center;
         }
-
-        .terms-text a {
-            color: #64748b;
+        .footer a {
+            color: #4b5563;
+            text-decoration: none;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .footer a:hover {
+            color: #111827;
             text-decoration: underline;
-            text-decoration-color: #cbd5e1;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(17, 24, 39, 0.4);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 24px;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+        .close-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 4px;
+            display: flex;
             transition: color 0.2s;
         }
-
-        .terms-text a:hover {
-            color: #0f172a;
-            text-decoration-color: #0f172a;
-        }
-
-        /* Right side aesthetic */
-        .right-content {
-            text-align: left;
-            max-width: 480px;
-            z-index: 2;
-        }
-
-        .right-title {
-            font-size: clamp(28px, 4vw, 42px);
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 24px;
-            line-height: 1.15;
-            letter-spacing: -0.02em;
-        }
-
-        .right-subtitle {
-            font-size: 18px;
-            color: #475569;
+        .close-btn:hover { color: #111827; }
+        .close-btn svg { width: 20px; height: 20px; }
+        
+        .modal-body {
+            padding: 24px;
+            overflow: hidden;
+            color: #4b5563;
+            font-size: 14px;
             line-height: 1.6;
         }
-
-        .right-bg-pattern {
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 24px 24px;
-            opacity: 0.4;
-            z-index: 1;
+        .modal-body h3 {
+            color: #111827;
+            font-size: 15px;
+            margin-top: 0;
+            margin-bottom: 8px;
         }
-        
-        .right-bg-glow {
-            position: absolute;
-            top: -20%;
-            right: -20%;
-            width: 70%;
-            height: 70%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
-            border-radius: 50%;
-            z-index: 1;
-        }
+        .modal-body p { margin-top: 0; margin-bottom: 16px; }
 `;
 
     static properties = {
+        showPolicyModal: { state: true },
+        showTermsModal: { state: true },
         _isWaiting: { state: true },
         step: { state: true },
         email: { state: true },
@@ -456,6 +459,32 @@ export class AuthView extends LitElement {
         }
     }
 
+    _openModal(type) {
+        if (type === 'policy') this.showPolicyModal = true;
+        if (type === 'terms') this.showTermsModal = true;
+        this.setAttribute('modal-open', '');
+    }
+
+    _closeModal() {
+        this.showPolicyModal = false;
+        this.showTermsModal = false;
+        this.removeAttribute('modal-open');
+    }
+
+    _handleKeyDown(e) {
+        if (e.key === 'Escape') this._closeModal();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener('keydown', this._handleKeyDown.bind(this));
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener('keydown', this._handleKeyDown.bind(this));
+    }
+
     _handleSSO(provider) {
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
@@ -516,104 +545,137 @@ export class AuthView extends LitElement {
 
 
 
+
     render() {
         return html`
             <div class="drag-region"></div>
-            
             <div class="window-controls">
-                <button class="control-btn" @click=${this._handleMinimize} title="Minimize">
+                <button class="control-btn" @click=${this._handleMinimize} title="Minimize" aria-label="Minimize">
                     <svg viewBox="0 0 10 10"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M1 5h8"/></svg>
                 </button>
-                <button class="control-btn" @click=${this._handleMaximize} title="Maximize">
+                <button class="control-btn" @click=${this._handleMaximize} title="Maximize" aria-label="Maximize">
                     <svg viewBox="0 0 10 10"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M1 1h8v8H1z"/></svg>
                 </button>
-                <button class="control-btn close" @click=${this._handleClose} title="Close">
+                <button class="control-btn close" @click=${this._handleClose} title="Close" aria-label="Close">
                     <svg viewBox="0 0 10 10"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M1 1l8 8m0-8L1 9"/></svg>
                 </button>
             </div>
 
-            <div class="auth-container">
-                <div class="auth-left">
-                    <div class="auth-form-wrapper">
-                        <div class="brand-logo">
-                            <!-- USE REAL LOGO ASSET WITH CORRECT PATH -->
-                            <img src="./assets/logo.png" alt="HideWin" />
-                        </div>
-                        
-                        ${this.step === 'email' ? html`
-                            <h1 class="welcome-title">Sign in to HideWin</h1>
-                            <p class="welcome-subtitle">Enter your email and we'll send you a secure login code.</p>
-                            
-                            <form @submit=${this._handleSendOtp}>
-                                <div class="input-group">
-                                    <label class="input-label">Email address</label>
-                                    <input type="email" class="input-field" required .value=${this.email} @input=${e => this.email = e.target.value} placeholder="name@company.com" />
-                                </div>
-                                
-                                ${this.error ? html`<div class="error-message">${this.error}</div>` : ''}
-                                
-                                <button type="submit" class="btn-continue" ?disabled=${this.loading}>
-                                    ${this.loading ? 'Sending...' : 'Continue with Email'}
-                                </button>
-                            </form>
-
-                            <div class="divider">OR</div>
-
-                            <div class="sso-buttons">
-                                <button type="button" class="sso-btn" @click=${() => this._handleSSO('Google')}>
-                                    <img src="https://www.google.com/favicon.ico" alt="Google" />
-                                    Continue with Google
-                                </button>
-                                <button type="button" class="sso-btn" @click=${() => this._handleSSO('Apple')}>
-                                    <svg viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
-                                    Continue with Apple
-                                </button>
-                                <button type="button" class="sso-btn" @click=${() => this._handleSSO('SAML')}>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                    Single Sign-On (SSO)
-                                </button>
-                            </div>
-                        ` : ''}
-
-                        ${this.step === 'otp' ? html`
-                            <h1 class="welcome-title">Check your email</h1>
-                            <p class="welcome-subtitle">Enter the 6-digit code sent to<br><strong>${this.email}</strong></p>
-                            
-                            ${this.successMsg ? html`<div class="success-message">${this.successMsg}</div>` : ''}
-                            
-                            <form @submit=${this._handleVerifyOtp}>
-                                <div class="input-group">
-                                    <label class="input-label">Secure Code</label>
-                                    <input type="text" class="input-field" required .value=${this.otp} @input=${e => this.otp = e.target.value} placeholder="123456" maxlength="6" style="font-size: 24px; letter-spacing: 6px; text-align: center; font-weight: 500;" />
-                                </div>
-                                
-                                ${this.error ? html`<div class="error-message" style="text-align: center;">${this.error}</div>` : ''}
-                                
-                                <button type="submit" class="btn-continue" ?disabled=${this.loading}>
-                                    ${this.loading ? 'Verifying...' : 'Verify Code'}
-                                </button>
-                                
-                                <button type="button" @click=${() => { this.step = 'email'; this.otp = ''; this.successMsg = ''; this.error = ''; }} style="background: transparent; border: none; color: #64748b; margin-top: 24px; cursor: pointer; text-decoration: underline; width: 100%; font-size: 14px; font-weight: 500;">
-                                    Back to login
-                                </button>
-                            </form>
-                        ` : ''}
-
-                        <div class="terms-text">
-                            By signing in, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-                        </div>
+            <div class="auth-layout">
+                <div class="auth-card">
+                    <div class="brand-logo">
+                        <img src="./assets/images/small_icon.png" alt="HideWin" />
                     </div>
-                </div>
+                    
+                    ${this.step === 'email' ? html`
+                        <h1 class="welcome-title">Welcome back</h1>
+                        <p class="welcome-subtitle">Sign in to your account</p>
+                        
+                        <form @submit=${this._handleSendOtp}>
+                            <div class="input-group">
+                                <label class="input-label" for="emailInput">Email address</label>
+                                <input id="emailInput" type="email" class="input-field" required .value=${this.email} @input=${e => this.email = e.target.value} placeholder="name@company.com" aria-label="Email address" />
+                            </div>
+                            
+                            ${this.error ? html`<div class="error-message" role="alert">${this.error}</div>` : ''}
+                            
+                            <button type="submit" class="btn-primary" ?disabled=${this.loading}>
+                                ${this.loading ? 'Signing in...' : 'Continue with Email'}
+                            </button>
+                        </form>
 
-                <div class="auth-right">
-                    <div class="right-bg-pattern"></div>
-                    <div class="right-bg-glow"></div>
-                    <div class="right-content">
-                        <h2 class="right-title">Real-time meeting assistant,<br>always ready to help</h2>
-                        <p class="right-subtitle">HideWin seamlessly integrates with your workflow, providing intelligent insights and secure management for all your desktop communications.</p>
+                        <div class="divider">OR</div>
+
+                        <div class="sso-row">
+                            <button type="button" class="sso-btn" @click=${() => this._handleSSO('Google')} aria-label="Continue with Google">
+                                <img src="https://www.google.com/favicon.ico" alt="Google" />
+                                Google
+                            </button>
+                            <button type="button" class="sso-btn" @click=${() => this._handleSSO('Apple')} aria-label="Continue with Apple">
+                                <svg viewBox="0 0 384 512"><path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+                                Apple
+                            </button>
+                        </div>
+                        <button type="button" class="sso-btn" style="width: 100%; margin-top: 0;" @click=${() => this._handleSSO('SAML')} aria-label="Single Sign-On (SSO)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            Single Sign-On (SSO)
+                        </button>
+                    ` : ''}
+
+                    ${this.step === 'otp' ? html`
+                        <h1 class="welcome-title">Check your email</h1>
+                        <p class="welcome-subtitle">Enter the 6-digit code sent to<br><strong>${this.email}</strong></p>
+                        
+                        ${this.successMsg ? html`<div class="success-message" role="status">${this.successMsg}</div>` : ''}
+                        
+                        <form @submit=${this._handleVerifyOtp}>
+                            <div class="input-group">
+                                <label class="input-label" for="codeInput">Secure Code</label>
+                                <input id="codeInput" type="text" class="input-field" required .value=${this.otp} @input=${e => this.otp = e.target.value} placeholder="123456" maxlength="6" style="font-size: 20px; letter-spacing: 4px; text-align: center; font-weight: 500;" aria-label="Secure Code" />
+                            </div>
+                            
+                            ${this.error ? html`<div class="error-message" role="alert">${this.error}</div>` : ''}
+                            
+                            <button type="submit" class="btn-primary" ?disabled=${this.loading}>
+                                ${this.loading ? 'Verifying...' : 'Verify Code'}
+                            </button>
+                            
+                            <button type="button" @click=${() => { this.step = 'email'; this.otp = ''; this.successMsg = ''; this.error = ''; }} style="background: transparent; border: none; color: #6b7280; margin-top: 24px; cursor: pointer; text-decoration: underline; width: 100%; font-size: 14px; font-weight: 500;">
+                                Back to login
+                            </button>
+                        </form>
+                    ` : ''}
+
+                    <div class="footer">
+                        <a role="button" tabindex="0" @click=${() => this._openModal('policy')} @keydown=${e => e.key === 'Enter' && this._openModal('policy')}>Privacy Policy</a>
+                        &nbsp;&middot;&nbsp;
+                        <a role="button" tabindex="0" @click=${() => this._openModal('terms')} @keydown=${e => e.key === 'Enter' && this._openModal('terms')}>Terms & Conditions</a>
                     </div>
                 </div>
             </div>
+
+            <!-- Modals -->
+            ${this.showPolicyModal ? html`
+                <div class="modal-overlay" @click=${this._closeModal}>
+                    <div class="modal-content" @click=${e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="policyTitle">
+                        <div class="modal-header">
+                            <h2 id="policyTitle" class="modal-title">Privacy Policy</h2>
+                            <button class="close-btn" @click=${this._closeModal} aria-label="Close modal">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h3>1. Information Collection</h3>
+                            <p>We only collect the essential information required to provide you with secure authentication and real-time meeting assistance. Your data is encrypted at rest and in transit.</p>
+                            <h3>2. Data Usage</h3>
+                            <p>Your authentication data is never shared with third parties. We use industry-standard security practices to ensure your account remains protected.</p>
+                            <h3>3. Contact Us</h3>
+                            <p>If you have any questions about our privacy practices, please contact our support team.</p>
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+
+            ${this.showTermsModal ? html`
+                <div class="modal-overlay" @click=${this._closeModal}>
+                    <div class="modal-content" @click=${e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+                        <div class="modal-header">
+                            <h2 id="termsTitle" class="modal-title">Terms & Conditions</h2>
+                            <button class="close-btn" @click=${this._closeModal} aria-label="Close modal">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h3>1. Acceptance of Terms</h3>
+                            <p>By accessing and using this application, you accept and agree to be bound by the terms and provisions of this agreement.</p>
+                            <h3>2. Service Usage</h3>
+                            <p>You agree to use this service only for its intended purposes. Unauthorized access, automated scraping, or misuse of the APIs is strictly prohibited.</p>
+                            <h3>3. Account Security</h3>
+                            <p>You are responsible for maintaining the confidentiality of your account authentication methods.</p>
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
         `;
     }
 
