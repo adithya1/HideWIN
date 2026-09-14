@@ -89,6 +89,23 @@ window.addEventListener('error', function(e) {
                 margin: 0;
                 overflow: hidden;
             }
+            ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(150, 150, 150, 0.3);
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(150, 150, 150, 0.6);
+    }
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
         </style>
         <script>
             if (window.location.search.includes('windowType=session')) {
@@ -109,4 +126,5 @@ window.addEventListener('error', function(e) {
         <hide-win-app id="appRoot"></hide-win-app>
     </body>
 </html>
+
 

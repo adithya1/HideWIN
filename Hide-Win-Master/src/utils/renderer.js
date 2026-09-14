@@ -1,4 +1,4 @@
-
+﻿
 function ensureQuestionMark(text) {
     if (!text) return text;
     const trimmed = text.trim();
@@ -911,7 +911,7 @@ ipcRenderer.on('clear-sensitive-data', async () => {
     console.log('Clearing all data...');
 });
 
-// ── Stealth red-dot cursor ────────────────────────────────────────────────
+// â”€â”€ Stealth red-dot cursor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 ipcRenderer.on('set-stealth-state', (_, isStealthActive) => {
@@ -936,7 +936,7 @@ ipcRenderer.on('set-stealth-state', (_, isStealthActive) => {
     if (isHidden) {
         // Red arrow will be shown by HideWinApp component
 
-        // ── NO CATCHER SHIELD ──────────────────────────────────────────────────
+        // â”€â”€ NO CATCHER SHIELD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // MouseBlocker.exe already blocks ALL real OS mouse events (moves, clicks,
         // scroll) at the hook level. A catcher div would only intercept the
         // IPC-forwarded stealth-click events, breaking UI interaction.
@@ -1309,14 +1309,14 @@ if (document.readyState === 'loading') {
 
 
 
-// ── Vosk Live Transcription Handler ──────────────────────────────────────────
-// Partials  → display live word-by-word in overlay (instant feedback)
-// Finals    → already LLM-cleaned by backend intent reconstructor
-//             → accumulate for 1.2s silence → submit as AI question
+// â”€â”€ Vosk Live Transcription Handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Partials  â†’ display live word-by-word in overlay (instant feedback)
+// Finals    â†’ already LLM-cleaned by backend intent reconstructor
+//             â†’ accumulate for 1.2s silence â†’ submit as AI question
 //
 // The backend sends: { transcript, is_final, raw? }
-//   is_final: false → partial, just update display
-//   is_final: true  → cleaned final, accumulate then submit
+//   is_final: false â†’ partial, just update display
+//   is_final: true  â†’ cleaned final, accumulate then submit
 
 let sttSilenceTimer = null;
 let sttAccumulated = '';    // accumulates cleaned Final segments
@@ -1329,7 +1329,7 @@ window.hideWin.ipcRenderer.on('live-transcription', async (_event, payload) => {
     const app = document.querySelector('hide-win-app');
 
     if (!isFinal) {
-        // ── Partial: show live display (accumulated finals + current partial)
+        // â”€â”€ Partial: show live display (accumulated finals + current partial)
         const displayText = (sttAccumulated + ' ' + text).trim();
         if (app && typeof app.updateLiveTranscription === 'function') {
             app.updateLiveTranscription(displayText);
@@ -1337,7 +1337,7 @@ window.hideWin.ipcRenderer.on('live-transcription', async (_event, payload) => {
         return;
     }
 
-    // ── Final (LLM-cleaned by backend) ───────────────────────────────────────
+    // â”€â”€ Final (LLM-cleaned by backend) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     sttAccumulated = (sttAccumulated + ' ' + text).trim();
 
@@ -1504,7 +1504,10 @@ async function initSileroVAD(mediaStream) {
                         window.dispatchEvent(new CustomEvent('ai-token-stream', { detail: chunk }));
                     }
                 } catch (err) {
-                    console.error("VAD Processing Error:", err.message || err);
+                    console.error('VAD Processing Error:', err.message || err);
+                    const view = document.getElementById('appRoot')?.shadowRoot.querySelector('assistant-view') || document.getElementById('appRoot')?.shadowRoot.querySelector('main-view');
+                    if (view) view.statusText = 'Error: Proxy Offline (Failed to fetch)';
+                    window.dispatchEvent(new CustomEvent('update-status', { detail: 'Error: FastAPI proxy not running' }));
                 }
             },
             
@@ -1526,3 +1529,4 @@ setTimeout(() => {
     console.log("Auto-starting capture for debug");
     if (typeof startCapture === 'function') startCapture();
 }, 4000);
+

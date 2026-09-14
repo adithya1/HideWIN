@@ -1,6 +1,24 @@
 ﻿import { css } from '../../assets/lit-core-2.7.4.min.js';
 
 export const appStyles =     css`
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(150, 150, 150, 0.3);
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(150, 150, 150, 0.6);
+    }
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
         * {
             box-sizing: border-box;
             font-family: var(--font);
@@ -440,4 +458,5 @@ export const appStyles =     css`
             color: var(--accent);
         }
     `;
+
 

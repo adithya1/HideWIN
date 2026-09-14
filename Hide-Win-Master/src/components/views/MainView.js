@@ -2,6 +2,38 @@
 
 export class MainView extends LitElement {
     static styles = css`
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(150, 150, 150, 0.3);
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(150, 150, 150, 0.6);
+    }
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+        @media (max-width: 650px) {
+            .home-container {
+                padding: 16px;
+            }
+        }
+        .action-bar-wrapper { display: flex; align-items: center; border-radius: 50px; background: var(--bg-surface); padding: 8px 12px 8px 24px; width: 100%; max-width: 850px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        @media (max-width: 650px) {
+            .action-bar-wrapper { flex-direction: column; border-radius: 16px; padding: 16px; gap: 12px; }
+            .action-bar-wrapper .action-dropdown { max-width: 100% !important; width: 100%; }
+            .action-bar-wrapper .action-spacer { display: none; }
+            .action-bar-wrapper .divider { width: 100%; margin: 4px 0; }
+            .action-bar-wrapper .action-buttons { width: 100%; justify-content: space-between; flex-direction: column; }
+            .action-bar-wrapper .action-buttons button { width: 100%; margin-top: 8px; }
+        }
         * {
             font-family: var(--font);
             cursor: default;
@@ -67,7 +99,7 @@ export class MainView extends LitElement {
             margin-bottom: var(--space-md);
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Cloud promo card Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Cloud promo card ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
         .cloud-promo {
             position: relative;
@@ -135,7 +167,7 @@ export class MainView extends LitElement {
             line-height: 1.5;
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Form controls Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Form controls ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
         .form-group {
             display: flex;
@@ -240,7 +272,7 @@ export class MainView extends LitElement {
             to { transform: rotate(360deg); }
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Start button Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Start button ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
         .start-button {
             width: 100%;
@@ -304,7 +336,7 @@ export class MainView extends LitElement {
             grid-template-columns: 1fr;
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Divider Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Divider ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
         .divider {
             display: flex;
@@ -325,7 +357,7 @@ export class MainView extends LitElement {
             text-transform: lowercase;
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Mode switch links Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Mode switch links ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
         .mode-links {
             display: flex;
@@ -347,7 +379,7 @@ export class MainView extends LitElement {
             color: var(--text-primary);
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Mode option cards Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Mode option cards ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
         .mode-cards {
             display: flex;
@@ -384,7 +416,7 @@ export class MainView extends LitElement {
             line-height: var(--line-height);
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Title row with help Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Title row with help ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
         .title-row {
             display: flex;
@@ -430,7 +462,7 @@ export class MainView extends LitElement {
             pointer-events: none;
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Help content Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Help content ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
         .help-content {
             display: flex;
@@ -527,7 +559,7 @@ export class MainView extends LitElement {
             line-height: var(--line-height);
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ NEW HOME LAYOUT Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ NEW HOME LAYOUT ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
         .home-container {
             width: 100%;
             height: 100%;
@@ -538,7 +570,9 @@ export class MainView extends LitElement {
             padding: 40px 60px;
             box-sizing: border-box;
             background: var(--bg-app);
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
         }
 
         .home-header {
@@ -1006,7 +1040,7 @@ export class MainView extends LitElement {
         }
     }
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Persistence Ã¢â€â‚¬Ã¢â€â‚¬
+    // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Persistence ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
 
     async _saveMode(mode) {
         this._mode = mode;
@@ -1077,7 +1111,7 @@ export class MainView extends LitElement {
         }
     }
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Start Ã¢â€â‚¬Ã¢â€â‚¬
+    // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Start ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
 
     _handleStart() {
         if (this.isInitializing) return;
@@ -1130,7 +1164,7 @@ export class MainView extends LitElement {
         return new Date(dateString).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
     }
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Render helpers Ã¢â€â‚¬Ã¢â€â‚¬
+    // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Render helpers ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
 
     _renderStartButton() {
         return html`
@@ -1165,11 +1199,11 @@ export class MainView extends LitElement {
         `;
     }
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Cloud mode Ã¢â€â‚¬Ã¢â€â‚¬
+    // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Cloud mode ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
     // Cloud UI intentionally disabled. Backend cloud wiring is still present in
     // the codebase, but the renderer no longer exposes this setup path.
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Mode + Profile selectors (rendered before Start button in all modes) Ã¢â€â‚¬Ã¢â€â‚¬
+    // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Mode + Profile selectors (rendered before Start button in all modes) ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
 
     _renderActionBar() {
         const MODES = [
@@ -1197,10 +1231,10 @@ export class MainView extends LitElement {
 
         return html`
             <div style="display: flex; flex-direction: column; align-items: center; margin: 24px 0 40px 0; width: 100%;">
-                <div style="display: flex; align-items: center; border: 1px solid ${borderColor === 'var(--accent, #3b82f6)' ? 'var(--border)' : borderColor}; box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 0 4px ${outlineColor}; border-radius: 50px; background: var(--bg-surface); padding: 8px 12px 8px 24px; width: 100%; max-width: 850px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);">
+                <div class="action-bar-wrapper" style="border: 1px solid ${borderColor === 'var(--accent, #3b82f6)' ? 'var(--border)' : borderColor}; box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 0 4px ${outlineColor};">
                     
                     <!-- Mode Select (Custom Dropdown) -->
-                    <div style="flex: 1; min-width: 100px; max-width: 220px; display: flex; flex-direction: column; position: relative;" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
+                      <div class="action-dropdown" style="flex: 1; min-width: 100px; max-width: 220px; display: flex; flex-direction: column; position: relative;" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
                         <div style="display: flex; align-items: center; gap: 12px; padding: 6px 0; cursor: pointer; width: 100%;">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
                                 <circle cx="11" cy="11" r="8"></circle>
@@ -1235,7 +1269,7 @@ export class MainView extends LitElement {
                     <div style="width: 1px; height: 32px; background: var(--border); margin: 0 20px;"></div>
 
                     <!-- Profile Select (Custom Dropdown) -->
-                    <div style="flex: 1; min-width: 100px; max-width: 220px; display: flex; flex-direction: column; position: relative;" @click=${(e) => { 
+                      <div class="action-dropdown" style="flex: 1; min-width: 100px; max-width: 220px; display: flex; flex-direction: column; position: relative;" @click=${(e) => { 
                         e.stopPropagation(); 
                         if (!this._selectedModeCategory) {
                             this._modeCategoryError = true;
@@ -1369,7 +1403,7 @@ export class MainView extends LitElement {
         `;
     }
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ BYOK mode Ã¢â€â‚¬Ã¢â€â‚¬
+    // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ BYOK mode ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
 
     _renderByokMode() {
         return html`
@@ -1380,7 +1414,7 @@ export class MainView extends LitElement {
         `;
     }
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Local AI mode Ã¢â€â‚¬Ã¢â€â‚¬
+    // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Local AI mode ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
 
     _renderLocalMode() {
         return html`
@@ -1463,7 +1497,7 @@ export class MainView extends LitElement {
                 <!-- Header -->
                 <div class="home-header">
                     <div class="header-left">
-                        <div class="brand-logo" style="margin-right: 16px;"></div>
+                        
 
                     </div>
 
@@ -1607,5 +1641,11 @@ export class MainView extends LitElement {
 }
 
 customElements.define('main-view', MainView);
+
+
+
+
+
+
 
 

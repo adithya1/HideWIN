@@ -1,4 +1,4 @@
-import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 
 export class BrowseView extends LitElement {
     static properties = {
@@ -278,7 +278,7 @@ export class BrowseView extends LitElement {
             tab.isLoading = false;
         } else if (eventName === 'page-title-updated') {
             tab.title = e.title;
-        } else if (eventName === 'will-navigate' || eventName === 'did-navigate' || eventName === 'did-navigate-in-page') {
+        } else if (eventName === 'did-navigate' || eventName === 'did-navigate-in-page') {
             tab.url = e.url;
             if (this.activeTabId === id) {
                 this.addressInputValue = e.url;
@@ -355,3 +355,4 @@ export class BrowseView extends LitElement {
 }
 
 customElements.define('browse-view', BrowseView);
+

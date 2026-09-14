@@ -1,6 +1,24 @@
-import { css } from '../../assets/lit-core-2.7.4.min.js';
+﻿import { css } from '../../assets/lit-core-2.7.4.min.js';
 
 export const unifiedPageStyles = css`
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(150, 150, 150, 0.3);
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(150, 150, 150, 0.6);
+    }
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
         /* GLOBAL POSH LEAN SCROLLBAR FOR ALL VIEWS */
         ::-webkit-scrollbar {
             width: 10px !important;
@@ -421,3 +439,4 @@ export const unifiedPageStyles = css`
     .row-action-btn svg { width: 14px; height: 14px; }
 
 `;
+
