@@ -1,6 +1,7 @@
 import smtplib
 from email.message import EmailMessage
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from services.api import db_models as models
 import logging
 
@@ -8,10 +9,11 @@ logger = logging.getLogger(__name__)
 
 class EmailService:
     @staticmethod
-    def send_email(db: Session, to_email: str, subject: str, content: str, cc: list = None, bcc: list = None, attachments: list = None):
+    async def send_email(db: Session, to_email: str, subject: str, content: str, cc: list = None, bcc: list = None, attachments: list = None):
         keys = ["smtp_host", "smtp_port", "smtp_user", "smtp_pass",
                 "smtp_from_name", "smtp_from_email", "smtp_ssl"]
-        configs = db.query(models.ApiConfig).filter(models.ApiConfig.key.in_(keys)).all()
+        result = await db.execute(select(models.ApiConfig).filter(models.ApiConfig.key.in_(keys)))
+        configs = result.scalars().all()
         data = {c.key: c.value for c in configs}
 
         host     = data.get("smtp_host")

@@ -392,7 +392,7 @@ export class AuthView extends LitElement {
         this.error = '';
         
         try {
-            const response = await fetch('http://localhost:8000/api/auth/send-otp', {
+            const response = await fetch('http://localhost:8000/auth/send-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: this.email })
@@ -418,10 +418,13 @@ export class AuthView extends LitElement {
         this.error = '';
         
         try {
-            const response = await fetch('http://localhost:8000/api/auth/login', {
+            const params = new URLSearchParams();
+            params.append('username', this.email);
+            params.append('password', this.otp);
+            const response = await fetch('http://localhost:8000/auth/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: this.email, password: this.otp })
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
             });
             
             if (!response.ok) {
@@ -430,7 +433,7 @@ export class AuthView extends LitElement {
             }
             
             const data = await response.json();
-            const token = data.token;
+            const token = data.access_token;
             
             // Success - save token
             if (window.hideWin && window.hideWin.storage) {

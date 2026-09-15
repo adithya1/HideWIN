@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 from services.api.core.config import settings
 from services.api.routers import admin, ws, ai_proxy, meeting
@@ -25,6 +26,15 @@ from services.api.api.admin.router import router as internal_admin_router
 from services.api.core.exceptions import ApplicationError, application_error_handler, validation_error_handler
 
 app = FastAPI(title="Hide-WIN API", version="1.0.0", debug=settings.DEBUG)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(admin.router)
 app.include_router(auth)
 app.include_router(stt_admin)

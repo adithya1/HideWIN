@@ -27,7 +27,13 @@ async def signup(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     repo = UserRepository(db)
+    form_data.username = form_data.username.strip()
+    form_data.password = form_data.password.strip()
     user = await repo.get_user_by_email(form_data.username)
+
+    
+
+    
     if not user or (not OTPService.verify_otp(form_data.username, form_data.password) and not AuthenticationService.verify_password(form_data.password, user.hashed_password)):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,7 +48,7 @@ from services.api.api.authentication.service import OTPService
 
 @router.post("/send-otp")
 async def send_otp(body: SendOtpRequest, db: AsyncSession = Depends(get_db)):
-    result = OTPService.send_otp(body.email, db)
+    result = await OTPService.send_otp(body.email, db)
     return result
 from services.api.schemas.auth_schema import ForgotPasswordRequest, ResetPasswordRequest
 from services.api.api.authentication.password_service import PasswordService

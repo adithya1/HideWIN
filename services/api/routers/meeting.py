@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from sqlalchemy.orm import Session
+from sqlalchemy import select, delete
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
@@ -45,7 +46,7 @@ class MeetingResponse(BaseModel):
         orm_mode = True
 
 @router.post("/", response_model=List[MeetingResponse])
-def create_meeting(
+async def create_meeting(
     meeting_data: str = Form(...),
     files: List[UploadFile] = File(None),
     db: Session = Depends(get_db),
@@ -114,7 +115,7 @@ def create_meeting(
             
         created_meetings.append(db_meeting)
         
-    db.commit()
+    await db.commit()
 
     if (meeting.participants or meeting.cc_participants or meeting.bcc_participants) and meeting.invite_url_base:
         # Prepare attachments for email
@@ -165,7 +166,7 @@ def create_meeting(
 
     
     for m in created_meetings:
-        db.refresh(m)
+        await db.refresh(m)
         
     return created_meetings
 
@@ -180,7 +181,7 @@ class SendInvitesRequest(BaseModel):
     description_override: Optional[str] = None
 
 @router.post("/{meeting_id}/send-invites")
-def send_invites_for_meeting(
+async def send_invites_for_meeting(
     meeting_id: str,
     invite_data: str = Form(...),
     files: List[UploadFile] = File(None),
@@ -190,10 +191,11 @@ def send_invites_for_meeting(
     import json
     data = SendInvitesRequest(**json.loads(invite_data))
     
-    meeting = db.query(models.Meeting).filter(
+    result = await db.execute(select(models.Meeting).filter(
         models.Meeting.id == meeting_id,
         models.Meeting.host_id == current_user.id
-    ).first()
+    ))
+    meeting = result.scalars().first()
     
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
@@ -220,7 +222,7 @@ def send_invites_for_meeting(
             db_att = models.MeetingAttachment(meeting_id=meeting_id, filename=file.filename, content_type=file.content_type or "application/octet-stream", file_path=file_path)
             db.add(db_att)
 
-    db.commit()
+    await db.commit()
 
     if (data.participants or data.cc_participants or data.bcc_participants) and data.invite_url_base:
         att_data = []
@@ -271,39 +273,42 @@ def send_invites_for_meeting(
 
 @router.get("/upcoming"
 , response_model=List[MeetingResponse])
-def get_upcoming_meetings(
+async def get_upcoming_meetings(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    meetings = db.query(models.Meeting).filter(
+    result = await db.execute(select(models.Meeting).filter(
         models.Meeting.host_id == current_user.id,
         models.Meeting.status.in_(["SCHEDULED", "ACTIVE"])
-    ).order_by(models.Meeting.created_at.desc()).all()
+    ).order_by(models.Meeting.created_at.desc()))
+    meetings = result.scalars().all()
     return meetings
 
 @router.get("/history", response_model=List[MeetingResponse])
-def get_historical_meetings(
+async def get_historical_meetings(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    meetings = db.query(models.Meeting).filter(
+    result = await db.execute(select(models.Meeting).filter(
         models.Meeting.host_id == current_user.id,
         models.Meeting.status == "COMPLETED"
-    ).order_by(models.Meeting.created_at.desc()).all()
+    ).order_by(models.Meeting.created_at.desc()))
+    meetings = result.scalars().all()
     return meetings
 
 
 @router.put("/{meeting_id}", response_model=MeetingResponse)
-def update_meeting(
+async def update_meeting(
     meeting_id: str,
     meeting_data: MeetingCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    meeting = db.query(models.Meeting).filter(
+    result = await db.execute(select(models.Meeting).filter(
         models.Meeting.id == meeting_id,
         models.Meeting.host_id == current_user.id
-    ).first()
+    ))
+    meeting = result.scalars().first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
         
@@ -348,25 +353,26 @@ def update_meeting(
             content_str = chr(10).join(lines)
             EmailService.send_email(db, to_email=email, subject=subject, content=content_str, cc=meeting_data.cc_participants, bcc=meeting_data.bcc_participants)
             
-    db.commit()
-    db.refresh(meeting)
+    await db.commit()
+    await db.refresh(meeting)
     return meeting
 
 @router.delete("/clear-all")
-def clear_all_meetings(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    db.query(models.Meeting).filter(models.Meeting.host_id == current_user.id).delete()
-    db.commit()
+async def clear_all_meetings(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    await db.execute(delete(models.Meeting).filter(models.Meeting.host_id == current_user.id))
+    await db.commit()
     return {"status": "success"}
 
 @router.delete("/{meeting_id}")
-def delete_meeting(meeting_id: str, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    meeting = db.query(models.Meeting).filter(
+async def delete_meeting(meeting_id: str, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    result = await db.execute(select(models.Meeting).filter(
         models.Meeting.id == meeting_id,
         models.Meeting.host_id == current_user.id
-    ).first()
+    ))
+    meeting = result.scalars().first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
         
     db.delete(meeting)
-    db.commit()
+    await db.commit()
     return {"status": "success"}

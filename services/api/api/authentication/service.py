@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from services.api.core.config import settings
 from typing import Optional
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt", "pbkdf2_sha256"], deprecated="auto")
 
 class AuthenticationService:
     """
@@ -18,7 +18,9 @@ class AuthenticationService:
     
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
+        res = pwd_context.verify(plain_password, hashed_password)
+        print(f'VERIFY: {plain_password} against {hashed_password} = {res}')
+        return res
 
     @staticmethod
     def get_password_hash(password: str) -> str:
@@ -36,6 +38,7 @@ class AuthenticationService:
         encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm="HS256")
         return encoded_jwt
 import secrets
+import time
 from services.api.services.email_service import EmailService
 
 # In-memory OTP cache for legacy behavior
@@ -43,24 +46,32 @@ _login_otps: dict = {}
 
 class OTPService:
     @staticmethod
-    def send_otp(email: str, db) -> dict:
+    async def send_otp(email: str, db) -> dict:
+        expires_at = time.time() + 600 # 10 minutes valid
         if email.endswith("@hidewin.app"):
             otp = "123456"
-            _login_otps[email] = otp
+            _login_otps[email] = {"code": otp, "expires_at": expires_at}
             return {"success": True, "message": "OTP sent successfully"}
         
         otp = str(secrets.randbelow(1000000)).zfill(6)
-        _login_otps[email] = otp
+        _login_otps[email] = {"code": otp, "expires_at": expires_at}
         
         body_html = f"Your login code is: {otp}\n\nPlease enter this code to sign in."
-        EmailService.send_email(db, email, "Your HideWIN Login Code", body_html)
+        await EmailService.send_email(db, email, "Your HideWIN Login Code", body_html)
         
         return {"success": True, "message": "OTP sent successfully"}
         
     @staticmethod
     def verify_otp(email: str, otp: str) -> bool:
         stored = _login_otps.get(email)
-        if stored and stored == otp:
+        if stored and isinstance(stored, dict):
+            if time.time() > stored.get("expires_at", 0):
+                del _login_otps[email]
+                return False
+            if stored.get("code") == otp:
+                del _login_otps[email]
+                return True
+        elif stored and stored == otp: # Fallback for any old strings in memory
             del _login_otps[email]
             return True
         return False

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File
 from groq import AsyncGroq
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from services.api.core.database import get_db
 from services.api.core.redis import redis_manager
 from services.api import db_models as models
@@ -22,9 +23,10 @@ router = APIRouter(
 
 HMAC_SECRET = "hw_desktop_secret_998877"
 
-def get_model_and_provider_for_tier(tier: str, db: Session):
+async def get_model_and_provider_for_tier(tier: str, db):
     setting_key = "high_tier_model" if tier == "premium" else "fast_tier_model"
-    setting = db.query(models.AppSetting).filter(models.AppSetting.setting_key == setting_key).first()
+    result = await db.execute(select(models.AppSetting).filter(models.AppSetting.setting_key == setting_key))
+    setting = result.scalars().first()
     model_val = setting.setting_value if setting else ("gpt-4o" if tier == "premium" else "gemini-flash-latest")
     
     if "gpt" in model_val:
@@ -40,11 +42,12 @@ def get_model_and_provider_for_tier(tier: str, db: Session):
     else:
         return "custom", model_val
 
-def get_active_keys_for_provider(provider: str, db: Session, model_name: str = None):
-    keys = db.query(models.AiProviderKey).filter(
+async def get_active_keys_for_provider(provider: str, db, model_name: str = None):
+    result = await db.execute(select(models.AiProviderKey).filter(
         models.AiProviderKey.provider == provider,
         models.AiProviderKey.is_enabled == True
-    ).all()
+    ))
+    keys = result.scalars().all()
     
     if not model_name:
         return keys
@@ -122,11 +125,11 @@ async def generate_text(request: Request, db: Session = Depends(get_db)):
     if explicit_model:
         provider = "groq"
         model_name = explicit_model
-        keys = get_active_keys_for_provider(provider, db, model_name)
+        keys = await get_active_keys_for_provider(provider, db, model_name)
     else:
         # Loosely coupled multi-model routing
         provider = "groq"
-        all_keys = get_active_keys_for_provider(provider, db)
+        all_keys = await get_active_keys_for_provider(provider, db)
         keys = []
         import random
         # Collect all keys that have at least one enabled model
@@ -160,8 +163,8 @@ async def generate_text(request: Request, db: Session = Depends(get_db)):
             logger.warning(f"Primary provider {provider} failed: {e}. Attempting fallback.")
     
     # Attempt fallback provider
-    fallback_provider, fallback_model = get_model_and_provider_for_tier("fast", db)
-    fallback_keys = get_active_keys_for_provider(fallback_provider, db, fallback_model)
+    fallback_provider, fallback_model = await get_model_and_provider_for_tier("fast", db)
+    fallback_keys = await get_active_keys_for_provider(fallback_provider, db, fallback_model)
     
     if fallback_keys:
         import random
@@ -187,8 +190,8 @@ async def stream_text(request: Request, db: Session = Depends(get_db)):
     
     if not contents: raise HTTPException(status_code=400, detail="Missing contents array")
 
-    provider, model_name = get_model_and_provider_for_tier(tier, db)
-    keys = get_active_keys_for_provider(provider, db, model_name)
+    provider, model_name = await get_model_and_provider_for_tier(tier, db)
+    keys = await get_active_keys_for_provider(provider, db, model_name)
     if not keys: raise HTTPException(status_code=503, detail="No active keys available.")
 
     import random
@@ -267,7 +270,7 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
     audio_bytes = await file.read()
     stt_model = request.headers.get("X-STT-Model")
     
-    groq_keys_objs = get_active_keys_for_provider('groq', db, stt_model)
+    groq_keys_objs = await get_active_keys_for_provider('groq', db, stt_model)
     if not groq_keys_objs:
         raise HTTPException(status_code=500, detail="No active Groq API keys available")
 

@@ -96,6 +96,38 @@ export class HideWinApp extends LitElement {
         // Read URL params for multi-window support
         const urlParams = new URLSearchParams(window.location.search);
         this.windowType = urlParams.get('windowType') || 'main';
+        
+        // Listen for Deep Link Authentication
+        if (window.hideWin && window.hideWin.ipcRenderer) {
+            window.hideWin.ipcRenderer.on('deep-link-auth-success', async (event, data) => {
+                try {
+                    if (data && data.token) {
+                        const payload = JSON.parse(atob(data.token.split('.')[1]));
+                        if (payload && payload.sub) {
+                            this.userEmail = payload.sub;
+                            if (window.hideWin && window.hideWin.storage) {
+                                window.hideWin.storage.updatePreference('userEmail', payload.sub);
+                                let creds = {};
+                                try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
+                                await window.hideWin.storage.setCredentials({
+                                    ...creds,
+                                    jwtToken: data.token,
+                                    hashkey: data.hash || 'hash',
+                                    user: payload.sub
+                                });
+                            }
+                        }
+                    }
+                } catch(e) { } finally {
+                    this.isAuthenticated = true;
+                    this.requestUpdate();
+                    if (this.isMainWindowMinimized) {
+                        this._handleMaximize();
+                    }
+                }
+            });
+        }
+
         if (this.windowType === 'session') {
             this.currentView = 'assistant';
             this.selectedModeCategory = urlParams.get('modeCategory') || '';
@@ -154,7 +186,39 @@ export class HideWinApp extends LitElement {
                 hideWin.storage.getProfiles()
             ]);
 
-            if (this.windowType === 'session') {
+            
+        // Listen for Deep Link Authentication
+        if (window.hideWin && window.hideWin.ipcRenderer) {
+            window.hideWin.ipcRenderer.on('deep-link-auth-success', async (event, data) => {
+                try {
+                    if (data && data.token) {
+                        const payload = JSON.parse(atob(data.token.split('.')[1]));
+                        if (payload && payload.sub) {
+                            this.userEmail = payload.sub;
+                            if (window.hideWin && window.hideWin.storage) {
+                                window.hideWin.storage.updatePreference('userEmail', payload.sub);
+                                let creds = {};
+                                try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
+                                await window.hideWin.storage.setCredentials({
+                                    ...creds,
+                                    jwtToken: data.token,
+                                    hashkey: data.hash || 'hash',
+                                    user: payload.sub
+                                });
+                            }
+                        }
+                    }
+                } catch(e) { } finally {
+                    this.isAuthenticated = true;
+                    this.requestUpdate();
+                    if (this.isMainWindowMinimized) {
+                        this._handleMaximize();
+                    }
+                }
+            });
+        }
+
+        if (this.windowType === 'session') {
                 this.currentView = 'assistant';
             } else {
                 this.currentView = config.onboarded ? 'main' : 'onboarding';
@@ -339,6 +403,38 @@ export class HideWinApp extends LitElement {
     }
 
     async handleClose() {
+        
+        // Listen for Deep Link Authentication
+        if (window.hideWin && window.hideWin.ipcRenderer) {
+            window.hideWin.ipcRenderer.on('deep-link-auth-success', async (event, data) => {
+                try {
+                    if (data && data.token) {
+                        const payload = JSON.parse(atob(data.token.split('.')[1]));
+                        if (payload && payload.sub) {
+                            this.userEmail = payload.sub;
+                            if (window.hideWin && window.hideWin.storage) {
+                                window.hideWin.storage.updatePreference('userEmail', payload.sub);
+                                let creds = {};
+                                try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
+                                await window.hideWin.storage.setCredentials({
+                                    ...creds,
+                                    jwtToken: data.token,
+                                    hashkey: data.hash || 'hash',
+                                    user: payload.sub
+                                });
+                            }
+                        }
+                    }
+                } catch(e) { } finally {
+                    this.isAuthenticated = true;
+                    this.requestUpdate();
+                    if (this.isMainWindowMinimized) {
+                        this._handleMaximize();
+                    }
+                }
+            });
+        }
+
         if (this.windowType === 'session') {
             if (window.require) {
                 const { ipcRenderer } = window.require('electron');
