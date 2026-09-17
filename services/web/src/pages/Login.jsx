@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Loader2, Eye, EyeOff } from 'lucide-react';
 
+const desktopStyles = `
+  .desktop-match .input-field { padding: 10px 12px !important; font-size: 15px !important; border: 1px solid #d1d5db !important; border-radius: 8px !important; background: #ffffff !important; color: #111827 !important; }
+  .desktop-match .input-field:focus { border-color: #2563eb !important; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important; outline: none !important; }
+  .desktop-match .btn-primary { padding: 10px 16px !important; font-size: 14px !important; border-radius: 8px !important; font-weight: 500 !important; }
+  .desktop-match .auth-title { font-size: 24px !important; font-weight: 700 !important; color: #111827 !important; }
+  .desktop-match .auth-subtitle { font-size: 14px !important; color: #6b7280 !important; }
+  .desktop-match .input-label { font-size: 13px !important; font-weight: 500 !important; color: #374151 !important; }
+  .desktop-match .sso-btn { padding: 10px 16px !important; font-size: 14px !important; border: 1px solid #d1d5db !important; color: #374151 !important; }
+`;
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -10,10 +20,38 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
+  const [expiryTimer, setExpiryTimer] = useState(180);
   const [successMsg, setSuccessMsg] = useState('');
   const [deepLinkMsg, setDeepLinkMsg] = useState('');
+  const [branding, setBranding] = useState({ logo_light: '', logo_dark: '', browser_icon: '' });
+  
+  useEffect(() => {
+    fetch('http://localhost:8000/auth/branding')
+      .then(res => res.json())
+      .then(data => {
+        setBranding(data);
+        if (data.browser_icon) {
+          const link = document.querySelector("link[rel~='icon']");
+          if (link) { link.href = data.browser_icon; }
+          else {
+            const newLink = document.createElement('link');
+            newLink.rel = 'icon';
+            newLink.href = data.browser_icon;
+            document.head.appendChild(newLink);
+          }
+        }
+      }).catch(err => console.log(err));
+  }, []);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    let interval = null;
+    if (step === 'otp' && expiryTimer > 0) {
+      interval = setInterval(() => setExpiryTimer(t => t - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [step, expiryTimer]);
+  
   useEffect(() => {
     let interval = null;
     if (resendTimer > 0) {
@@ -37,35 +75,35 @@ export default function Login() {
     if (params.get('step') === 'otp') {
       setStep('otp');
       setResendTimer(60);
+      setExpiryTimer(180);
       setSuccessMsg('Enter the password or OTP sent to your email.');
     }
     
     const isDesktopUser = sessionStorage.getItem('isDesktop') === 'true';
 
-    const existingToken = localStorage.getItem('hidewin_token');
-    if (existingToken) {
-      if (isDesktopUser) {
-        console.log('Active session found for desktop user. Triggering deep link...');
-        try {
-          window.location.href = `hidewin://auth?token=${existingToken}&hash=mock_hash`;
-        } catch (e) {
-          console.log("Deep link failed");
-        }
-        
-        // Browsers block automatic custom protocol redirects without a user gesture!
-        // We MUST wait for the user to click a button if it was blocked.
-        // So we do NOT navigate away automatically.
-        setDeepLinkMsg('Session found! Attempting to launch the app...');
-      } else {
-        // Regular web user visiting /login while logged in -> redirect to dashboard
+    if (isDesktopUser) {
+      // SECURITY FIX: For enterprise desktop flows, we MUST force re-authentication.
+      // We clear the existing token so they are forced to validate via OTP.
+      localStorage.removeItem('hidewin_token');
+    } else {
+      const existingToken = localStorage.getItem('hidewin_token');
+      if (existingToken) {
         navigate('/download');
       }
     }
   }, [navigate]);
 
 
+  useEffect(() => {
+    if (lockedEmail && email && sessionStorage.getItem('isDesktop') === 'true' && !sessionStorage.getItem('auto_otp_sent')) {
+      sessionStorage.setItem('auto_otp_sent', 'true');
+      handleSendOtp({ preventDefault: () => {} });
+    }
+  }, [lockedEmail, email]);
+
   const handleSendOtp = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError('');
     
@@ -84,6 +122,7 @@ export default function Login() {
       setSuccessMsg(`We found your account. Enter your password or the OTP sent to your email.`);
       setStep('otp');
       setResendTimer(60);
+      setExpiryTimer(180);
     } catch (err) {
       setError(err.message || 'Failed to connect to server');
     } finally {
@@ -91,25 +130,36 @@ export default function Login() {
     }
   };
 
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
+  const handleVerifyOtp = async (e, overrideOtp = otp) => {
+    if (e) e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError('');
-    
     try {
-      const response = await fetch('http://localhost:8000/api/auth/login', {
+      const formData = new URLSearchParams();
+      formData.append('username', email);
+      formData.append('password', overrideOtp);
+      
+      const response = await fetch('http://localhost:8000/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: otp }) // Sending OTP input as password
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
       });
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Invalid code. Please try again.');
+        let errMsg = 'Enter valid OTP';
+        if (errorData.detail) {
+          if (typeof errorData.detail === 'string') {
+            errMsg = errorData.detail === 'Incorrect email or password' ? 'Enter valid OTP' : errorData.detail;
+          }
+        }
+        throw new Error(errMsg);
       }
       
       const data = await response.json();
-      const token = data.token;
+      const token = data.access_token;
+      const hash = data.hash;
       
       // Success - save token
       localStorage.setItem('hidewin_token', token);
@@ -119,7 +169,7 @@ export default function Login() {
       // Determine if we redirect to desktop app or download page
       if (isDesktopUser) {
         try {
-          window.location.href = `hidewin://auth?token=${token}&hash=mock_hash`;
+          window.location.href = `hidewin://auth?token=${token}&hash=${hash}`;
         } catch (e) {
           console.log("Deep link failed");
         }
@@ -148,50 +198,42 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-layout">
+    <div className="auth-layout desktop-match">
+      <style>{desktopStyles}</style>
       <div className="auth-left">
         <div className="auth-card">
-          <div className="brand-logo">
-            <ShieldCheck size={32} color="var(--primary)" />
-            <span style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-main)', marginLeft: '12px' }}>HideWin</span>
+          <div className="brand-logo" style={{ justifyContent: 'center' }}>
+            {branding.logo_light || branding.logo_dark ? (
+              <img src={(document.body.getAttribute('data-theme') === 'dark' ? branding.logo_dark : branding.logo_light) || branding.logo_light || branding.logo_dark} alt="HideWin" style={{ maxHeight: '48px', maxWidth: '240px' }} />
+            ) : (
+              <>
+                <ShieldCheck size={32} color="var(--primary)" />
+                <span style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-main)', marginLeft: '12px' }}>HideWin</span>
+              </>
+            )}
           </div>
 
-          {deepLinkMsg ? (
-            <div style={{ textAlign: 'center', marginTop: '40px' }}>
-              <div style={{ width: '64px', height: '64px', background: '#dcfce7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                <ShieldCheck size={32} color="#16a34a" />
-              </div>
-              <h1 className="auth-title" style={{ color: '#16a34a', marginBottom: '16px' }}>{deepLinkMsg}</h1>
-              
-              {sessionStorage.getItem('isDesktop') === 'true' && (
-                <div style={{ marginTop: '24px', textAlign: 'center' }}>
-                  <button 
-                    onClick={() => {
-                      try {
-                        window.location.href = `hidewin://auth?token=${localStorage.getItem('hidewin_token')}&hash=mock_hash`;
-                        setTimeout(() => navigate('/download'), 500);
-                      } catch(e) {}
-                    }}
-                    style={{ padding: '12px 24px', background: 'var(--primary)', color: 'white', borderRadius: '8px', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                  >
-                    Launch HideWin App
-                  </button>
-                  <p style={{ marginTop: '16px', fontSize: '13px', color: '#64748b' }}>
-                    Click above to return to the app if it didn't open automatically.
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : null}
           
-          {!deepLinkMsg && step === 'email' && (
+          
+          {step === 'email' && (
             <>
               <h1 className="auth-title">Sign in to HideWin</h1>
               <p className="auth-subtitle">Enter your email and we will send you a login code</p>
               
               <form onSubmit={handleSendOtp}>
                 <div className="input-group">
-                  <label className="input-label">Email address</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label className="input-label" style={{ marginBottom: 0 }}>Email address</label>
+                    {lockedEmail && (
+                      <button 
+                        type="button" 
+                        onClick={() => setLockedEmail(false)} 
+                        style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
+                      >
+                        Change Email
+                      </button>
+                    )}
+                  </div>
                   <input 
                     type="email" 
                     className="input-field" 
@@ -204,7 +246,7 @@ export default function Login() {
                   />
                 </div>
                 
-                {error && <p className="error-message">{error}</p>}
+                {error && <p className="error-message" style={{ marginTop: '8px', padding: '12px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#b91c1c' }}>{error}</p>}
                 
                 <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: '24px' }}>
                   {loading ? <Loader2 className="animate-spin" /> : 'Continue with Email'}
@@ -247,46 +289,43 @@ export default function Login() {
             </>
           )}
 
-          {!deepLinkMsg && step === 'otp' && (
+          {step === 'otp' && (
             <>
               <h1 className="auth-title">Check your email</h1>
               <p className="auth-subtitle">Enter the code sent to {email}</p>
               
-              {successMsg && (
-                <div className="bg-green-50 text-green-700 p-4 rounded-xl text-sm border border-green-200 mb-6">
-                  {successMsg}
-                </div>
-              )}
+              
               
               <form onSubmit={handleVerifyOtp}>
                 <div className="input-group">
-                                    <label className="input-label">Password or OTP</label>
-                  <div style={{ position: 'relative' }}>
-                    <input 
-                      type={showPassword ? "text" : "password"} 
-                      className="input-field" 
-                      required 
-                      value={otp}
-                      onChange={e => setOtp(e.target.value)}
-                      placeholder="Enter password or code" 
-                      style={{ fontSize: '18px', textAlign: 'center', paddingRight: '40px' }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
+                  <label className="input-label">6-digit Code</label>
+                  <input 
+                    type="text" 
+                    className="input-field" 
+                    required 
+                    value={otp}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setOtp(val);
+                      if (val.length === 6) {
+                        handleVerifyOtp(null, val);
+                      }
+                    }}
+                    placeholder="123456" 
+                    maxLength={6}
+                    style={{ fontSize: '24px', letterSpacing: '4px', textAlign: 'center' }}
+                  />
                 </div>
                 
-                {error && <p className="error-message" style={{ textAlign: 'center' }}>{error}</p>}
+                {error && <p className="error-message" style={{ textAlign: 'center', padding: '12px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#b91c1c' }}>{error}</p>}
                 
                 <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: '24px' }}>
                   {loading ? <Loader2 className="animate-spin" /> : 'Verify Code'}
                 </button>
 
+                <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '13px', color: '#6b7280', fontWeight: 500, display: expiryTimer > 0 ? 'block' : 'none' }}>
+                  Code expires in: {Math.floor(expiryTimer / 60)}:{String(expiryTimer % 60).padStart(2, '0')}
+                </div>
                 <div style={{ marginTop: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
                   <button 
                     type="button" 
@@ -294,11 +333,11 @@ export default function Login() {
                     onClick={handleSendOtp}
                     style={{ background: 'none', border: 'none', color: resendTimer > 0 ? '#9ca3af' : 'var(--primary)', cursor: resendTimer > 0 ? 'not-allowed' : 'pointer', fontSize: '14px', fontWeight: 500 }}
                   >
-                    {resendTimer > 0 ? `Resend Code in ${resendTimer}s` : 'Resend Code'}
+                    {resendTimer > 0 ? `Wait ${resendTimer}s to Regenerate` : 'Regenerate OTP'}
                   </button>
                   <button 
                     type="button" 
-                    onClick={() => { setStep('email'); setError(''); setOtp(''); }}
+                    onClick={() => { setStep('email'); setError(''); setOtp(''); setLockedEmail(false); }}
                     style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '14px', textDecoration: 'underline' }}
                   >
                     Use a different email

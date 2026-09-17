@@ -37,23 +37,16 @@ export class MainView extends LitElement {
             display: flex;
             flex-direction: column;
             align-items: center; /* Center the layout container */
-            padding: clamp(16px, 4vh, 40px) clamp(16px, 4vw, 60px);
+            justify-content: flex-start !important;
+            padding: 16px;
             box-sizing: border-box;
             background: var(--bg-app);
             overflow-y: auto;
             overflow-x: hidden;
-        }
-
-        /* --------------------------------------------------------- */
-        /* HEADER & NAVIGATION */
-        /* --------------------------------------------------------- */
-        .home-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 1200px; /* Safe readable width */
-            margin-bottom: clamp(16px, 3vh, 32px);
+            
+            /* Container Queries for bulletproof component rendering */
+            container-type: inline-size;
+            container-name: home;
         }
 
         /* --------------------------------------------------------- */
@@ -64,24 +57,20 @@ export class MainView extends LitElement {
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            flex-wrap: nowrap;
-            gap: clamp(12px, 2vw, 24px);
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto clamp(16px, 3vh, 24px) auto;
-            padding: 10px 24px;
+            gap: 12px;
+            width: fit-content;
+            max-width: 100%;
+            margin: 6vh auto 32px auto;
+            padding: 12px 64px;
             background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         }
 
         /* Dropdowns */
         .action-dropdown {
-            flex: 0 1 auto;
-            min-width: 160px;
-            max-width: 220px;
+            flex: 0 0 140px;
             position: relative;
         }
 
@@ -89,23 +78,23 @@ export class MainView extends LitElement {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
-            padding: 8px 12px;
-            height: 38px;
+            gap: 12px;
+            padding: 8px 16px;
+            height: 44px;
             background: transparent;
             border-radius: 6px;
-            border: 1px solid var(--border);
+            border: 1px solid transparent;
+            border-right: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.15s ease;
         }
         
         .action-dropdown-content:hover, .action-dropdown-content:focus-within {
-            background: rgba(100, 116, 139, 0.05);
-            border: 1px solid var(--text-muted);
+            background: var(--bg-hover);
         }
 
         .action-dropdown-content span {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             color: var(--text-primary);
             flex: 1;
@@ -119,28 +108,38 @@ export class MainView extends LitElement {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            padding-left: clamp(12px, 2vw, 24px);
-            border-left: 1px solid var(--border); /* Clean separation */
+            gap: 12px;
+            padding: 0 16px;
+            border-left: none;
+            height: 44px;
+            width: 175px;
             flex-shrink: 0;
+        }
+
+        .mouse-detect-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
         }
 
         /* Start Button */
         .action-buttons-wrapper {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            margin: 0;
+            justify-content: center;
             flex-shrink: 0;
+            height: 44px;
+            margin-left: 12px;
         }
 
         .primary-action-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 0 20px;
-            height: 38px;
+            gap: 6px;
+            padding: 0 16px;
+            height: 100%;
             border-radius: 8px;
             border: none;
             background: var(--accent);
@@ -149,29 +148,25 @@ export class MainView extends LitElement {
             font-weight: 600;
             cursor: pointer;
             transition: background 0.15s ease, transform 0.1s ease;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
             white-space: nowrap;
         }
         
-        .primary-action-btn:hover { background: #2563eb; }
-        .primary-action-btn:active { transform: scale(0.98); }
-        .primary-action-btn svg { width: 16px; height: 16px; }
+        .primary-action-btn:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
 
-        /* Popups */
-        .child-dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 0;
-            width: 100%;
-            min-width: 200px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            z-index: 100;
-            max-height: 280px;
-            overflow-y: auto;
-            padding: 8px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        .primary-action-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .primary-action-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
         }
 
         /* --------------------------------------------------------- */
@@ -218,12 +213,15 @@ export class MainView extends LitElement {
         /* RESPONSIVE BREAKPOINTS (Fluid Architecture)               */
         /* --------------------------------------------------------- */
         
+        /* --------------------------------------------------------- */
+        /* RESPONSIVE BREAKPOINTS (Fluid Architecture via Container) */
+        /* --------------------------------------------------------- */
+        
         /* COMPACT (2-Row Reflow) */
         @media (max-width: 680px) {
             .action-bar-wrapper {
                 flex-wrap: wrap;
-                padding: 12px 16px;
-                max-width: 500px;
+                padding: 8px 12px;
             }
             .action-dropdown {
                 flex: 1 1 40%;
@@ -241,23 +239,28 @@ export class MainView extends LitElement {
             }
         }
 
-        /* SMALL (Vertical Stack) */
+        /* SMALL (Strict 2x2 Grid instead of Vertical Stack) */
         @media (max-width: 500px) {
             .action-bar-wrapper {
-                flex-direction: column;
-                align-items: stretch;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                padding: 12px;
             }
-            .action-dropdown {
-                flex: 1 1 100%;
+            .action-dropdown, .mouse-toggle-wrapper, .action-buttons-wrapper {
+                flex: none;
                 max-width: 100%;
+                width: auto;
+                min-width: 0;
+                margin: 0;
             }
             .mouse-toggle-wrapper {
-                justify-content: space-between;
-                margin-top: 8px;
+                border-left: none;
+                padding-left: 0;
+                justify-content: flex-start;
             }
             .action-buttons-wrapper {
-                justify-content: stretch;
-                margin-top: 8px;
+                justify-content: flex-end;
             }
             .primary-action-btn { width: 100%; }
         }
@@ -288,11 +291,12 @@ export class MainView extends LitElement {
 
         :host {
             min-height: 100%;
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: var(--space-md);
+            padding: 0; /* Removed double-padding to fix top empty gap */
             overflow-y: auto;
             overflow-x: hidden;
         }
@@ -385,7 +389,7 @@ export class MainView extends LitElement {
         }
 
         .cloud-promo-desc {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             line-height: 1.5;
         }
@@ -504,7 +508,7 @@ export class MainView extends LitElement {
             border: none;
             background: var(--accent);
             color: white;
-            font-size: 15px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
@@ -825,7 +829,7 @@ export class MainView extends LitElement {
             border: none;
             border-radius: 8px;
             padding: 10px 24px;
-            font-size: 15px;
+            font-size: 12px;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -853,7 +857,7 @@ export class MainView extends LitElement {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             letter-spacing: 0.5px;
         }
@@ -961,7 +965,7 @@ export class MainView extends LitElement {
         }
 
         .history-group-title {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
             font-weight: 600;
         }
@@ -970,7 +974,7 @@ export class MainView extends LitElement {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
+            padding: 8px 12px;
             border-radius: 8px;
             background: var(--bg-surface);
             border: 1px solid var(--border);
@@ -1440,22 +1444,27 @@ export class MainView extends LitElement {
             <div style="display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; width: 100%;">
                 <div class="action-bar-wrapper">
                     
-                    <!-- Mode Select (Custom Dropdown) -->
-                      <div class="action-dropdown" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
-                        <div class="action-dropdown-content">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
+                      <!-- Mode Select (Custom Dropdown) -->
+                        <div class="action-dropdown" @click=${(e) => { e.stopPropagation(); this.isModeMenuOpen = !this.isModeMenuOpen; this.isProfileMenuOpen = false; this.requestUpdate(); }}>
+                          <div class="action-dropdown-content ${this._modeCategoryError ? 'error-shake' : ''}" style="${this._modeCategoryError ? 'border-color: #ef4444;' : ''}">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
-                            <span style="font-size: 15px; font-weight: ${this._selectedModeCategory ? '600' : '500'}; color: ${this._selectedModeCategory ? 'var(--text-primary)' : 'var(--text-muted)'}; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <span style="font-size: 12px; font-weight: ${this._selectedModeCategory ? '600' : '500'}; color: ${this._selectedModeCategory ? 'var(--text-primary)' : 'var(--text-muted)'}; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 ${this._selectedModeCategory ? (MODES.find(m => m.value === this._selectedModeCategory)?.label || this._selectedModeCategory) : 'Select Mode'}
                             </span>
                         </div>
+                        ${this._modeCategoryError ? html`
+                            <div style="position: absolute; top: calc(100% + 4px); left: 8px; color: #ef4444; font-size: 12px; font-weight: 500;">
+                                Please select mode
+                            </div>
+                        ` : ''}
                         
                         ${this.isModeMenuOpen ? html`
-                            <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: -12px; width: calc(100% + 24px); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
+                            <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: 0; width: 100%; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
                                 ${MODES.slice(1).map(m => html`
-                                    <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: ${this._selectedModeCategory === m.value ? 'var(--accent)' : 'var(--text-primary)'}; background: ${this._selectedModeCategory === m.value ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;" 
+                                    <div style="padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; color: ${this._selectedModeCategory === m.value ? 'var(--accent)' : 'var(--text-primary)'}; background: ${this._selectedModeCategory === m.value ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;" 
                                         @mouseover=${e => { if (this._selectedModeCategory !== m.value) e.currentTarget.style.background = 'var(--bg-hover)'; }}
                                         @mouseout=${e => { if (this._selectedModeCategory !== m.value) e.currentTarget.style.background = 'transparent'; }}
                                         @click=${(e) => {
@@ -1489,7 +1498,7 @@ export class MainView extends LitElement {
                         this.requestUpdate(); 
                     }}>
                         <div class="action-dropdown-content">
-                            <span style="font-size: 15px; font-weight: ${isProfileValid ? '600' : '500'}; color: ${isProfileValid ? 'var(--text-primary)' : 'var(--text-muted)'}; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <span style="font-size: 12px; font-weight: ${isProfileValid ? '600' : '500'}; color: ${isProfileValid ? 'var(--text-primary)' : 'var(--text-muted)'}; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 ${displayProfileName}
                             </span>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
@@ -1498,8 +1507,8 @@ export class MainView extends LitElement {
                         </div>
                         
                         ${this.isProfileMenuOpen ? html`
-                            <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: -12px; width: calc(100% + 24px); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
-                                <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: ${!isProfileValid ? 'var(--accent)' : 'var(--text-primary)'}; background: ${!isProfileValid ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;" 
+                            <div class="child-dropdown" style="position: absolute; top: calc(100% + 16px); left: 0; width: 100%; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; z-index: 100; max-height: 280px; overflow-y: auto; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.4);">
+                                <div style="padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; color: ${!isProfileValid ? 'var(--accent)' : 'var(--text-primary)'}; background: ${!isProfileValid ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;" 
                                     @mouseover=${e => { if (isProfileValid) e.currentTarget.style.background = 'var(--bg-hover)'; }}
                                     @mouseout=${e => { if (isProfileValid) e.currentTarget.style.background = 'transparent'; }}
                                     @click=${(e) => {
@@ -1511,7 +1520,7 @@ export class MainView extends LitElement {
                                     No Profile (AI Mode)
                                 </div>
                                 ${profileOptions.map(p => html`
-                                    <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: ${this.selectedProfile === (p.id || p.name) ? 'var(--accent)' : 'var(--text-primary)'}; background: ${this.selectedProfile === (p.id || p.name) ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;" 
+                                    <div style="padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; color: ${this.selectedProfile === (p.id || p.name) ? 'var(--accent)' : 'var(--text-primary)'}; background: ${this.selectedProfile === (p.id || p.name) ? 'rgba(59, 130, 246, 0.1)' : 'transparent'}; transition: background 0.15s;" 
                                         @mouseover=${e => { if (this.selectedProfile !== (p.id || p.name)) e.currentTarget.style.background = 'var(--bg-hover)'; }}
                                         @mouseout=${e => { if (this.selectedProfile !== (p.id || p.name)) e.currentTarget.style.background = 'transparent'; }}
                                         @click=${(e) => {
@@ -1524,7 +1533,7 @@ export class MainView extends LitElement {
                                     </div>
                                 `)}
                                 <div style="height: 1px; background: var(--border); margin: 6px 0;"></div>
-                                <div style="padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--accent); transition: background 0.15s;" 
+                                <div style="padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; color: var(--accent); transition: background 0.15s;" 
                                     @mouseover=${e => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)'}
                                     @mouseout=${e => e.currentTarget.style.background = 'transparent'}
                                     @click=${(e) => {
@@ -1538,11 +1547,10 @@ export class MainView extends LitElement {
                             </div>
                         ` : ''}
                     </div>
-                    <div style="width: 1px; height: 32px; background: var(--border); margin: 0 12px;"></div>
 
                     <!-- Mouse Toggle -->
-                    <div class="mouse-toggle-wrapper stealth-tooltip" data-tooltip="Stealth Mode" @click=${(e) => { e.stopPropagation(); this.onToggleClickThrough && this.onToggleClickThrough(); }} style="pointer-events: auto; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
-                        <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap;">
+                    <div class="mouse-toggle-wrapper stealth-tooltip" data-tooltip="Stealth Mode" @click=${(e) => { e.stopPropagation(); this.onToggleClickThrough && this.onToggleClickThrough(); }} style="pointer-events: auto; cursor: pointer;">
+                        <span style="font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap;">
                             ${this.isClickThrough ? 'Mouse Un-Detect' : 'Mouse Detect'}
                         </span>
                         <div style="width: 42px; height: 22px; border-radius: 6px; background: ${this.isClickThrough ? 'var(--bg-elevated)' : 'var(--text-muted)'}; border: 1px solid var(--border); position: relative; transition: all 0.3s ease; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); flex-shrink: 0;">
@@ -1600,12 +1608,6 @@ export class MainView extends LitElement {
                     </div>
                 ` : ''}
 
-                <!-- Validation message beneath the pill -->
-                <div style="height: 20px; width: 100%; max-width: 800px; display: flex; align-items: center; padding-left: 20px; margin-top: 8px;">
-                    ${this._modeCategoryError ? html`
-                        <span style="color: #ef4444; font-size: 12px; font-weight: 500; margin-top: 8px;">Please select mode</span>
-                    ` : ''}
-                </div>
             </div>
         `;
     }
@@ -1701,20 +1703,6 @@ export class MainView extends LitElement {
 
         return html`
             <div class="home-container">
-                <!-- Header -->
-                <div class="home-header">
-                    <div class="header-left">
-                        
-
-                    </div>
-
-                    <div class="header-right">
-                        <div style="display:flex; flex-direction:column; align-items:center;">
-                            <span class="meetings-left-text" style="font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7);">Unlimited sessions left</span>
-                        </div>
-                    </div>
-                </div>
-
                 ${this._renderActionBar()}
 
                 <div class="home-subtext" style="font-size: 14px; font-weight: 600; color: var(--text-primary); text-align: center; margin-top: clamp(8px, 2vh, 24px); margin-bottom: 0;">
@@ -1802,7 +1790,7 @@ export class MainView extends LitElement {
                                 border: none;
                             }
                             .fullscreen-viewer .doc-sidebar-header {
-                                padding: 12px 16px;
+                                padding: 8px 12px;
                                 font-weight: 600;
                                 font-size: 14px;
                                 color: var(--text-primary);

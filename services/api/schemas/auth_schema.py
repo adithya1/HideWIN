@@ -12,6 +12,7 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    hash: str | None = None
 from pydantic import BaseModel, EmailStr
 
 class SendOtpRequest(BaseModel):

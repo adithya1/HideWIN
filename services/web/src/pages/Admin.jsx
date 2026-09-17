@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Globe, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff } from 'lucide-react';
+import RichTextEditor from '../components/RichTextEditor';
+import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload } from 'lucide-react';
 
 const MODEL_HIERARCHY = {
   openai: { name: 'OpenAI', models: [{id: 'gpt-4o', name: 'GPT-4o'}, {id: 'gpt-4o-mini', name: 'GPT-4o Mini'}] },
@@ -53,7 +54,11 @@ const HierarchicalModelSelect = ({ label, value, onChange }) => {
 export default function Admin() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [activeSettingsTab, setActiveSettingsTab] = useState('ai_models');
+    const [activeSettingsTab, setActiveSettingsTab] = useState('email_templates');
+  const [emailTemplates, setEmailTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [isAddingTemplate, setIsAddingTemplate] = useState(false);
+  const [newTemplate, setNewTemplate] = useState({ action_trigger: '', title: '', subject: '', body_html: '' });
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [showKeys, setShowKeys] = useState({});
 
@@ -133,21 +138,91 @@ export default function Admin() {
   const [smtpStatus, setSmtpStatus] = useState({ loading: false, message: '', error: false });
   const [smtpEnv, setSmtpEnv] = useState('production');
 
+
+  useEffect(() => {
+    if (activeSettingsTab === 'email_templates' && emailTemplates.length === 0) {
+      fetch('http://localhost:8000/admin-system/email-templates', { headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }})
+        .then(res => res.json())
+        .then(data => {
+            if(Array.isArray(data)) {
+                setEmailTemplates(data);
+                if(data.length > 0) setSelectedTemplate(data[0]);
+            }
+        })
+        .catch(console.error);
+    }
+  }, [activeSettingsTab]);
+
+
+  const createTemplate = async () => {
+    if (!newTemplate.action_trigger || !newTemplate.title) return alert("Trigger and Title are required");
+    try {
+        const res = await fetch(`http://localhost:8000/admin-system/email-templates`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}`
+            },
+            body: JSON.stringify(newTemplate)
+        });
+        if (res.ok) {
+            const created = await res.json();
+            setEmailTemplates([...emailTemplates, created]);
+            setIsAddingTemplate(false);
+            setSelectedTemplate(created);
+            setNewTemplate({ action_trigger: '', title: '', subject: '', body_html: '' });
+            alert("Template created successfully!");
+        }
+        else {
+            const err = await res.json();
+            alert("Failed to create template: " + (err.detail || 'Unknown error'));
+        }
+    } catch (e) {
+        alert("Error creating template.");
+    }
+  };
+
+  const saveTemplate = async () => {
+    if (!selectedTemplate) return;
+    try {
+        const res = await fetch(`http://localhost:8000/admin-system/email-templates/${selectedTemplate.action_trigger}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}`
+            },
+            body: JSON.stringify({
+                title: selectedTemplate.title,
+                subject: selectedTemplate.subject,
+                body_html: selectedTemplate.body_html
+            })
+        });
+        if (res.ok) alert("Template saved successfully!");
+        else alert("Failed to save template.");
+    } catch (e) {
+        alert("Error saving template.");
+    }
+  };
+
   const fetchAiData = async () => {
     try {
       const token = localStorage.getItem('hidewin_token');
       const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
       
-      const keysRes = await fetch('http://localhost:8000/api/admin/ai-keys', { headers });
+      const keysRes = await fetch('http://localhost:8000/admin/llm/keys', { headers });
       if (keysRes.ok) {
         const data = await keysRes.json();
         setAiKeys({ gemini: data.aiKeys.gemini || [], openai: data.aiKeys.openai || [], groq: data.aiKeys.groq || [], claude: data.aiKeys.claude || [], deepseek: data.aiKeys.deepseek || [], custom: data.aiKeys.custom || [] });
       }
       
-      const settingsRes = await fetch('http://localhost:8000/api/admin/app-settings', { headers });
+      const settingsRes = await fetch('http://localhost:8000/admin/settings', { headers });
       if (settingsRes.ok) {
         const data = await settingsRes.json();
         setAppSettings(prev => ({ ...prev, ...data.settings }));
+        if (data.settings.browser_icon_url) {
+          const link = document.querySelector("link[rel~='icon']");
+          if (link) { link.href = data.settings.browser_icon_url; }
+        }
       }
 
       const smtpRes = await fetch('http://localhost:8000/api/admin/smtp', { headers });
@@ -159,7 +234,7 @@ export default function Admin() {
       }
 
       // Load STT configs
-      const sttRes = await fetch('http://localhost:8000/api/stt/config');
+      const sttRes = await fetch('http://localhost:8000/admin/stt/config');
       if (sttRes.ok) {
         const data = await sttRes.json();
         setSttConfigs(data.configs || []);
@@ -177,7 +252,7 @@ export default function Admin() {
     const key = sttForm.groq_key;
     if (!key) { alert('Please enter a Groq API key first'); return; }
     try {
-      const res = await fetch('http://localhost:8000/api/admin-keys/fetch-models', {
+      const res = await fetch('http://localhost:8000/admin/llm/fetch-models', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'groq', api_key_value: key })
@@ -197,7 +272,7 @@ export default function Admin() {
     if (!key) return;
     setSttSaving('groq');
     try {
-      const res = await fetch('http://localhost:8000/api/admin-keys', {
+      const res = await fetch('http://localhost:8000/admin/llm/keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'groq', api_key_value: key, enabled_models: sttGroqModelsSelected })
@@ -228,7 +303,7 @@ export default function Admin() {
         buffer_seconds: parseInt(sttForm.groq_buffer || '3'),
         ...(providerName === 'custom' ? { custom_url: sttForm.custom_url, custom_name: sttForm.custom_name || 'Custom' } : {})
       };
-      const r = await fetch('http://localhost:8000/api/stt/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const r = await fetch('http://localhost:8000/admin/stt/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!r.ok) throw new Error(await r.text());
       fetchAiData();
       alert(`Success! ${providerName} STT key has been saved.`);
@@ -239,7 +314,7 @@ export default function Admin() {
   const handleActivateStt = async (providerName, mode) => {
     try {
       const payload = { provider_name: providerName, mode, is_enabled: true, is_active: true, priority: 1, buffer_seconds: parseInt(sttForm.groq_buffer || '3') };
-      const r = await fetch('http://localhost:8000/api/stt/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const r = await fetch('http://localhost:8000/admin/stt/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!r.ok) throw new Error(await r.text());
       fetchAiData();
     } catch(e) { alert('Activate failed: ' + e.message); }
@@ -248,7 +323,7 @@ export default function Admin() {
   const handleTestStt = async (providerName) => {
     setSttTestResults(prev => ({ ...prev, [providerName]: { loading: true } }));
     try {
-      const r = await fetch('http://localhost:8000/api/stt/config/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider_name: providerName }) });
+      const r = await fetch('http://localhost:8000/admin/stt/config/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider_name: providerName }) });
       const data = await r.json();
       setSttTestResults(prev => ({ ...prev, [providerName]: data }));
     } catch(e) {
@@ -261,7 +336,7 @@ export default function Admin() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('hidewin_token');
-      const res = await fetch('http://localhost:8000/api/admin/users', {
+      const res = await fetch('http://localhost:8000/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -319,7 +394,7 @@ export default function Admin() {
   const handleToggleKey = async (id, currentState) => {
     try {
       const token = localStorage.getItem('hidewin_token');
-      await fetch(`http://localhost:8000/api/admin/ai-keys/${id}/toggle`, {
+      await fetch(`http://localhost:8000/admin/llm/keys/${id}/toggle`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -334,9 +409,10 @@ export default function Admin() {
   };
 
   const handleSettingChange = async (key, value) => {
+    setAppSettings(prev => ({ ...prev, [key]: value }));
     try {
       const token = localStorage.getItem('hidewin_token');
-      await fetch('http://localhost:8000/api/admin/app-settings', {
+      await fetch('http://localhost:8000/admin/settings', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ [key]: value })
@@ -395,7 +471,29 @@ export default function Admin() {
     setModalConfig({ isOpen: true, type: 'DELETE_USER', payload: { id } });
   };
 
+
+  const handleUnblockUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to unblock this user?')) return;
+    try {
+      const token = localStorage.getItem('hidewin_token');
+      const res = await fetch(`http://localhost:8000/admin/users/${userId}/unblock`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        alert('User unblocked successfully');
+        fetchUsers();
+      } else {
+        const err = await res.json();
+        alert(err.detail || 'Failed to unblock user');
+      }
+    } catch (e) {
+      alert('Error connecting to server');
+    }
+  };
+
   const handleEditUser = (user) => {
+
     setModalForm(prev => ({ ...prev, email: user.email, password: '', role: user.role }));
     setModalError('');
     setModalConfig({ isOpen: true, type: 'UPDATE_USER', payload: { id: user.id } });
@@ -407,7 +505,7 @@ export default function Admin() {
     setIsFetchingModels(true);
     setModalError('');
     try {
-      const res = await fetch('http://localhost:8000/api/admin-keys/fetch-models', {
+      const res = await fetch('http://localhost:8000/admin/llm/fetch-models', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider, api_key_value: apiKey })
@@ -480,7 +578,7 @@ export default function Admin() {
             setModalError('API Key is required');
             return;
           }
-          const res = await fetch('http://localhost:8000/api/admin-keys', {
+          const res = await fetch('http://localhost:8000/admin/llm/keys', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ provider: payload.provider, api_key_value: modalForm.apiKey, custom_url: modalForm.customUrl || null, is_enabled: true, enabled_models: selectedModels })
@@ -489,7 +587,7 @@ export default function Admin() {
           fetchAiData();
         }
       else if (type === 'DELETE_KEY') {
-        const res = await fetch(`http://localhost:8000/api/admin/ai-keys/${payload.id}`, {
+        const res = await fetch(`http://localhost:8000/admin/llm/keys/${payload.id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -516,7 +614,7 @@ export default function Admin() {
       <aside className="sidebar">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
           <div className="brand-logo" style={{ marginBottom: 0 }}>
-            <img src="/logo.png" alt="HideWin" style={{ height: '32px' }} />
+            <img src={(theme === 'dark' ? appSettings?.logo_dark_url : appSettings?.logo_light_url) || appSettings?.logo_light_url || appSettings?.logo_dark_url || "/logo.png"} alt="HideWin" style={{ maxHeight: '32px', maxWidth: '200px' }} />
           </div>
           <button className="theme-toggle" onClick={toggleTheme} title="Toggle Theme">
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
@@ -635,9 +733,17 @@ export default function Admin() {
                       </td>
                       <td>{user.role}</td>
                       <td>
-                        <span className={`badge ${user.is_suspended ? 'badge-pending' : 'badge-active'}`}>
-                          {user.is_suspended ? 'Suspended' : 'Active'}
-                        </span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <span className={`badge ${user.is_suspended ? 'badge-pending' : 'badge-active'}`}>
+                            {user.is_suspended ? 'Suspended' : 'Active'}
+                          </span>
+                          {user.admin_unblock_required && (
+                            <span className="badge" style={{ background: '#fef2f2', color: '#ef4444' }}>Locked</span>
+                          )}
+                          {user.blocked_until && !user.admin_unblock_required && (
+                            <span className="badge" style={{ background: '#fffbeb', color: '#d97706' }}>Cooldown</span>
+                          )}
+                        </div>
                       </td>
                       <td style={{ color: 'var(--text-muted)' }}>{new Date(user.created_at).toLocaleDateString()}</td>
                       <td>
@@ -648,6 +754,11 @@ export default function Admin() {
                             <button onClick={() => handleDeleteUser(user.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete User">
                               <Trash2 size={16} />
                             </button>
+                            {(user.admin_unblock_required || user.blocked_until) && (
+                              <button onClick={() => handleUnblockUser(user.id)} style={{ background: 'none', border: 'none', color: '#8b5cf6', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Unblock User">
+                                <ShieldCheck size={16} />
+                              </button>
+                            )}
                           </div>
                       </td>
                     </tr>
@@ -694,6 +805,42 @@ export default function Admin() {
         )}
 
         {/* NESTED SETTINGS TAB */}
+        {activeTab === 'branding' && (
+          <div className="tab-content fade-in settings-layout">
+            <div className="settings-main">
+              <div className="settings-card">
+                <h3 className="section-title">Brand Logos</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div className="input-group">
+                    <label className="input-label">Light Logo URL</label>
+                    <input type="text" className="input-field" placeholder="https://example.com/logo-light.svg" value={appSettings?.logo_light_url || ''} onChange={e => handleSettingChange('logo_light_url', e.target.value)} />
+                  </div>
+                  <div className="input-group">
+                    <label className="input-label">Dark Logo URL</label>
+                    <input type="text" className="input-field" placeholder="https://example.com/logo-dark.svg" value={appSettings?.logo_dark_url || ''} onChange={e => handleSettingChange('logo_dark_url', e.target.value)} />
+                  </div>
+                  <div className="input-group">
+                    <label className="input-label">Browser Icon (Favicon) URL</label>
+                    <input type="text" className="input-field" placeholder="https://example.com/favicon.ico" value={appSettings?.browser_icon_url || ''} onChange={e => handleSettingChange('browser_icon_url', e.target.value)} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="settings-sidebar">
+              <div className="settings-card">
+                <h3 className="section-title">Save Changes</h3>
+                <p className="text-muted" style={{ marginBottom: '16px', fontSize: '14px' }}>
+                  Update your branding settings globally.
+                </p>
+                <button className="btn-primary" onClick={saveSettings} style={{ width: '100%' }}>
+                  Apply Branding
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'settings' && (
           <div className="tab-content fade-in settings-layout">
             {/* Settings Sidebar */}
@@ -713,10 +860,116 @@ export default function Admin() {
               <button className={`settings-nav-item ${activeSettingsTab === 'dns' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('dns')}>
                 <Globe size={18} /> DNS & Network
               </button>
+              <button className={`settings-nav-item ${activeSettingsTab === 'email_templates' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('email_templates')}>
+                <Mail size={18} /> Email Templates
+              </button>
+              <button className={`settings-nav-item ${activeSettingsTab === 'branding' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('branding')}>
+                <Sun size={18} /> Branding & Logos
+              </button>
             </aside>
 
             {/* Settings Content */}
             <div className="settings-content">
+              
+              {/* BRANDING & LOGOS */}
+              {activeSettingsTab === 'branding' && (
+                <div className="fade-in">
+                  <div className="card">
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
+                      <div style={{ padding: '12px', background: 'rgba(234, 179, 8, 0.1)', color: '#eab308', borderRadius: '12px' }}>
+                        <Sun size={24} />
+                      </div>
+                      <div>
+                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Brand Identity</h2>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Upload your official logos and favicon here.</p>
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                      
+                      {/* Light Logo */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-subtle)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <div style={{ width: '120px', height: '60px', background: '#ffffff', border: '1px dashed #d1d5db', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            {appSettings?.logo_light_url ? <img src={appSettings.logo_light_url} alt="Light Logo" style={{ maxHeight: '100%', maxWidth: '100%' }} /> : <span style={{fontSize: '12px', color: '#9ca3af'}}>Preview</span>}
+                          </div>
+                          <div>
+                            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>Light Theme Logo</h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Displayed on light backgrounds.</p>
+                          </div>
+                        </div>
+                        <label className="btn-primary" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px 16px', borderRadius: '6px', fontSize: '14px', width: 'max-content', minWidth: '140px' }}>
+                          <Upload size={16} /> Upload Image
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => handleSettingChange('logo_light_url', ev.target.result);
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        </label>
+                      </div>
+                      
+                      {/* Dark Logo */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-subtle)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <div style={{ width: '120px', height: '60px', background: '#111827', border: '1px dashed #374151', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            {appSettings?.logo_dark_url ? <img src={appSettings.logo_dark_url} alt="Dark Logo" style={{ maxHeight: '100%', maxWidth: '100%' }} /> : <span style={{fontSize: '12px', color: '#4b5563'}}>Preview</span>}
+                          </div>
+                          <div>
+                            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>Dark Theme Logo</h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Displayed on dark backgrounds.</p>
+                          </div>
+                        </div>
+                        <label className="btn-primary" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px 16px', borderRadius: '6px', fontSize: '14px', width: 'max-content', minWidth: '140px' }}>
+                          <Upload size={16} /> Upload Image
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => handleSettingChange('logo_dark_url', ev.target.result);
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        </label>
+                      </div>
+
+                      {/* Favicon */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-subtle)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <div style={{ width: '60px', height: '60px', background: '#ffffff', border: '1px dashed #d1d5db', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            {appSettings?.browser_icon_url ? <img src={appSettings.browser_icon_url} alt="Favicon" style={{ maxHeight: '32px', maxWidth: '32px' }} /> : <span style={{fontSize: '12px', color: '#9ca3af'}}>16x16</span>}
+                          </div>
+                          <div>
+                            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>Browser Favicon</h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Browser tab icon (.ico or image).</p>
+                          </div>
+                        </div>
+                        <label className="btn-primary" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px 16px', borderRadius: '6px', fontSize: '14px', width: 'max-content', minWidth: '140px' }}>
+                          <Upload size={16} /> Upload Icon
+                          <input type="file" accept="image/*,.ico" style={{ display: 'none' }} onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => handleSettingChange('browser_icon_url', ev.target.result);
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        </label>
+                      </div>
+                      
+                    </div>
+                    
+                    <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
+                      <button className="btn-primary" onClick={() => alert("Branding settings saved successfully!")} style={{ width: 'max-content', padding: '10px 24px' }}>
+                        Save Branding Settings
+                      </button>
+                    </div>
+                    
+                  </div>
+                </div>
+              )}
               
               {/* SECURITY & AUTH */}
               {activeSettingsTab === 'security' && (
@@ -731,6 +984,44 @@ export default function Admin() {
                         <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Configure your SMTP server for sending authentication OTPs.</p>
                       </div>
                     </div>
+                    <div className="card" style={{ marginTop: '24px' }}>
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
+                        <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '12px' }}>
+                          <ShieldCheck size={24} />
+                        </div>
+                        <div>
+                          <h2 style={{ fontSize: '18px', fontWeight: 600 }}>OTP Rate Limiting & Blocking</h2>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Configure exponential backoff and permanent block for failed OTP attempts.</p>
+                        </div>
+                      </div>
+                      <div style={{ display: 'grid', gap: '16px', maxWidth: '500px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={appSettings?.otp_rate_limit_enabled ?? true}
+                            onChange={(e) => handleSettingChange('otp_rate_limit_enabled', e.target.checked)}
+                          />
+                          <label>Enable Progressive Rate Limiting</label>
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">Max Failed Attempts Before Lock</label>
+                          <input type="number" className="input-field" value={appSettings?.otp_max_attempts || 3} onChange={e => handleSettingChange('otp_max_attempts', parseInt(e.target.value))} />
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">Level 1 Block (Minutes)</label>
+                          <input type="number" className="input-field" value={appSettings?.otp_block_duration_1_mins || 3} onChange={e => handleSettingChange('otp_block_duration_1_mins', parseInt(e.target.value))} />
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">Level 2 Block (Minutes)</label>
+                          <input type="number" className="input-field" value={appSettings?.otp_block_duration_2_mins || 10} onChange={e => handleSettingChange('otp_block_duration_2_mins', parseInt(e.target.value))} />
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">Level 3 Block (Minutes)</label>
+                          <input type="number" className="input-field" value={appSettings?.otp_block_duration_3_mins || 120} onChange={e => handleSettingChange('otp_block_duration_3_mins', parseInt(e.target.value))} />
+                        </div>
+                      </div>
+                    </div>
+
                     
                     <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
                       <button 
@@ -1142,7 +1433,7 @@ export default function Admin() {
                             </div>
                             <button className="btn-primary" onClick={() => {
                               // Save as STT
-                              fetch('http://localhost:8000/api/admin-keys', {
+                              fetch('http://localhost:8000/admin/llm/keys', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ provider: 'groq', api_key_value: sttForm.groq_key, enabled_models: selectedModels })
@@ -1257,6 +1548,133 @@ export default function Admin() {
               })()}
 
               
+                
+                {/* EMAIL TEMPLATES */}
+                {activeSettingsTab === 'email_templates' && (
+                  <div className="fade-in">
+                    <div style={{ marginBottom: '24px' }}>
+                      <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>Email Templates</h2>
+                      <p style={{ color: 'var(--text-muted)' }}>Dynamically trigger rich HTML emails for system events.</p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '24px' }}>
+
+                      <div style={{ width: '250px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <button 
+                            className="btn-primary" 
+                            onClick={() => { setIsAddingTemplate(true); setSelectedTemplate(null); }}
+                            style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                        >
+                            + Add Template
+                        </button>
+
+                        {emailTemplates.map(t => (
+                            <button 
+                                key={t.action_trigger}
+                                onClick={() => setSelectedTemplate(t)}
+                                style={{
+                                    padding: '12px',
+                                    textAlign: 'left',
+                                    background: selectedTemplate?.action_trigger === t.action_trigger ? 'var(--primary)' : 'var(--surface)',
+                                    color: selectedTemplate?.action_trigger === t.action_trigger ? 'white' : 'var(--text)',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    fontWeight: selectedTemplate?.action_trigger === t.action_trigger ? 'bold' : 'normal'
+                                }}
+                            >
+                                {t.title}
+                                <div style={{ fontSize: '11px', opacity: 0.8, marginTop: '4px' }}>Trigger: {t.action_trigger}</div>
+                            </button>
+                        ))}
+                      </div>
+
+
+                      <div style={{ flex: 1 }} className="card">
+                        {isAddingTemplate ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Action Trigger (e.g. user_login)</label>
+                                    <input 
+                                        type="text" 
+                                        className="input-field" 
+                                        placeholder="No spaces, use underscores"
+                                        value={newTemplate.action_trigger} 
+                                        onChange={e => setNewTemplate({...newTemplate, action_trigger: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Template Title</label>
+                                    <input 
+                                        type="text" 
+                                        className="input-field" 
+                                        value={newTemplate.title} 
+                                        onChange={e => setNewTemplate({...newTemplate, title: e.target.value})}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Email Subject</label>
+                                    <input 
+                                        type="text" 
+                                        className="input-field" 
+                                        value={newTemplate.subject} 
+                                        onChange={e => setNewTemplate({...newTemplate, subject: e.target.value})}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Email Body (Rich HTML)</label>
+                                    <RichTextEditor 
+                                        value={newTemplate.body_html} 
+                                        onChange={val => setNewTemplate({...newTemplate, body_html: val})}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
+                                    <button className="btn-secondary" onClick={() => setIsAddingTemplate(false)}>Cancel</button>
+                                    <button className="btn-primary" onClick={createTemplate}>Create Template</button>
+                                </div>
+                            </div>
+                        ) : selectedTemplate ? (
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Template Title</label>
+                                    <input 
+                                        type="text" 
+                                        className="input-field" 
+                                        value={selectedTemplate.title} 
+                                        onChange={e => setSelectedTemplate({...selectedTemplate, title: e.target.value})}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Email Subject</label>
+                                    <input 
+                                        type="text" 
+                                        className="input-field" 
+                                        value={selectedTemplate.subject} 
+                                        onChange={e => setSelectedTemplate({...selectedTemplate, subject: e.target.value})}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Email Body (Rich HTML)</label>
+                                    <RichTextEditor 
+                                        value={selectedTemplate.body_html} 
+                                        onChange={val => setSelectedTemplate({...selectedTemplate, body_html: val})}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                                    <button className="btn-primary" onClick={saveTemplate}>Save Template</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                                Select a template to edit.
+                            </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* DNS & NETWORK */}
                 {activeSettingsTab === 'dns' && (
                   <div className="fade-in">

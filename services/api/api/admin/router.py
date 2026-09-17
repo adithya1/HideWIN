@@ -15,7 +15,11 @@ from services.api.db_models.email_template import EmailTemplate
 router = APIRouter(prefix="/admin-system", tags=["Admin Settings & Compliance"])
 
 async def verify_admin(current_user: User = Depends(get_current_user)):
-    if current_user.role not in ("ADMIN", "SUPER_ADMIN"):
+    from services.api.core.admin_config import get_admin_settings
+    settings = get_admin_settings()
+    
+    # Allow if role is admin OR if their email matches the global admin email
+    if current_user.role not in ("ADMIN", "SUPER_ADMIN") and current_user.email != settings.admin_email:
         raise HTTPException(status_code=403, detail="Not enough permissions")
     return current_user
 

@@ -225,3 +225,21 @@ async def vendor_reports(db: AsyncSession = Depends(get_db), current_user: User 
             } for u in employees],
         }
     }
+
+@router.post("/users/{user_id}/unblock")
+async def vendor_unblock_user(user_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(require_vendor)):
+    res = await db.execute(select(User).filter(User.id == user_id, User.vendor_id == current_user.id))
+    user = res.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found or not in your organization")
+        
+    user.failed_otp_attempts = 0
+    user.otp_block_level = 0
+    user.blocked_until = None
+    user.admin_unblock_required = False
+    
+    audit = AuditLog(user_id=current_user.id, actor_email=current_user.email, event_type="USER_UNBLOCKED", details=f"Unblocked employee {user.email}")
+    db.add(audit)
+    db.add(user)
+    await db.commit()
+    return {"success": True, "message": f"User {user.email} unblocked successfully."}

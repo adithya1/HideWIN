@@ -82,45 +82,43 @@ export class AuthView extends LitElement {
         }
 
         .auth-card {
-            background: #ffffff;
+            background: var(--bg-elevated);
             width: 100%;
             max-width: 400px;
             border-radius: 12px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0,0,0,0.02);
-            border: 1px solid #f3f4f6;
-            padding: clamp(16px, 3vw, 24px);
+            padding: 32px 32px 24px 32px;
             display: flex;
             flex-direction: column;
-            z-index: 95;
-            position: relative;
+            align-items: center;
+            border: 1px solid var(--border);
         }
 
         .brand-logo {
+            margin-bottom: 24px;
             display: flex;
             justify-content: center;
-            margin-bottom: 16px;
         }
         .brand-logo img {
             height: 40px;
             width: auto;
             object-fit: contain;
+            filter: var(--logo-filter, none);
         }
 
         .welcome-title {
+            margin: 0 0 8px 0;
             font-size: 24px;
             font-weight: 600;
-            color: #111827;
+            color: var(--text-primary);
             text-align: center;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.01em;
         }
 
         .welcome-subtitle {
-            font-size: 15px;
-            color: #6b7280;
+            margin: 0 0 24px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
             text-align: center;
-            margin: 0 0 8px 0;
-            line-height: 1.5;
         }
 
         .input-group {
@@ -134,28 +132,28 @@ export class AuthView extends LitElement {
         .input-label {
             font-size: 13px;
             font-weight: 500;
-            color: #374151;
+            color: var(--text-primary);
         }
 
         .input-field {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid #d1d5db;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 15px;
-            color: #111827;
-            outline: none;
+            font-size: 14px;
             transition: all 0.2s ease;
-            background: #ffffff;
+            box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
         .input-field:focus {
-            border-color: #2563eb;
+            border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-        .input-field::placeholder { color: #9ca3af; }
+        .input-field::placeholder { color: var(--text-muted); }
 
         .error-message {
-            color: #dc2626;
+            color: var(--danger);
             font-size: 13px;
             margin-top: -12px;
             margin-bottom: 16px;
@@ -164,11 +162,11 @@ export class AuthView extends LitElement {
         }
 
         .success-message {
-            background: #f0fdf4;
-            color: #166534;
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success);
             padding: 10px 14px;
             border-radius: 8px;
-            border: 1px solid #bbf7d0;
+            border: 1px solid rgba(22, 163, 74, 0.2);
             margin-bottom: 16px;
             font-size: 14px;
             font-weight: 500;
@@ -178,8 +176,8 @@ export class AuthView extends LitElement {
         .btn-primary {
             width: 100%;
             padding: 10px 14px;
-            background: #111827;
-            color: white;
+            background: var(--accent);
+            color: #ffffff;
             border: none;
             border-radius: 8px;
             font-size: 15px;
@@ -192,14 +190,14 @@ export class AuthView extends LitElement {
             gap: 8px;
         }
         .btn-primary:hover:not(:disabled) {
-            background: #1f2937;
+            background: var(--accent-hover);
             transform: translateY(-1px);
         }
         .btn-primary:active:not(:disabled) {
             transform: translateY(0);
         }
         .btn-primary:disabled {
-            background: #9ca3af;
+            background: var(--text-muted);
             cursor: not-allowed;
         }
 
@@ -208,14 +206,14 @@ export class AuthView extends LitElement {
             align-items: center;
             text-align: center;
             margin: 12px 0;
-            color: #9ca3af;
+            color: var(--text-muted);
             font-size: 12px;
             font-weight: 500;
         }
         .divider::before, .divider::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border);
         }
         .divider::before { margin-right: 16px; }
         .divider::after { margin-left: 16px; }
@@ -230,12 +228,12 @@ export class AuthView extends LitElement {
         .sso-btn {
             flex: 1;
             padding: 9px 14px;
-            background: #ffffff;
-            border: 1px solid #d1d5db;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
-            color: #374151;
+            color: var(--text-primary);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -244,10 +242,10 @@ export class AuthView extends LitElement {
             transition: all 0.2s ease;
         }
         .sso-btn:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
+            background: var(--bg-hover);
+            border-color: var(--text-muted);
         }
-        .sso-btn:active { background: #f3f4f6; }
+        .sso-btn:active { background: var(--bg-app); }
         .sso-btn svg, .sso-btn img {
             width: 18px;
             height: 18px;
@@ -399,8 +397,14 @@ export class AuthView extends LitElement {
             });
             
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to send OTP');
+                let errorMsg = 'Failed to send OTP';
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.detail || errorMsg;
+                } catch(e) {
+                    errorMsg = `Server error: ${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMsg);
             }
             
             this.successMsg = 'We found your account. Enter your password or the OTP sent to your email.';
@@ -428,8 +432,14 @@ export class AuthView extends LitElement {
             });
             
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Invalid code. Please try again.');
+                let errorMsg = 'Invalid code. Please try again.';
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.detail || errorMsg;
+                } catch(e) {
+                    errorMsg = `Server error: ${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMsg);
             }
             
             const data = await response.json();
@@ -551,19 +561,6 @@ export class AuthView extends LitElement {
 
     render() {
         return html`
-            <div class="drag-region"></div>
-            <div class="window-controls">
-                <button class="control-btn" @click=${this._handleMinimize} title="Minimize" aria-label="Minimize">
-                    <svg viewBox="0 0 10 10"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M1 5h8"/></svg>
-                </button>
-                <button class="control-btn" @click=${this._handleMaximize} title="Maximize" aria-label="Maximize">
-                    <svg viewBox="0 0 10 10"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M1 1h8v8H1z"/></svg>
-                </button>
-                <button class="control-btn close" @click=${this._handleClose} title="Close" aria-label="Close">
-                    <svg viewBox="0 0 10 10"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M1 1l8 8m0-8L1 9"/></svg>
-                </button>
-            </div>
-
             <div class="auth-layout">
                 <div class="auth-card">
                     <div class="brand-logo">

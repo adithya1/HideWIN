@@ -1,4 +1,4 @@
-﻿import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 import { renderTopToolbar, renderLiveBar, renderCurrentView } from './HideWinAppRenderers.js';
 import { bindAppEvents, unbindAppEvents } from './HideWinAppEvents.js';
 import { appStyles } from './HideWinApp.styles.js';
@@ -22,6 +22,9 @@ export class HideWinApp extends LitElement {
 
 
     static properties = {
+        showAvatarMenu: { type: Boolean },
+        isMobileDrawerOpen: { type: Boolean },
+        _windowWidth: { state: true },
         isAuthenticated: { type: Boolean },
         currentView: { type: String },
         statusText: { type: String },
@@ -78,6 +81,7 @@ export class HideWinApp extends LitElement {
         this.isSessionHidden = false;
         this.userFullName = 'User';
         this.userEmail = 'user@example.com';
+        this._windowWidth = window.innerWidth || 1050;
         this.showAvatarMenu = false;
         this.responses = [];
         this.currentResponseIndex = -1;
@@ -252,11 +256,44 @@ export class HideWinApp extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         bindAppEvents.call(this);
+
+        // Track window width for responsive toolbar (CSS media queries don't fire in Electron shadow DOM)
+        this._resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const w = entry.contentRect.width;
+                if (w !== this._windowWidth) {
+                    this._windowWidth = w;
+                }
+            }
+        });
+        this._resizeObserver.observe(this);
+
+        // Handle session start routed from main window (single-window merge)
+        if (window.require) {
+            const { ipcRenderer } = window.require('electron');
+            ipcRenderer.on('update-session-state', (e, options) => {
+                if (options && options.modeCategory !== undefined) this.selectedModeCategory = options.modeCategory;
+                if (options && options.profileId !== undefined) this.selectedProfile = options.profileId;
+                if (!this.sessionActive) {
+                    // Transition to session view within main window
+                    this.currentView = 'assistant';
+                    this.sessionActive = true;
+                    this.isPaused = false;
+                    this.startTime = Date.now();
+                    this._startTimer();
+                }
+                this.requestUpdate();
+            });
+        }
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
         unbindAppEvents.call(this);
+        if (this._resizeObserver) {
+            this._resizeObserver.disconnect();
+            this._resizeObserver = null;
+        }
     }
 
     async _handleResizingKeydown(e) {
@@ -1103,35 +1140,7 @@ export class HideWinApp extends LitElement {
                 <div class="resize-handle bottom-left" @mousedown=${e => this._startResize(e, 'bottom-left')}></div>
                 <div class="resize-handle bottom-right" @mousedown=${e => this._startResize(e, 'bottom-right')}></div>
             ` : ''}
-            <div class="app-shell" style="${this.isSessionHidden ? 'display: none;' : (isLive ? 'margin-top: 48px; height: calc(100vh - 78px);' : '')}">
-                <div class="top-drag-bar ${isLive ? 'hidden' : ''}" @mousedown=${e => this._startMove(e)}>
-                    <!-- Left: Brand -->
-                    <div class="titlebar-brand">
-                        <div class="brand-logo"></div>
-                    </div>
-
-                    <!-- Center: Drag region -->
-                    <div class="drag-region"></div>
-
-                    <!-- Center: Window Controls -->
-                    <div class="titlebar-controls">
-                        <button class="win-btn minimize" @click=${() => this._handleMinimize()}>
-                            <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="1" y="5.5" width="10" height="1.5" rx="0.75" fill="currentColor"/>
-                            </svg>
-                        </button>
-                        <button class="win-btn maximize" @click=${() => this._handleMaximize()}>
-                            <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="1.5" y="1.5" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                            </svg>
-                        </button>
-                        <button class="win-btn close" @click=${() => this.handleClose()}>
-                            <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2 2L10 10M10 2L2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+            <div class="app-shell" style="${this.isSessionHidden ? 'display: none;' : ''}">
                 ${this.renderTopToolbar()}
                 <div class="content">
                     <div class="content-inner ${isLive ? 'live' : ''}">

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
     <head>
 <script>
@@ -82,12 +82,13 @@ window.addEventListener('error', function(e) {
                 box-shadow: none !important;
                 border: none !important;
             }
-            body {
-            overflow-x: hidden;
-                background-color: var(--bg-app);
-                
+            html, body {
                 margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
                 overflow: hidden;
+                background-color: transparent !important;
             }
             ::-webkit-scrollbar {
         width: 4px;
@@ -123,7 +124,7 @@ window.addEventListener('error', function(e) {
         <link rel="stylesheet" href="assets/highlight-vscode-dark.min.css" />
         <script type="module" src="components/app/HideWinApp.js"></script>
 
-        <hide-win-app id="appRoot"></hide-win-app>
+        <hide-win-app id="appRoot" style="display:block;width:100%;height:100%;"></hide-win-app>
     </body>
 </html>
 

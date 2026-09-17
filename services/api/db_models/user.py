@@ -26,6 +26,13 @@ class User(Base):
     context_data = Column(Text, nullable=True)
     google_id = Column(String, nullable=True)
     stripe_customer_id = Column(String, nullable=True)
+    
+    # OTP Progressive Rate Limiting & Lockout
+    failed_otp_attempts = Column(Integer, default=0)
+    otp_block_level = Column(Integer, default=0)
+    blocked_until = Column(DateTime(timezone=True), nullable=True)
+    admin_unblock_required = Column(Boolean, default=False)
+    
     _permissions = Column("permissions", Text, default="{}")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

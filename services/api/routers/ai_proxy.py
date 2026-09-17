@@ -357,6 +357,8 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
                     raise HTTPException(status_code=429, detail="API exhausted across multiple fallback keys.")
                 continue # Try next key
             else:
+                if err_code == 401:
+                    raise HTTPException(status_code=502, detail="Upstream provider (Groq) rejected API key as Unauthorized")
                 raise HTTPException(status_code=err_code, detail=str(e))
                 
         except Exception as e:

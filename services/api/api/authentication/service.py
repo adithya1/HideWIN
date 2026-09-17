@@ -39,6 +39,7 @@ class AuthenticationService:
         return encoded_jwt
 import secrets
 import time
+from services.api.core.admin_config import get_admin_settings
 from services.api.services.email_service import EmailService
 
 # In-memory OTP cache for legacy behavior
@@ -47,7 +48,8 @@ _login_otps: dict = {}
 class OTPService:
     @staticmethod
     async def send_otp(email: str, db) -> dict:
-        expires_at = time.time() + 600 # 10 minutes valid
+        admin_settings = get_admin_settings()
+        expires_at = time.time() + (admin_settings.otp_expiry_minutes * 60)
         if email.endswith("@hidewin.app"):
             otp = "123456"
             _login_otps[email] = {"code": otp, "expires_at": expires_at}
@@ -57,13 +59,18 @@ class OTPService:
         _login_otps[email] = {"code": otp, "expires_at": expires_at}
         
         body_html = f"Your login code is: {otp}\n\nPlease enter this code to sign in."
-        await EmailService.send_email(db, email, "Your HideWIN Login Code", body_html)
+        print(f"\n{'='*40}\n[DEBUG] OTP FOR {email} IS: {otp}\n{'='*40}\n")
+        try:
+            await EmailService.send_email(db, email, "Your HideWIN Login Code", body_html)
+        except Exception as e:
+            print(f"Failed to send email to {email}: {e}")
         
         return {"success": True, "message": "OTP sent successfully"}
         
     @staticmethod
     def verify_otp(email: str, otp: str) -> bool:
         stored = _login_otps.get(email)
+        print(f"VERIFY OTP CALLED - Email: {email}, Provided: {otp}, Stored: {stored}")
         if stored and isinstance(stored, dict):
             if time.time() > stored.get("expires_at", 0):
                 del _login_otps[email]

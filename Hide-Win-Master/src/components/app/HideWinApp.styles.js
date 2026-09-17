@@ -1,4 +1,4 @@
-﻿import { css } from '../../assets/lit-core-2.7.4.min.js';
+import { css } from '../../assets/lit-core-2.7.4.min.js';
 
 export const appStyles =     css`
     ::-webkit-scrollbar {
@@ -56,6 +56,39 @@ export const appStyles =     css`
             display: block;
         }
 
+
+        :host {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: transparent !important;
+        }
+
+        /* --------------------------------------------------------- */
+        /* GLOBAL DESIGN TOKENS (Light/Dark Mode Support)            */
+        /* --------------------------------------------------------- */
+        :host-context([data-theme="dark"]) {
+            --bg-app: #0f1115;
+            --bg-surface: #1e2128;
+            --bg-elevated: #282c34;
+            --bg-hover: #2c313a;
+
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+
+            --border: #333842;
+            --border-strong: #4b5563;
+            --input-bg: #1e2128;
+
+            --logo-filter: brightness(0) invert(1);
+        }
+
+        :host-context(:not([data-theme="dark"])) {
+            --input-bg: #ffffff;
+            --logo-filter: none;
+        }
 
 
         /* Click-through mode: pass 100% of mouse events and cursor shapes to underlying OS windows */
@@ -148,9 +181,16 @@ export const appStyles =     css`
         .app-shell {
             display: flex;
             flex-direction: column;
+            width: 100%;
             height: 100%;
             overflow: hidden;
+            background: var(--bg-app);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-sizing: border-box;
         }
+
+
 
         .content {
             flex: 1;
@@ -182,11 +222,10 @@ export const appStyles =     css`
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 40px;
+            height: 36px;
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border);
             -webkit-app-region: drag;
-            
             padding: 0 8px;
         }
 
@@ -286,82 +325,108 @@ export const appStyles =     css`
             pointer-events: none;
         }
 
-        /* Horizontal Top Navigation Bar (Snipping Tool Style) */
+        /* Horizontal Top Navigation Bar */
         .top-toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border);
-            padding: 6px 12px;
-            height: 48px;
-            -webkit-app-region: no-drag;
-            gap: 8px;
+            padding: 3px 8px;
+            height: 36px;
+            -webkit-app-region: drag;
+            gap: 4px;
+            box-sizing: border-box;
         }
 
         .top-toolbar.hidden {
             display: none;
         }
 
-                .nav-item {
+        /* nav-item: default (icon + label, window > 550px) */
+        .nav-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
+            gap: 4px;
+            padding: 3px 7px;
             border: 1px solid transparent;
             background: transparent;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: background 0.15s ease, color 0.15s ease;
+            position: relative;
+            white-space: nowrap;
         }
         .nav-item:hover {
-            background: rgba(120, 120, 120, 0.1);
+            background: rgba(120, 120, 120, 0.12);
             color: var(--text-primary);
         }
         .nav-item.active {
             background: var(--bg-elevated);
             border-color: var(--border);
             color: var(--accent);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         }
         .nav-item svg {
-            width: 16px;
-            height: 16px;
+            width: 13px;
+            height: 13px;
+            flex-shrink: 0;
         }
-        @media (max-width: 600px) {
-            .nav-item {
-                padding: 8px;
-            }
-            .nav-item .nav-label {
-                display: none;
-            }
-            /* Show label on hover if possible, or just let tooltip handle it */
-            .nav-item:hover::after {
-                content: attr(title);
-                position: absolute;
-                top: 100%;
-                margin-top: 4px;
-                background: var(--bg-elevated);
-                border: 1px solid var(--border);
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 11px;
-                color: var(--text-primary);
-                white-space: nowrap;
-                z-index: 1000;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                pointer-events: none;
-            }
+        .nav-label {
+            font-size: 11px;
+            line-height: 1;
         }
+
+        /* icon-only mode: window <= 550px — hide labels */
+        .nav-item.icon-only {
+            padding: 4px 5px;
+            gap: 0;
+        }
+        .nav-item.icon-only .nav-label {
+            display: none;
+        }
+
+        /* ultra-compact: window <= 450px */
+        .nav-item.ultra-compact {
+            padding: 3px 4px;
+        }
+        .nav-item.ultra-compact svg {
+            width: 11px;
+            height: 11px;
+        }
+
+        /* Tooltip shown on hover in icon-only modes */
+        .nav-item.icon-only:hover::after,
+        .nav-item.ultra-compact:hover::after {
+            content: attr(title);
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            pointer-events: none;
+        }
+
         .horizontal-nav {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 2px;
             overflow-x: auto;
             scrollbar-width: none;
+            flex: 1;
+            min-width: 0;
         }
 
         .horizontal-nav::-webkit-scrollbar {

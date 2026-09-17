@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 
@@ -8,7 +8,21 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [branding, setBranding] = useState({ logo_light: '', logo_dark: '', browser_icon: '' });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('http://localhost:8000/auth/branding')
+      .then(res => res.json())
+      .then(data => {
+        setBranding(data);
+        if (data.browser_icon) {
+          const link = document.querySelector("link[rel~='icon']");
+          if (link) { link.href = data.browser_icon; }
+        }
+      })
+      .catch(e => console.error(e));
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -50,7 +64,7 @@ export default function AdminLogin() {
         
         <div className="card" style={{ maxWidth: '400px', width: '100%', padding: '40px' }}>
           <div className="brand-logo" style={{ marginBottom: '32px', justifyContent: 'center' }}>
-            <img src="/logo.png" alt="HideWin" style={{ height: '40px' }} />
+            <img src={(document.body.getAttribute('data-theme') === 'dark' ? branding.logo_dark : branding.logo_light) || branding.logo_light || branding.logo_dark || "/logo.png"} alt="HideWin" style={{ maxHeight: '40px', maxWidth: '200px' }} />
           </div>
           
           <h1 style={{ fontSize: '24px', fontWeight: '700', textAlign: 'center', marginBottom: '8px' }}>Staff Portal</h1>

@@ -314,29 +314,15 @@ ipcMain.handle('show-confirm-dialog', async (event, message) => {
                 lastSessionOptions = options;
             }
 
-            if (!sessionWindow || sessionWindow.isDestroyed()) {
-                sessionWindow = createSessionWindow(sendToRenderer, geminiSessionRef, options);
-                if (sessionState !== 'paused') {
-                    sessionStartTime = Date.now();
-                }
-                sessionState = 'active';
-                try { require('./utils/window').triggerAutoStealthStart(); } catch(e) { console.error(e); }
-                
-                sessionWindow.on('closed', () => {
-                    if (sessionState === 'active') {
-                        sessionState = 'paused';
-                        if (mainWindow && !mainWindow.isDestroyed()) {
-                            mainWindow.webContents.send('session-status-changed', { state: sessionState, startTime: sessionStartTime });
-                        }
-                    }
-                });
-            } else {
-                sessionWindow.webContents.send('update-session-state', options);
-                sessionWindow.show();
-                sessionWindow.focus();
-                sessionState = 'active';
+            if (sessionState !== 'paused') {
+                sessionStartTime = Date.now();
             }
+            sessionState = 'active';
+            try { require('./utils/window').triggerAutoStealthStart(); } catch(e) { console.error(e); }
+            
+            // Do NOT create a new window. Instead, tell mainWindow to transition into session UI.
             if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('update-session-state', options);
                 mainWindow.webContents.send('session-status-changed', { state: sessionState, startTime: sessionStartTime });
             }
             return { success: true };
@@ -362,30 +348,7 @@ ipcMain.handle('show-confirm-dialog', async (event, message) => {
             try { require('./utils/window').triggerAutoStealthStop(); } catch(e) { console.error(e); }
             
             if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.webContents.send('force-restore-main-window');
-                
-                if (mainWindow.isMinimized()) mainWindow.restore();
-                mainWindow.show();
-                mainWindow.setAlwaysOnTop(true, "screen-saver");
-                mainWindow.focus();
-                try { app.focus(); } catch(e) {}
-                
                 mainWindow.webContents.send('session-status-changed', { state: sessionState, startTime: sessionStartTime });
-
-                setTimeout(() => { 
-                    if (mainWindow && !mainWindow.isDestroyed()) {
-                        mainWindow.setAlwaysOnTop(false); 
-                    }
-                    if (sessionWindow && !sessionWindow.isDestroyed()) {
-                        sessionWindow.destroy();
-                        sessionWindow = null;
-                    }
-                }, 150);
-            } else {
-                if (sessionWindow && !sessionWindow.isDestroyed()) {
-                    sessionWindow.destroy();
-                    sessionWindow = null;
-                }
             }
             return { success: true };
         } catch (error) {
@@ -399,10 +362,7 @@ ipcMain.handle('show-confirm-dialog', async (event, message) => {
             sessionState = 'idle';
             try { require('./utils/window').triggerAutoStealthStop(); } catch(e) { console.error(e); }
             sessionStartTime = null;
-            if (sessionWindow && !sessionWindow.isDestroyed()) {
-                sessionWindow.destroy();  // Bug #5 fix: destroy so session can be restarted
-                sessionWindow = null;
-            }
+            
             if (mainWindow && !mainWindow.isDestroyed()) {
                 mainWindow.webContents.send('session-status-changed', { state: sessionState, startTime: null });
             }
