@@ -8,6 +8,7 @@ import Account from "./pages/Account";
 import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import AdminCopilots from "./pages/AdminCopilots";
+import AdminOrders from "./pages/AdminOrders";
 import CreateAssistant from "./pages/CreateAssistant";
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path={adminPath} element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<Admin />} />
 <Route path="/admin/copilots" element={<AdminCopilots />} />
+<Route path="/admin/orders" element={<AdminOrders />} />
         </Routes>
       </div>
     </BrowserRouter>
