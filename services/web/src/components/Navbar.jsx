@@ -52,7 +52,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="navbar-logo" onClick={() => navigate('/download')} style={{ cursor: 'pointer' }}>
+        <div className="navbar-logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
           <img src="/logo.png" alt="HideWin" />
         </div>
         

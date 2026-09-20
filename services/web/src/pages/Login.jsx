@@ -91,7 +91,7 @@ export default function Login() {
     } else {
       const existingToken = localStorage.getItem('hidewin_token');
       if (existingToken) {
-        navigate('/download');
+        navigate('/dashboard');
       }
     }
   }, [navigate]);
@@ -180,11 +180,11 @@ export default function Login() {
       if (!isDesktopUser) {
         // Fallback redirect for users who are new or on a web-only device
         setTimeout(() => {
-          navigate('/download');
+          navigate('/dashboard');
         }, 3000);
       } else {
         setTimeout(() => {
-          navigate('/download');
+          navigate('/dashboard');
         }, 500);
       }
 
