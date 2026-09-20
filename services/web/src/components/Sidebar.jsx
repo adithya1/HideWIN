@@ -30,8 +30,8 @@ export default function Sidebar() {
         { name: 'Credits', path: '/account/credits' },
         { name: 'Transactions', path: '/account/transactions' },
         { name: 'Credit History', path: '/account/credit-history' },
-        { name: 'Associates', path: '/account/associates' },
-        { name: 'Security', path: '/account/security' },
+        
+        
     ];
 
     const bottomItems = [

@@ -31,7 +31,7 @@ function App() {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/assistant/create" element={<CreateAssistant />} />
-            <Route path="/account" element={<Account />} />
+            <Route path="/account/:tab?" element={<Account />} />
             <Route path="/assistants" element={<Assistants />} />
             <Route path="/sessions" element={<Sessions />} />
             <Route path="/session/:id/:tab?" element={<SessionDetail />} />
