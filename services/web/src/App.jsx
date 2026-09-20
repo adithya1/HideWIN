@@ -7,6 +7,7 @@ import Account from "./pages/Account";
 
 import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import Assistants from "./pages/Assistants";
 import AdminCopilots from "./pages/AdminCopilots";
 import AdminOrders from "./pages/AdminOrders";
 import CreateAssistant from "./pages/CreateAssistant";
@@ -28,7 +29,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/assistant/create" element={<CreateAssistant />} />
             <Route path="/account" element={<Account />} />
-            <Route path="/assistants" element={<div>Assistants List</div>} />
+            <Route path="/assistants" element={<Assistants />} />
             <Route path="/sessions" element={<div>Sessions List</div>} />
             <Route path="/documents" element={<div>Documents List</div>} />
           </Route>
