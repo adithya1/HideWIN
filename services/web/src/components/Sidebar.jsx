@@ -36,7 +36,7 @@ export default function Sidebar() {
     const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
 
     return (
-        <div style={{ width: '250px', borderRight: '1px solid #e0e0e0', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        <div style={{ width: '250px', borderRight: '1px solid #e0e0e0', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', fontFamily: 'system-ui, -apple-system, sans-serif', overflowY: 'auto' }}>
             <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
                 {branding.logo_light ? (
                     <img src={branding.logo_light} alt="HideWin" style={{ height: '36px', objectFit: 'contain' }} />

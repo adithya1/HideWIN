@@ -9,6 +9,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import Assistants from "./pages/Assistants";
 import Sessions from "./pages/Sessions";
+import Documents from "./pages/Documents";
 import SessionDetail from "./pages/SessionDetail";
 import AdminCopilots from "./pages/AdminCopilots";
 import AdminOrders from "./pages/AdminOrders";
@@ -34,7 +35,7 @@ function App() {
             <Route path="/assistants" element={<Assistants />} />
             <Route path="/sessions" element={<Sessions />} />
             <Route path="/session/:id/:tab?" element={<SessionDetail />} />
-            <Route path="/documents" element={<div>Documents List</div>} />
+            <Route path="/documents" element={<Documents />} />
           </Route>
           
           <Route path={adminPath} element={<AdminLogin />} />
