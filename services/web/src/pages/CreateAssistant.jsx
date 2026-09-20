@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Paperclip } from "lucide-react";
 import { API_BASE } from "../config";
 
 export default function CreateAssistant() {
@@ -22,20 +22,42 @@ export default function CreateAssistant() {
         materials_url: ""
     });
 
+    // Standard dropdown options mirroring the user interface perfectly
+    const standardOptions = [
+        { id: "custom", name: "Custom" },
+        { id: "interview", name: "Interview" },
+        { id: "trivia", name: "Trivia & Quiz" }
+    ];
+
     useEffect(() => {
         const fetchTemplates = async () => {
             try {
                 const res = await fetch(`${API_BASE}/user/assistants/templates`);
+                let data = [];
                 if (res.ok) {
-                    const data = await res.json();
-                    setTemplates(data);
-                    
-                    let activeTpl = data.find(t => t.id.toString() === templateId);
-                    if (!activeTpl && data.length > 0) activeTpl = data[0];
-                    setSelectedTemplate(activeTpl);
+                    data = await res.json();
                 }
+                
+                // Merge DB templates with standard options to guarantee UI works exactly as expected
+                let merged = [...standardOptions];
+                data.forEach(dbTpl => {
+                    if (!merged.find(m => m.name.toLowerCase() === dbTpl.name.toLowerCase())) {
+                        merged.push(dbTpl);
+                    }
+                });
+                
+                setTemplates(merged);
+                
+                let activeTpl = merged.find(t => t.id.toString() === templateId);
+                if (!activeTpl) activeTpl = merged.find(t => t.name.toLowerCase().includes('interview')) || merged[1];
+                
+                setSelectedTemplate(activeTpl);
             } catch (err) {
                 console.error("Error fetching templates:", err);
+                setTemplates(standardOptions);
+                
+                let activeTpl = standardOptions.find(t => t.id === templateId) || standardOptions[1];
+                setSelectedTemplate(activeTpl);
             } finally {
                 setLoading(false);
             }
@@ -59,7 +81,7 @@ export default function CreateAssistant() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    template_id: selectedTemplate.id,
+                    template_id: selectedTemplate.id.toString().includes('custom') ? null : selectedTemplate.id,
                     name: formData.name,
                     target_role: formData.target_role || null,
                     experience_years: formData.experience_years ? parseInt(formData.experience_years) : null
@@ -67,7 +89,6 @@ export default function CreateAssistant() {
             });
             if (res.ok) {
                 if (actionType === 'launch') {
-                    // In a real app, this would route to the active session
                     navigate("/sessions");
                 } else {
                     navigate("/dashboard");
@@ -83,7 +104,7 @@ export default function CreateAssistant() {
     };
 
     if (loading) return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#5f6368" }}><Loader2 className="animate-spin" size={32} /></div>;
-    if (!selectedTemplate) return <div style={{ padding: "40px", textAlign: "center", color: "#5f6368" }}>No templates available. Please ask admin to configure templates.</div>;
+    if (!selectedTemplate) return null;
 
     const isInterview = selectedTemplate.name.toLowerCase().includes("interview");
 
@@ -104,10 +125,10 @@ export default function CreateAssistant() {
         fontSize: "11px", fontWeight: "700", color: "#5f6368", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "16px", marginTop: "32px"
     };
 
-    const attachmentButtonStyle = {
+    const dashedButtonStyle = {
         display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "transparent", 
-        border: "1px solid #dadce0", borderRadius: "4px", padding: "6px 16px", color: "#1a73e8", 
-        fontSize: "13px", fontWeight: "500", cursor: "pointer", marginTop: "4px"
+        border: "1px dashed #1a73e8", borderRadius: "4px", padding: "8px 16px", color: "#1a73e8", 
+        fontSize: "13px", fontWeight: "600", cursor: "pointer", marginTop: "4px"
     };
 
     return (
@@ -131,7 +152,7 @@ export default function CreateAssistant() {
 
                 <div style={{ marginBottom: "24px" }}>
                     <label style={labelStyle}>Co-pilot</label>
-                    <select value={selectedTemplate.id} onChange={handleTemplateChange} style={{...inputStyle, cursor: "pointer", maxWidth: "400px"}}>
+                    <select value={selectedTemplate.id} onChange={handleTemplateChange} style={{...inputStyle, cursor: "pointer", maxWidth: "400px", paddingRight: "30px", appearance: "none", backgroundImage: "url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6368' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center", backgroundSize: "16px"}}>
                         {templates.map(t => (
                             <option key={t.id} value={t.id}>{t.name}</option>
                         ))}
@@ -156,17 +177,17 @@ export default function CreateAssistant() {
                         </div>
 
                         <div style={{ marginBottom: "24px" }}>
-                            <label style={labelStyle}>Resume <span style={{ fontWeight: "normal", color: "#5f6368" }}>Optional</span></label>
-                            <button type="button" style={attachmentButtonStyle}>
-                                <Plus size={16} /> Attach resume
+                            <label style={labelStyle}>Resume <span style={{ fontWeight: "normal", color: "#80868b" }}>Optional</span></label>
+                            <button type="button" style={dashedButtonStyle}>
+                                <Paperclip size={16} /> Attach resume
                             </button>
                             <div style={subtextStyle}>Upload your resume so the meeting assistant can provide personalized responses based on your background and experience.</div>
                         </div>
 
                         <div style={{ marginBottom: "24px" }}>
-                            <label style={labelStyle}>Job Description <span style={{ fontWeight: "normal", color: "#5f6368" }}>Optional</span></label>
-                            <button type="button" style={attachmentButtonStyle}>
-                                <Plus size={16} /> Attach job description
+                            <label style={labelStyle}>Job Description <span style={{ fontWeight: "normal", color: "#80868b" }}>Optional</span></label>
+                            <button type="button" style={dashedButtonStyle}>
+                                <Paperclip size={16} /> Attach job description
                             </button>
                             <div style={subtextStyle}>Add the job description to help your meeting assistant understand the role requirements and expectations.</div>
                         </div>
@@ -175,8 +196,8 @@ export default function CreateAssistant() {
 
                 <div style={sectionTitleStyle}>ADDITIONAL CONTEXT</div>
                 <div style={{ marginBottom: "24px" }}>
-                    <label style={labelStyle}>Materials <span style={{ fontWeight: "normal", color: "#5f6368" }}>Optional</span></label>
-                    <button type="button" style={attachmentButtonStyle}>
+                    <label style={labelStyle}>Materials <span style={{ fontWeight: "normal", color: "#80868b" }}>Optional</span></label>
+                    <button type="button" style={dashedButtonStyle}>
                         <Plus size={16} /> Add material
                     </button>
                     <div style={subtextStyle}>Add reference documents or notes for your assistant to use during sessions.</div>

@@ -38,10 +38,10 @@ export default function Dashboard() {
         </div>
     );
 
-    // Fallback templates if none match exactly, to recreate the screenshot visually
-    const interviewTpl = templates.find(t => t.name.toLowerCase().includes('interview')) || { id: 1, name: 'Interview', description: 'A real-time interview co-pilot that helps you answer faster and more confidently.' };
-    const triviaTpl = templates.find(t => t.name.toLowerCase().includes('trivia')) || { id: 2, name: 'Trivia & Quiz', description: 'A quick-answer co-pilot for trivia games, quizzes, and rapid-fire Q&A.' };
-    const customTpl = templates.find(t => t.name.toLowerCase().includes('custom')) || { id: 3, name: 'Custom', description: 'A flexible co-pilot you can fully customize to fit any meeting.' };
+    // Fallback templates to exactly match UI if DB is empty
+    const interviewTpl = templates.find(t => t.name.toLowerCase().includes('interview')) || { id: 'interview', name: 'Interview', description: 'A real-time interview co-pilot that helps you answer faster and more confidently.' };
+    const triviaTpl = templates.find(t => t.name.toLowerCase().includes('trivia')) || { id: 'trivia', name: 'Trivia & Quiz', description: 'A quick-answer co-pilot for trivia games, quizzes, and rapid-fire Q&A.' };
+    const customTpl = templates.find(t => t.name.toLowerCase().includes('custom')) || { id: 'custom', name: 'Custom', description: 'A flexible co-pilot you can fully customize to fit any meeting.' };
 
     return (
         <div style={{ padding: "32px 40px", maxWidth: "1000px", margin: "0 auto", paddingBottom: "80px", fontFamily: 'system-ui, -apple-system, sans-serif' }}>
