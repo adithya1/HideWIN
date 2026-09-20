@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import Download from "./pages/Download";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import Account from "./pages/Account";
 
 import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import GoInvisible from "./pages/GoInvisible";
 import Assistants from "./pages/Assistants";
 import Sessions from "./pages/Sessions";
 import Documents from "./pages/Documents";
@@ -23,8 +23,7 @@ function App() {
       <div className="app-container" style={{ margin: 0, padding: 0, height: "100vh" }}>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/download" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Login />} />
           
@@ -36,6 +35,8 @@ function App() {
             <Route path="/sessions" element={<Sessions />} />
             <Route path="/session/:id/:tab?" element={<SessionDetail />} />
             <Route path="/documents" element={<Documents />} />
+            <Route path="/invisible" element={<GoInvisible />} />
+            <Route path="/downloads" element={<GoInvisible />} />
           </Route>
           
           <Route path={adminPath} element={<AdminLogin />} />
