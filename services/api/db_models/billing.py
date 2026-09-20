@@ -43,3 +43,26 @@ class TokenBilling(Base):
     total_tokens = Column(Integer, default=0)
     estimated_cost_usd = Column(Integer, default=0)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class Order(Base):
+    """Orders for individual services (different from subscriptions)."""
+    __tablename__ = "orders"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    amount = Column(Float, default=0.0)
+    status = Column(String, default="pending")
+    payment_method = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    user = relationship("User")
+
+class Payment(Base):
+    """Payments tracking for orders."""
+    __tablename__ = "payments"
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"))
+    stripe_charge_id = Column(String, nullable=True)
+    amount = Column(Float, default=0.0)
+    status = Column(String, default="pending")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    order = relationship("Order")
+

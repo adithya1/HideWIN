@@ -54,3 +54,4 @@ __all__ = [
     # AI Config
     "ApiConfig", "AppSetting", "AiProviderKey", "SttProviderKey",
 ]
+from .copilot import CopilotTemplate, Assistant
