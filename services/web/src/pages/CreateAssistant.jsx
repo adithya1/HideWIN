@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export default function CreateAssistant() {
     const [searchParams] = useSearchParams();
@@ -72,83 +73,94 @@ export default function CreateAssistant() {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
-    if (!selectedTemplate) return <div>No templates available. Please ask admin to configure templates.</div>;
+    if (loading) return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#5f6368" }}>Loading...</div>;
+    if (!selectedTemplate) return <div style={{ padding: "40px", textAlign: "center", color: "#64748b" }}>No templates available. Please ask admin to configure templates.</div>;
 
-    // Check if current template requires role/experience (e.g. Interview)
-    // We will do a basic check based on name for now, but ideally this comes from form_schema
     const isInterview = selectedTemplate.name.toLowerCase().includes("interview");
 
     const inputStyle = {
-        width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #dcdcdc", 
-        fontSize: "14px", marginTop: "6px", outline: "none", color: "#202124"
+        width: "100%", padding: "12px 16px", borderRadius: "10px", border: "1px solid #e2e8f0", 
+        fontSize: "15px", marginTop: "8px", outline: "none", color: "#0f172a", backgroundColor: "#f8fafc",
+        transition: "all 0.2s"
     };
 
     const labelStyle = {
-        display: "block", fontSize: "12px", fontWeight: "600", color: "#3c4043", textTransform: "uppercase"
+        display: "block", fontSize: "13px", fontWeight: "600", color: "#334155", textTransform: "uppercase", letterSpacing: "0.05em"
+    };
+
+    const sectionTitleStyle = {
+        fontSize: "12px", fontWeight: "700", color: "#94a3b8", textTransform: "uppercase", marginBottom: "20px", letterSpacing: "0.1em"
     };
 
     return (
-        <div style={{ maxWidth: "800px", margin: "0 auto", backgroundColor: "#fff" }}>
-            <h1 style={{ fontSize: "20px", fontWeight: "600", marginBottom: "32px", color: "#202124", borderBottom: "1px solid #e0e0e0", paddingBottom: "16px" }}>Create Assistant</h1>
+        <div style={{ maxWidth: "800px", margin: "0 auto", backgroundColor: "#fff", padding: "40px", borderRadius: "24px", boxShadow: "0 10px 40px -10px rgba(0,0,0,0.05)" }} className="animate-fade-slide-up">
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", borderBottom: "1px solid #f1f5f9", paddingBottom: "24px", marginBottom: "40px" }}>
+                <button onClick={() => navigate("/dashboard")} className="posh-button" style={{ background: "#f1f5f9", border: "none", borderRadius: "50%", width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#475569" }}>
+                    <ArrowLeft size={20} />
+                </button>
+                <h1 style={{ fontSize: "24px", fontWeight: "700", margin: 0, color: "#0f172a", letterSpacing: "-0.02em" }}>Create Assistant</h1>
+            </div>
 
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "24px" }}>
-                    <div style={{ fontSize: "11px", fontWeight: "600", color: "#9aa0a6", textTransform: "uppercase", marginBottom: "16px" }}>BASICS</div>
+                <div style={{ marginBottom: "40px" }} className="form-field-enter stagger-1">
+                    <div style={sectionTitleStyle}>BASICS</div>
                     
-                    <div style={{ marginBottom: "16px" }}>
-                        <label style={labelStyle}>Name *</label>
-                        <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="e.g. Interview Coach" style={inputStyle} />
-                        <div style={{ fontSize: "12px", color: "#5f6368", marginTop: "4px" }}>Give your meeting assistant a descriptive name.</div>
+                    <div style={{ marginBottom: "24px" }}>
+                        <label style={labelStyle}>Name <span style={{ color: "#ef4444" }}>*</span></label>
+                        <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="e.g. Interview Coach" style={inputStyle} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
+                        <div style={{ fontSize: "13px", color: "#64748b", marginTop: "8px" }}>Give your meeting assistant a descriptive name.</div>
                     </div>
 
-                    <div style={{ marginBottom: "16px" }}>
+                    <div style={{ marginBottom: "24px" }}>
                         <label style={labelStyle}>Co-pilot</label>
-                        <select value={selectedTemplate.id} onChange={handleTemplateChange} style={inputStyle}>
+                        <select value={selectedTemplate.id} onChange={handleTemplateChange} style={{...inputStyle, cursor: "pointer"}} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"}>
                             {templates.map(t => (
                                 <option key={t.id} value={t.id}>{t.name}</option>
                             ))}
                         </select>
-                        <div style={{ fontSize: "12px", color: "#5f6368", marginTop: "4px" }}>Choose a pre-built co-pilot for common meeting types.</div>
+                        <div style={{ fontSize: "13px", color: "#64748b", marginTop: "8px" }}>Choose a pre-built co-pilot for common meeting types.</div>
                     </div>
                 </div>
 
                 {isInterview && (
-                    <div style={{ marginBottom: "24px" }}>
-                        <div style={{ fontSize: "11px", fontWeight: "600", color: "#9aa0a6", textTransform: "uppercase", marginBottom: "16px" }}>CONFIGURATION</div>
+                    <div style={{ marginBottom: "40px" }} className="form-field-enter stagger-2">
+                        <div style={sectionTitleStyle}>CONFIGURATION</div>
                         
-                        <div style={{ marginBottom: "16px" }}>
-                            <label style={labelStyle}>Target Role *</label>
-                            <input type="text" name="target_role" value={formData.target_role} onChange={handleChange} required placeholder="e.g. Senior Backend Engineer" style={inputStyle} />
+                        <div style={{ marginBottom: "24px" }}>
+                            <label style={labelStyle}>Target Role <span style={{ color: "#ef4444" }}>*</span></label>
+                            <input type="text" name="target_role" value={formData.target_role} onChange={handleChange} required placeholder="e.g. Senior Backend Engineer" style={inputStyle} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
                         </div>
 
-                        <div style={{ marginBottom: "16px" }}>
-                            <label style={labelStyle}>Experience (Years) *</label>
-                            <input type="number" name="experience_years" value={formData.experience_years} onChange={handleChange} required placeholder="5" style={inputStyle} />
+                        <div style={{ marginBottom: "24px" }}>
+                            <label style={labelStyle}>Experience (Years) <span style={{ color: "#ef4444" }}>*</span></label>
+                            <input type="number" name="experience_years" value={formData.experience_years} onChange={handleChange} required placeholder="5" style={inputStyle} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
                         </div>
 
-                        <div style={{ marginBottom: "16px" }}>
-                            <label style={labelStyle}>Resume <span style={{ fontWeight: "normal", textTransform: "none", color: "#5f6368" }}>Optional</span></label>
-                            <button type="button" style={{ display: "block", marginTop: "6px", background: "#fff", border: "1px dashed #1a73e8", color: "#1a73e8", padding: "8px 16px", borderRadius: "20px", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}>
-                                + Attach resume
+                        <div style={{ marginBottom: "24px" }}>
+                            <label style={labelStyle}>Resume <span style={{ fontWeight: "normal", textTransform: "none", color: "#94a3b8" }}>Optional</span></label>
+                            <button type="button" className="posh-button" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "12px", background: "#f0fdf4", border: "1px dashed #22c55e", color: "#16a34a", padding: "12px 24px", borderRadius: "100px", fontSize: "14px", fontWeight: "600", cursor: "pointer", width: "fit-content" }}>
+                                <span style={{ fontSize: "18px" }}>+</span> Attach resume
                             </button>
                         </div>
                     </div>
                 )}
 
-                <div style={{ marginBottom: "24px" }}>
-                    <div style={{ fontSize: "11px", fontWeight: "600", color: "#9aa0a6", textTransform: "uppercase", marginBottom: "16px" }}>ADDITIONAL CONFIG</div>
+                <div style={{ marginBottom: "40px" }} className="form-field-enter stagger-3">
+                    <div style={sectionTitleStyle}>ADDITIONAL CONFIG</div>
                     
-                    <div style={{ marginBottom: "16px" }}>
-                        <label style={labelStyle}>Materials <span style={{ fontWeight: "normal", textTransform: "none", color: "#5f6368" }}>Optional</span></label>
-                        <button type="button" style={{ display: "block", marginTop: "6px", background: "#fff", border: "1px dashed #1a73e8", color: "#1a73e8", padding: "8px 16px", borderRadius: "20px", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}>
-                            + Add material
+                    <div style={{ marginBottom: "24px" }}>
+                        <label style={labelStyle}>Materials <span style={{ fontWeight: "normal", textTransform: "none", color: "#94a3b8" }}>Optional</span></label>
+                        <button type="button" className="posh-button" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "12px", background: "#eff6ff", border: "1px dashed #3b82f6", color: "#2563eb", padding: "12px 24px", borderRadius: "100px", fontSize: "14px", fontWeight: "600", cursor: "pointer", width: "fit-content" }}>
+                            <span style={{ fontSize: "18px" }}>+</span> Add material
                         </button>
                     </div>
                 </div>
 
-                <div style={{ borderTop: "1px solid #e0e0e0", paddingTop: "16px", display: "flex", justifyContent: "flex-end" }}>
-                    <button type="submit" style={{ background: "#1a73e8", color: "#fff", border: "none", padding: "10px 24px", borderRadius: "6px", fontWeight: "600", fontSize: "14px", cursor: "pointer" }}>
+                <div className="form-field-enter stagger-3" style={{ borderTop: "1px solid #f1f5f9", paddingTop: "32px", display: "flex", justifyContent: "flex-end", gap: "16px" }}>
+                    <button type="button" onClick={() => navigate("/dashboard")} className="posh-button" style={{ background: "transparent", color: "#64748b", border: "1px solid #e2e8f0", padding: "12px 28px", borderRadius: "12px", fontWeight: "600", fontSize: "15px", cursor: "pointer" }}>
+                        Cancel
+                    </button>
+                    <button type="submit" className="posh-button" style={{ background: "#2563eb", color: "#fff", border: "none", padding: "12px 32px", borderRadius: "12px", fontWeight: "600", fontSize: "15px", cursor: "pointer", boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)" }}>
                         Create & Launch
                     </button>
                 </div>
