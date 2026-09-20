@@ -25,7 +25,7 @@ export default function CreateAssistant() {
     useEffect(() => {
         const fetchTemplates = async () => {
             try {
-                const res = await fetch(\/user/assistants/templates);
+                const res = await fetch(`${API_BASE}/user/assistants/templates`);
                 if (res.ok) {
                     const data = await res.json();
                     setTemplates(data);
@@ -56,7 +56,7 @@ export default function CreateAssistant() {
         e.preventDefault();
         setSubmitting(true);
         try {
-            const res = await fetch(\/user/assistants/, {
+            const res = await fetch(`${API_BASE}/user/assistants/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

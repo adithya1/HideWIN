@@ -11,7 +11,7 @@ export default function Sidebar() {
     const [branding, setBranding] = useState({ logo_light: '', logo_dark: '', browser_icon: '' });
 
     useEffect(() => {
-        fetch(\/auth/branding)
+        fetch(`${API_BASE}/auth/branding`)
             .then(res => res.json())
             .then(data => setBranding(data))
             .catch(err => console.error('Failed to load branding', err));
