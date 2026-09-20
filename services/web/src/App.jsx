@@ -7,6 +7,7 @@ import Account from "./pages/Account";
 import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import GoInvisible from "./pages/GoInvisible";
+import Refer from "./pages/Refer";
 import Assistants from "./pages/Assistants";
 import Sessions from "./pages/Sessions";
 import Documents from "./pages/Documents";
@@ -37,6 +38,8 @@ function App() {
             <Route path="/documents" element={<Documents />} />
             <Route path="/invisible" element={<GoInvisible />} />
             <Route path="/downloads" element={<GoInvisible />} />
+            <Route path="/refer" element={<Refer />} />
+            <Route path="/referrals" element={<Refer />} />
           </Route>
           
           <Route path={adminPath} element={<AdminLogin />} />
