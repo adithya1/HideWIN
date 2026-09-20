@@ -44,7 +44,7 @@ export default function Dashboard() {
     const customTpl = templates.find(t => t.name.toLowerCase().includes('custom')) || { id: 3, name: 'Custom', description: 'A flexible co-pilot you can fully customize to fit any meeting.' };
 
     return (
-        <div style={{ maxWidth: "1000px", margin: "0 auto", paddingBottom: "60px", fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        <div style={{ padding: "32px 40px", maxWidth: "1000px", margin: "0 auto", paddingBottom: "80px", fontFamily: 'system-ui, -apple-system, sans-serif' }}>
             
             <p style={{ color: "#1a73e8", margin: "0 0 32px 0", fontSize: "16px", fontWeight: "500" }}>Launch an AI assistant for your next meeting.</p>
 
