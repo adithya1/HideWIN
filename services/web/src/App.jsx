@@ -19,6 +19,8 @@ function App() {
       <div className="app-container" style={{ margin: 0, padding: 0, height: "100vh" }}>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/download" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Login />} />
           
