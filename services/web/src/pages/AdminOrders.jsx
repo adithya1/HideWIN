@@ -7,7 +7,7 @@ export default function AdminOrders() {
 
     const fetchOrders = async () => {
         try {
-            const res = await fetch("http://localhost:8000/admin/orders/");
+            const res = await fetch("http://127.0.0.1:8000/admin/orders/");
             if (res.ok) setOrders(await res.json());
         } catch (err) {
             console.error(err);

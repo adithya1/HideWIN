@@ -26,7 +26,7 @@ export default function Login() {
   const [branding, setBranding] = useState({ logo_light: '', logo_dark: '', browser_icon: '' });
   
   useEffect(() => {
-    fetch('http://localhost:8000/auth/branding')
+    fetch('http://127.0.0.1:8000/auth/branding')
       .then(res => res.json())
       .then(data => {
         setBranding(data);
@@ -111,7 +111,7 @@ export default function Login() {
     setError('');
     
     try {
-      const response = await fetch('http://localhost:8000/auth/send-otp', {
+      const response = await fetch('http://127.0.0.1:8000/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -143,7 +143,7 @@ export default function Login() {
       formData.append('username', email);
       formData.append('password', overrideOtp);
       
-      const response = await fetch('http://localhost:8000/auth/login', {
+      const response = await fetch('http://127.0.0.1:8000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData
@@ -197,7 +197,7 @@ export default function Login() {
 
   const handleSSO = (provider) => {
     // Redirect to FastAPI SSO endpoints
-    window.location.href = `http://localhost:8000/auth/sso/${provider.toLowerCase()}/login`;
+    window.location.href = `http://127.0.0.1:8000/auth/sso/${provider.toLowerCase()}/login`;
   };
 
   return (

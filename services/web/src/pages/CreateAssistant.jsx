@@ -23,7 +23,7 @@ export default function CreateAssistant() {
     useEffect(() => {
         const fetchTemplates = async () => {
             try {
-                const res = await fetch("http://localhost:8000/user/assistants/templates");
+                const res = await fetch("http://127.0.0.1:8000/user/assistants/templates");
                 if (res.ok) {
                     const data = await res.json();
                     setTemplates(data);
@@ -53,7 +53,7 @@ export default function CreateAssistant() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("http://localhost:8000/user/assistants/", {
+            const res = await fetch("http://127.0.0.1:8000/user/assistants/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

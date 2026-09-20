@@ -18,7 +18,7 @@ export default function Account() {
 
     const fetchOrders = async () => {
       try {
-        const res = await fetch("http://localhost:8000/user/orders/");
+        const res = await fetch("http://127.0.0.1:8000/user/orders/");
         if (res.ok) setOrders(await res.json());
       } catch (err) {
         console.error("Failed to fetch orders:", err);
@@ -31,7 +31,7 @@ export default function Account() {
 
   const createDummyOrder = async () => {
     try {
-      const res = await fetch("http://localhost:8000/user/orders/?amount=49.99&payment_method=card", { method: "POST" });
+      const res = await fetch("http://127.0.0.1:8000/user/orders/?amount=49.99&payment_method=card", { method: "POST" });
       if (res.ok) {
         const newOrder = await res.json();
         setOrders([...orders, newOrder]);

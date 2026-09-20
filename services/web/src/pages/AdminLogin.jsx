@@ -12,7 +12,7 @@ export default function AdminLogin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:8000/auth/branding')
+    fetch('http://127.0.0.1:8000/auth/branding')
       .then(res => res.json())
       .then(data => {
         setBranding(data);
@@ -34,7 +34,7 @@ export default function AdminLogin() {
       params.append('username', email);
       params.append('password', password);
       
-      const response = await fetch('http://localhost:8000/auth/login', {
+      const response = await fetch('http://127.0.0.1:8000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params

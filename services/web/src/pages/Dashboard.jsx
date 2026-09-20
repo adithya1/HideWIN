@@ -11,10 +11,10 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const tplRes = await fetch("http://localhost:8000/user/assistants/templates");
+                const tplRes = await fetch("http://127.0.0.1:8000/user/assistants/templates");
                 if (tplRes.ok) setTemplates(await tplRes.json());
                 
-                const astRes = await fetch("http://localhost:8000/user/assistants/");
+                const astRes = await fetch("http://127.0.0.1:8000/user/assistants/");
                 if (astRes.ok) setAssistants(await astRes.json());
             } catch (err) {
                 console.error("Error fetching data:", err);
