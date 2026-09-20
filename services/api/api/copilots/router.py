@@ -18,6 +18,8 @@ class CopilotTemplateCreate(BaseModel):
     name: str
     description: Optional[str] = None
     icon: Optional[str] = None
+    category: str = 'General'
+    subcategory: Optional[str] = None
     form_schema: Dict[str, Any] = {}
 
 class CopilotTemplateOut(CopilotTemplateCreate):

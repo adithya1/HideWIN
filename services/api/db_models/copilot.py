@@ -13,6 +13,8 @@ class CopilotTemplate(Base):
     name = Column(String, index=True)
     description = Column(String, nullable=True)
     icon = Column(String, nullable=True)
+    category = Column(String, default='General')
+    subcategory = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     
     # JSON schema defining what fields this template requires
