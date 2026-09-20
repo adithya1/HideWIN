@@ -1,5 +1,5 @@
 import React from "react";
-import { Gift, Copy, Mail, MessageSquare, Twitter, Send, Tag } from "lucide-react";
+import { Gift, Copy, Mail, MessageSquare, Send, Tag } from "lucide-react";
 
 export default function Refer() {
     const inviteCode = "1E52G1";
@@ -79,7 +79,7 @@ export default function Refer() {
                         <div style={{ display: "flex", gap: "12px" }}>
                             <button style={{ background: "transparent", border: "1px solid #dadce0", borderRadius: "4px", padding: "8px", color: "#5f6368", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Mail size={16} /></button>
                             <button style={{ background: "transparent", border: "1px solid #dadce0", borderRadius: "4px", padding: "8px", color: "#5f6368", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><MessageSquare size={16} /></button>
-                            <button style={{ background: "transparent", border: "1px solid #dadce0", borderRadius: "4px", padding: "8px", color: "#5f6368", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Twitter size={16} /></button>
+                            <button style={{ background: "transparent", border: "1px solid #dadce0", borderRadius: "4px", padding: "8px", color: "#5f6368", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg></button>
                         </div>
                     </div>
                 </div>
