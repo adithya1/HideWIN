@@ -122,26 +122,21 @@ export default function CreateAssistant() {
                     </div>
                 </div>
 
-                {isInterview && (
+                {selectedTemplate.form_schema && selectedTemplate.form_schema.length > 0 && (
                     <div style={{ marginBottom: "40px" }} className="form-field-enter stagger-2">
                         <div style={sectionTitleStyle}>CONFIGURATION</div>
-                        
-                        <div style={{ marginBottom: "24px" }}>
-                            <label style={labelStyle}>Target Role <span style={{ color: "#ef4444" }}>*</span></label>
-                            <input type="text" name="target_role" value={formData.target_role} onChange={handleChange} required placeholder="e.g. Senior Backend Engineer" style={inputStyle} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
-                        </div>
-
-                        <div style={{ marginBottom: "24px" }}>
-                            <label style={labelStyle}>Experience (Years) <span style={{ color: "#ef4444" }}>*</span></label>
-                            <input type="number" name="experience_years" value={formData.experience_years} onChange={handleChange} required placeholder="5" style={inputStyle} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
-                        </div>
-
-                        <div style={{ marginBottom: "24px" }}>
-                            <label style={labelStyle}>Resume <span style={{ fontWeight: "normal", textTransform: "none", color: "#94a3b8" }}>Optional</span></label>
-                            <button type="button" className="posh-button" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "12px", background: "#f0fdf4", border: "1px dashed #22c55e", color: "#16a34a", padding: "12px 24px", borderRadius: "100px", fontSize: "14px", fontWeight: "600", cursor: "pointer", width: "fit-content" }}>
-                                <span style={{ fontSize: "18px" }}>+</span> Attach resume
-                            </button>
-                        </div>
+                        {selectedTemplate.form_schema.map(field => (
+                            <div key={field.name} style={{ marginBottom: "24px" }}>
+                                <label style={labelStyle}>{field.label} {field.required && <span style={{ color: "#ef4444" }}>*</span>}</label>
+                                {field.type === "file" ? (
+                                    <button type="button" className="posh-button" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "12px", background: "#f0fdf4", border: "1px dashed #22c55e", color: "#16a34a", padding: "12px 24px", borderRadius: "100px", fontSize: "14px", fontWeight: "600", cursor: "pointer", width: "fit-content" }}>
+                                        <span style={{ fontSize: "18px" }}>+</span> Attach {field.label.toLowerCase()}
+                                    </button>
+                                ) : (
+                                    <input type={field.type} name={field.name} value={formData[field.name] || ""} onChange={handleChange} required={field.required} placeholder={field.placeholder || ""} style={inputStyle} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
+                                )}
+                            </div>
+                        ))}
                     </div>
                 )}
 

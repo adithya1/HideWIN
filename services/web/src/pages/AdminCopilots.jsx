@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 export default function AdminCopilots() {
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [newTemplate, setNewTemplate] = useState({ name: "", description: "" });
+    const [newTemplate, setNewTemplate] = useState({ name: "", description: "", form_schema: "[]" });
 
     const fetchTemplates = async () => {
         try {
@@ -26,7 +26,7 @@ export default function AdminCopilots() {
             const res = await fetch("http://localhost:8000/admin/copilots/templates", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newTemplate)
+                body: JSON.stringify({ ...newTemplate, form_schema: JSON.parse(newTemplate.form_schema || "[]") })
             });
             if (res.ok) {
                 setNewTemplate({ name: "", description: "" });
