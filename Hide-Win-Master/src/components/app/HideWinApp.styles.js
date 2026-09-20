@@ -119,6 +119,22 @@ export const appStyles =     css`
             box-sizing: border-box;
         }
 
+        :host(.pill-mode) {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            pointer-events: none; /* Let clicks pass through empty areas */
+        }
+        :host(.pill-mode) .app-shell {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            pointer-events: none;
+        }
+        :host(.pill-mode) .app-shell * {
+            pointer-events: auto; /* Re-enable clicks on actual children */
+        }
+
         :host(.is-session-window) {
             background: transparent !important;
             border: none;
@@ -523,5 +539,6 @@ export const appStyles =     css`
             color: var(--accent);
         }
     `;
+
 
 

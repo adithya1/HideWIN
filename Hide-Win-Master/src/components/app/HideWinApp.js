@@ -1,3 +1,15 @@
+window.addEventListener('unhandledrejection', function(event) {
+    if (window.require) {
+        const fs = window.require('fs');
+        fs.appendFileSync('renderer_error_log.txt', 'Unhandled Promise Rejection: ' + event.reason + '\n\n');
+    }
+});
+window.addEventListener('error', function(event) {
+    if (window.require) {
+        const fs = window.require('fs');
+        fs.appendFileSync('renderer_error_log.txt', event.message + '\n' + event.error.stack + '\n\n');
+    }
+});
 import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 import { renderTopToolbar, renderLiveBar, renderCurrentView } from './HideWinAppRenderers.js';
 import { bindAppEvents, unbindAppEvents } from './HideWinAppEvents.js';
@@ -46,6 +58,10 @@ export class HideWinApp extends LitElement {
         _isClickThrough: { state: true },
         _awaitingNewResponse: { state: true },
         shouldAnimateResponse: { type: Boolean },
+        isQuickSettingsOpen: { state: true },
+        quickTheme: { state: true },
+        quickTransparency: { state: true },
+        quickFontSize: { state: true },
         autoScroll: { type: Boolean },
         _storageLoaded: { state: true },
         _updateAvailable: { state: true },
@@ -76,6 +92,10 @@ export class HideWinApp extends LitElement {
         this.selectedScreenshotInterval = '5';
         this.selectedImageQuality = 'medium';
         this.layoutMode = 'normal';
+        this.isQuickSettingsOpen = false;
+        this.quickTheme = 'dark';
+        this.quickTransparency = 0.3;
+        this.quickFontSize = 14;
         this.showLiveNotes = false;
         this.showProfileModal = false;
         this.isSessionHidden = false;
@@ -256,6 +276,25 @@ export class HideWinApp extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         bindAppEvents.call(this);
+        if (this.currentView === 'main' && this.isAuthenticated) {
+            // Pill mode disabled
+        }
+
+        this._documentClickHandler = () => {
+            if (this.isQuickSettingsOpen || this.showAvatarMenu) {
+                this.isQuickSettingsOpen = false;
+                this.showAvatarMenu = false;
+            }
+        };
+        document.addEventListener('click', this._documentClickHandler);
+
+        if (window.hideWin && window.hideWin.storage) {
+            window.hideWin.storage.getPreferences().then(prefs => {
+                this.quickTheme = prefs.themeSession || 'dark';
+                this.quickTransparency = prefs.transparencySession !== undefined ? prefs.transparencySession : 0.3;
+                this.quickFontSize = prefs.fontSizeSession || 14;
+            });
+        }
 
         // Track window width for responsive toolbar (CSS media queries don't fire in Electron shadow DOM)
         this._resizeObserver = new ResizeObserver(entries => {
@@ -287,9 +326,14 @@ export class HideWinApp extends LitElement {
         }
     }
 
-    disconnectedCallback() {
+        disconnectedCallback() {
         super.disconnectedCallback();
         unbindAppEvents.call(this);
+        if (this.currentView === 'main' && this.isAuthenticated) {
+            // Pill mode disabled
+        }
+        document.removeEventListener('click', this._documentClickHandler);
+
         if (this._resizeObserver) {
             this._resizeObserver.disconnect();
             this._resizeObserver = null;
@@ -801,6 +845,11 @@ export class HideWinApp extends LitElement {
     updated(changedProperties) {
         super.updated(changedProperties);
         
+        if (changedProperties.has('currentView') || changedProperties.has('isAuthenticated')) {
+            // Pill mode is disabled to restore the main window background
+            this.classList.remove('pill-mode');
+        }
+
         if (changedProperties.has('currentView') && window.require) {
             const { ipcRenderer } = window.require('electron');
             ipcRenderer.send('view-changed', this.currentView);
@@ -1051,56 +1100,6 @@ export class HideWinApp extends LitElement {
             `;
         }
 
-        // Enforce Authentication Next (skip for session windows to prevent AuthView flashing)
-        if (!this.isAuthenticated && this.windowType !== 'session') {
-            return html`
-                            <!-- Resize Handles (Corner Only) -->
-            ${!this.isSessionHidden ? html`
-                <div class="resize-handle top-left" @mousedown=${e => this._startResize(e, 'top-left')}></div>
-                <div class="resize-handle top-right" @mousedown=${e => this._startResize(e, 'top-right')}></div>
-                <div class="resize-handle bottom-left" @mousedown=${e => this._startResize(e, 'bottom-left')}></div>
-                <div class="resize-handle bottom-right" @mousedown=${e => this._startResize(e, 'bottom-right')}></div>
-            ` : ''}
-            <div class="app-shell">
-                                        <auth-view @auth-success=${async (e) => {
-                        try {
-                            if (window.hideWin && window.hideWin.storage) {
-                                let creds = {};
-                                try {
-                                    creds = await window.hideWin.storage.getCredentials() || {};
-                                } catch(e) { console.warn("Failed to get credentials, creating new"); }
-                                
-                                await window.hideWin.storage.setCredentials({
-                                    ...creds,
-                                    jwtToken: e.detail.token,
-                                    hashkey: e.detail.hash || creds.hashkey,
-                                    user: e.detail.user || creds.user
-                                });
-                                
-                                try {
-                                    const payload = JSON.parse(atob(e.detail.token.split('.')[1]));
-                                    if (payload && payload.sub) {
-                                        this.userEmail = payload.sub;
-                                        window.hideWin.storage.updatePreference('userEmail', payload.sub);
-                                    }
-                                } catch(err) { }
-                            }
-                        } catch(fatalErr) {
-                            console.error("Non-fatal storage error during login:", fatalErr);
-                        } finally {
-                            this.isAuthenticated = true;
-                            this.requestUpdate();
-                            if (this.isMainWindowMinimized) {
-                                this._handleMaximize();
-                            }
-                        }
-                    }}
-                      @minimize=${() => this._handleMinimize()}
-                    ></auth-view>
-                </div>
-            `;
-        }
-
         // Onboarding is fullscreen, no toolbar
         if (this.currentView === 'onboarding') {
             return html`
@@ -1175,4 +1174,12 @@ export class HideWinApp extends LitElement {
 }
 
 customElements.define('hide-win-app', HideWinApp);
+
+
+
+
+
+
+
+
 

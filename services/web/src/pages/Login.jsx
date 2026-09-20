@@ -65,13 +65,16 @@ export default function Login() {
   useEffect(() => {
     // Check if coming from desktop app
     const params = new URLSearchParams(window.location.search);
-    if (params.get('source') === 'desktop') {
+    if (params.get('source') === 'desktop' || params.has('returnUrl') || params.has('redirect_uri')) {
       sessionStorage.setItem('isDesktop', 'true');
     }
-    if (params.get('email')) {
-      setEmail(params.get('email'));
+    
+    const emailParam = params.get('email') || params.get('login_hint');
+    if (emailParam) {
+      setEmail(emailParam);
       setLockedEmail(true);
     }
+    
     if (params.get('step') === 'otp') {
       setStep('otp');
       setResendTimer(60);

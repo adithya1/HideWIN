@@ -1,6 +1,7 @@
 import { html } from '../../assets/lit-core-2.7.4.min.js';
 
 export function renderTopToolbar() {
+        if (!this.isAuthenticated && this.windowType !== 'session') return '';
         if (this.windowType === 'session') return '';
 
         const w = this._windowWidth || window.innerWidth || 1050;
@@ -41,7 +42,7 @@ export function renderTopToolbar() {
                     </div>
 
                     <div class="toolbar-right" style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
-                        <div class="stealth-tooltip" @click=${() => { this.showAvatarMenu = !this.showAvatarMenu; this.requestUpdate(); }} style="width:26px;height:26px;border-radius:50%;background-color:${this.getUserAvatarColor()};color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.2);">
+                        <div class="stealth-tooltip" @click=${(e) => { e.stopPropagation(); this.showAvatarMenu = !this.showAvatarMenu; this.requestUpdate(); }} style="width:26px;height:26px;border-radius:50%;background-color:${this.getUserAvatarColor()};color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.2);">
                             ${this.getUserAvatarInitials()}
                         </div>
                     </div>
@@ -137,7 +138,7 @@ export function renderTopToolbar() {
                         <div
                             class="stealth-tooltip"
                             data-tooltip="Account"
-                            @click=${() => { this.showAvatarMenu = !this.showAvatarMenu; this.requestUpdate(); }}
+                            @click=${(e) => { e.stopPropagation(); this.showAvatarMenu = !this.showAvatarMenu; this.requestUpdate(); }}
                             style="width:22px;height:22px;border-radius:50%;background-color:${this.getUserAvatarColor()};color:white;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;cursor:pointer;user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.2);"
                         >
                             ${this.getUserAvatarInitials()}
@@ -174,10 +175,54 @@ export function renderTopToolbar() {
                         ` : ''}
                     </div>
 
-                    <!-- Theme toggle -->
-                    <button class="stealth-tooltip" data-tooltip="Toggle Theme" @click=${() => window.hideWin.theme.load().then(t => window.hideWin.theme.save(t === 'light' ? 'dark' : 'light'))} style="padding:3px;border:none;background:transparent;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                    </button>
+                                        <!-- Quick Settings -->
+                    <div style="position: relative;">
+                        <button class="stealth-tooltip" data-tooltip="Quick Settings" @click=${(e) => { e.stopPropagation(); this.isQuickSettingsOpen = !this.isQuickSettingsOpen; }} style="padding:3px;border:none;background:transparent;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;transition:color 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                        </button>
+                        ${this.isQuickSettingsOpen ? html`
+                            <div @click=${e => e.stopPropagation()} style="position: absolute; top: calc(100% + 12px); right: 0; width: 280px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.2); padding: 20px; z-index: 9999; animation: slideDownFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; display: flex; flex-direction: column; gap: 24px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Dark Mode</span>
+                                    <div @click=${async () => {
+                                        const newTheme = this.quickTheme === 'light' ? 'dark' : 'light';
+                                        this.quickTheme = newTheme;
+                                        await window.hideWin.theme.save(newTheme);
+                                    }} style="width: 40px; height: 22px; border-radius: 11px; background: ${this.quickTheme === 'dark' ? 'var(--accent)' : 'var(--border)'}; position: relative; cursor: pointer; transition: background 0.3s ease;">
+                                        <div style="width: 18px; height: 18px; border-radius: 50%; background: #fff; position: absolute; top: 2px; left: ${this.quickTheme === 'dark' ? '20px' : '2px'}; transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Transparency</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: var(--accent);">${Math.round((1 - this.quickTransparency) * 100)}%</span>
+                                    </div>
+                                    <input type="range" min="0.1" max="1.0" step="0.05" .value=${this.quickTransparency} @input=${async (e) => {
+                                        this.quickTransparency = parseFloat(e.target.value);
+                                        if (window.hideWin && window.hideWin.storage) {
+                                            await window.hideWin.storage.updatePreference('transparencySession', this.quickTransparency);
+                                            if (window.hideWin.theme) await window.hideWin.theme.load();
+                                            window.dispatchEvent(new CustomEvent('preferences-updated'));
+                                        }
+                                    }} style="width: 100%; height: 4px; border-radius: 2px; -webkit-appearance: none; background: var(--border); accent-color: var(--accent); outline: none; cursor: pointer;">
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Text Size</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: var(--accent);">${this.quickFontSize}px</span>
+                                    </div>
+                                    <input type="range" min="10" max="24" step="1" .value=${this.quickFontSize} @input=${async (e) => {
+                                        this.quickFontSize = parseInt(e.target.value, 10);
+                                        if (window.hideWin && window.hideWin.storage) {
+                                            await window.hideWin.storage.updatePreference('fontSizeSession', this.quickFontSize);
+                                            if (window.hideWin.theme) await window.hideWin.theme.load();
+                                            window.dispatchEvent(new CustomEvent('preferences-updated'));
+                                        }
+                                    }} style="width: 100%; height: 4px; border-radius: 2px; -webkit-appearance: none; background: var(--border); accent-color: var(--accent); outline: none; cursor: pointer;">
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
                 </div>
             </div>
         `;
@@ -224,6 +269,25 @@ export function renderLiveBar() {
 
 
 export function renderCurrentView() {
+        if (!this.isAuthenticated) {
+            return html`<auth-view @auth-success=${async (e) => {
+                try {
+                    if (window.hideWin && window.hideWin.storage) {
+                        let creds = {};
+                        try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
+                        await window.hideWin.storage.setCredentials({
+                            ...creds,
+                            jwtToken: e.detail.token,
+                            hashkey: e.detail.hash || creds.hashkey,
+                            user: e.detail.user || creds.user
+                        });
+                    }
+                } catch(fatalErr) {} finally {
+                    this.isAuthenticated = true;
+                    this.requestUpdate();
+                }
+            }}></auth-view>`;
+        }
         switch (this.currentView) {
             case 'onboarding':
                 return html`
@@ -236,6 +300,30 @@ export function renderCurrentView() {
             case 'main':
                 return html`
                     <main-view
+                        @auth-success=${async (e) => {
+                            try {
+                                if (window.hideWin && window.hideWin.storage) {
+                                    let creds = {};
+                                    try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
+                                    
+                                    await window.hideWin.storage.setCredentials({
+                                        ...creds,
+                                        jwtToken: e.detail.token,
+                                        hashkey: e.detail.hash || creds.hashkey,
+                                        user: e.detail.user || creds.user
+                                    });
+                                }
+                            } catch(fatalErr) {
+                                console.error("Non-fatal storage error during login:", fatalErr);
+                            } finally {
+                                this.isAuthenticated = true;
+                                this.requestUpdate();
+                                if (this.isMainWindowMinimized) {
+                                    this._handleMaximize();
+                                }
+                            }
+                        }}
+                        .isAuthenticated=${this.isAuthenticated}
                         .selectedProfile=${this.selectedProfile}
                         .isClickThrough=${this._isClickThrough}
                         .onToggleClickThrough=${() => this.toggleClickThrough()}
@@ -435,6 +523,14 @@ export function renderCurrentView() {
                 return html`<div>Unknown view: ${this.currentView}</div>`;
         }
     }
+
+
+
+
+
+
+
+
 
 
 

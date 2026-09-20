@@ -1,4 +1,5 @@
 const { app, BrowserWindow, shell, ipcMain, dialog, Menu } = require('electron');
+app.disableHardwareAcceleration();
 const path = require('path');
 
 if (process.argv.includes('--squirrel-uninstall')) {
@@ -79,7 +80,8 @@ function createMainWindow() {
     return mainWindow;
 }
 
-const PROTOCOL_NAME = 'hidewin';
+const configManager = require('./utils/configManager');
+const PROTOCOL_NAME = configManager.getProtocolName();
 
 if (process.defaultApp) {
     if (process.argv.length >= 2) {
@@ -117,12 +119,12 @@ app.on('open-url', (event, url) => {
 function handleDeepLink(urlStr) {
     try {
         const url = new URL(urlStr);
-        if (url.hostname === 'auth') {
-            const token = url.searchParams.get('token');
-            const hash = url.searchParams.get('hash');
+        if (url.hostname === 'auth' || url.hostname === 'callback') {
+            const token = url.searchParams.get('token') || url.searchParams.get('code');
+            const hash = url.searchParams.get('hash') || 'default-hash';
             const userEncoded = url.searchParams.get('user');
             
-            if (token && hash) {
+            if (token) {
                 // Send to renderer
                 if (mainWindow) {
                     mainWindow.webContents.send('deep-link-auth-success', {
@@ -494,6 +496,9 @@ ipcMain.handle('show-confirm-dialog', async (event, message) => {
         }
     });
 }
+
+
+
 
 
 

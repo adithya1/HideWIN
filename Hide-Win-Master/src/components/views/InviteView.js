@@ -2,6 +2,8 @@ import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
 import { render } from './InviteViewRenderer.js';
 import { inviteStyles } from './InviteView.styles.js';
 
+const configManager = window.require ? window.require('./utils/configManager.js') : require('../../utils/configManager.js');
+
 export class InviteView extends LitElement {
     static properties = {
         prefillChannelId: { type: String },
@@ -100,7 +102,7 @@ export class InviteView extends LitElement {
             try {
                 let usingApi = false;
                 try {
-                    const response = await fetch('http://127.0.0.1:8000/api/user/public/dns-settings');
+                    const response = await fetch(`${configManager.getApiBaseUrl()}/api/user/public/dns-settings`);
                     if (response.ok) {
                         const data = await response.json();
                         if (data.dnsIP && data.dnsIP !== '127.0.0.1') {
@@ -378,7 +380,7 @@ export class InviteView extends LitElement {
             try {
                 const data = JSON.parse(event.data);
                 if (this.activeControllerId !== guestId) return;
-                fetch('http://127.0.0.1:8000/api/user/remote-control', {
+                fetch(`${configManager.getApiBaseUrl()}/api/user/remote-control`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -462,7 +464,7 @@ export class InviteView extends LitElement {
                 try {
                     const data = JSON.parse(event.data);
                     // Forward to Python backend
-                    fetch('http://127.0.0.1:8000/api/user/remote-control', {
+                    fetch(`${configManager.getApiBaseUrl()}/api/user/remote-control`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)

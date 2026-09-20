@@ -1,6 +1,7 @@
+const configManager = require('./configManager.js');
 const crypto = require('crypto');
 
-const PROXY_URL = 'http://localhost:8000/api/ai-proxy/generate';
+const PROXY_URL = `${configManager.getApiBaseUrl()}/api/ai-proxy/generate`;
 // In a real application, this should be obfuscated or fetched via an auth handshake.
 // For now, it matches the backend router configuration.
 const HMAC_SECRET = 'hw_desktop_secret_998877';

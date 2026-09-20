@@ -270,12 +270,19 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
     audio_bytes = await file.read()
     stt_model = request.headers.get("X-STT-Model")
     
-    groq_keys_objs = await get_active_keys_for_provider('groq', db, stt_model)
-    if not groq_keys_objs:
-        raise HTTPException(status_code=500, detail="No active Groq API keys available")
+    custom_key = request.headers.get("X-Groq-Api-Key")
+    auth_header = request.headers.get("Authorization")
+    if not custom_key and auth_header and auth_header.startswith("Bearer "):
+        custom_key = auth_header.split(" ")[1]
 
-    # Serialize keys for Redis Manager
-    available_keys = [{"id": k.id, "api_key_value": k.api_key_value, "enabled_models": k.enabled_models} for k in groq_keys_objs]
+    if custom_key:
+        available_keys = [{"id": "user-custom", "api_key_value": custom_key, "enabled_models": "[]"}]
+    else:
+        groq_keys_objs = await get_active_keys_for_provider('groq', db, stt_model)
+        if not groq_keys_objs:
+            raise HTTPException(status_code=500, detail="No active Groq API keys available")
+        # Serialize keys for Redis Manager
+        available_keys = [{"id": k.id, "api_key_value": k.api_key_value, "enabled_models": k.enabled_models} for k in groq_keys_objs]
     
     max_retries = 3
     
@@ -364,3 +371,4 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
         except Exception as e:
             print(f"Unknown Groq Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
+

@@ -1,6 +1,18 @@
 <!doctype html>
 <html>
     <head>
+
+      <script>
+        window.addEventListener('error', function(event) {
+            const fs = require('fs');
+            fs.appendFileSync('renderer_errors.log', event.message + '\n' + (event.error ? event.error.stack : '') + '\n\n');
+        });
+        window.addEventListener('unhandledrejection', function(event) {
+            const fs = require('fs');
+            fs.appendFileSync('renderer_errors.log', 'Unhandled Promise Rejection: ' + (event.reason ? event.reason.stack || event.reason : '') + '\n\n');
+        });
+      </script>
+
 <script>
 window.onerror = function(message, source, lineno, colno, error) { 
     console.error('GLOBAL_ERROR_DETAIL:', message, source, lineno, colno, error ? error.stack : '');

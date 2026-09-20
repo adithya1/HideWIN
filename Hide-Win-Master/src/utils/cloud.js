@@ -1,3 +1,4 @@
+const configManager = require('./configManager.js');
 const WebSocket = require('ws');
 const { BrowserWindow } = require('electron');
 
@@ -33,7 +34,7 @@ function connectCloud(token, profile, userContext) {
     audioChunkCount = 0;
 
     return new Promise((resolve, reject) => {
-        const url = `wss://api.hidewin.com/ws?token=${encodeURIComponent(token)}`;
+        const url = `${configManager.getWsBaseUrl()}/ws?token=${encodeURIComponent(token)}`;
         console.log('[Cloud] Connecting to', url);
 
         cloudWs = new WebSocket(url);

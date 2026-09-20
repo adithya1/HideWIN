@@ -1,3 +1,4 @@
+const configManager = require('./configManager.js');
 const { net } = require('electron');
 const storage = require('../storage');
 
@@ -9,7 +10,7 @@ async function validateSubscriptionWithAdmin() {
         }
 
         // Fetch backend URL from storage or fallback to localhost
-        const backendUrl = storage.getPreference('backendUrl') || 'http://localhost:8000';
+        const backendUrl = configManager.getApiBaseUrl();
         
         const request = net.request({
             method: 'POST',

@@ -1,7 +1,21 @@
-import { html, css, LitElement } from '../../assets/lit-core-2.7.4.min.js';
+import { html, css, LitElement, unsafeCSS } from '../../assets/lit-core-2.7.4.min.js';
+
+
+const configManager = window.require ? window.require('./utils/configManager.js') : require('../../utils/configManager.js');
+const pathManager = window.require ? window.require('./utils/pathManager.js') : require('../../utils/pathManager.js');
 
 export class AuthView extends LitElement {
+
     static styles = css`
+        .auth-right {
+            flex: 1;
+            height: 100vh;
+            background-image: url('./assets/images/login_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
         :host {
             display: block;
             width: 100%;
@@ -72,39 +86,49 @@ export class AuthView extends LitElement {
         .control-btn.close:hover { background: #ef4444; color: white; }
         .control-btn svg { width: 12px; height: 12px; }
 
-        /* Centered Authentication Layout */
+        /* 30/70 Split Authentication Layout */
         .auth-layout {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh; overflow: hidden;
-            padding: 12px;
+            flex-direction: row;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .auth-card {
-            background: var(--bg-elevated);
-            width: 100%;
-            max-width: 400px;
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0,0,0,0.02);
-            padding: 32px 32px 24px 32px;
+            background: #ffffff;
+            width: 35%;
+            min-width: 320px;
+            max-width: 420px;
+            height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
+            border-right: 1px solid var(--border);
+            padding: 40px 36px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            border: 1px solid var(--border);
+            justify-content: center;
+            overflow-y: auto;
         }
 
         .brand-logo {
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             display: flex;
-            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
         .brand-logo img {
-            height: 40px;
+            height: 36px;
             width: auto;
             object-fit: contain;
             filter: var(--logo-filter, none);
         }
+        .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary, #111827);
+            letter-spacing: -0.3px;
+        }
+
 
         .welcome-title {
             margin: 0 0 8px 0;
@@ -147,7 +171,7 @@ export class AuthView extends LitElement {
             color: var(--text-primary);
         }
         .input-field:focus {
-            border-color: var(--accent);
+            border-color: #1a73e8;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         .input-field::placeholder { color: var(--text-muted); }
@@ -176,7 +200,7 @@ export class AuthView extends LitElement {
         .btn-primary {
             width: 100%;
             padding: 10px 14px;
-            background: var(--accent);
+            background: #1a73e8;
             color: #ffffff;
             border: none;
             border-radius: 8px;
@@ -190,7 +214,7 @@ export class AuthView extends LitElement {
             gap: 8px;
         }
         .btn-primary:hover:not(:disabled) {
-            background: var(--accent-hover);
+            background: #1557b0;
             transform: translateY(-1px);
         }
         .btn-primary:active:not(:disabled) {
@@ -390,30 +414,55 @@ export class AuthView extends LitElement {
         this.error = '';
         
         try {
-            const response = await fetch('http://localhost:8000/auth/send-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: this.email })
-            });
+            const verifier = this._generateRandomString(43);
+            const challenge = await this._generateCodeChallenge(verifier);
+            const state = this._generateRandomString(32);
             
-            if (!response.ok) {
-                let errorMsg = 'Failed to send OTP';
-                try {
-                    const errorData = await response.json();
-                    errorMsg = errorData.detail || errorMsg;
-                } catch(e) {
-                    errorMsg = `Server error: ${response.status} ${response.statusText}`;
-                }
-                throw new Error(errorMsg);
+            sessionStorage.setItem('oauth_verifier', verifier);
+            sessionStorage.setItem('oauth_state', state);
+
+            const clientId = "c0b65c72458d40d5a3f477dcf3c07f4c";
+            const protocol = window.configManager && window.configManager.getProtocolName ? window.configManager.getProtocolName() : 'hidewin';
+            const redirectUri = `${protocol}://callback`;
+            const webBaseUrl = window.configManager && window.configManager.getWebBaseUrl ? window.configManager.getWebBaseUrl() : 'http://localhost:5173';
+            
+            const returnUrl = `${webBaseUrl}/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&code_challenge=${challenge}&code_challenge_method=S256&state=${state}&scope=openid%20profile%20email`;
+            
+            const fullUrl = `${webBaseUrl}/signin?login_hint=${encodeURIComponent(this.email)}&returnUrl=${encodeURIComponent(returnUrl)}`;
+            
+            if (window.require) {
+                const { ipcRenderer } = window.require('electron');
+                ipcRenderer.invoke('open-external', fullUrl);
+            } else {
+                window.location.href = fullUrl;
             }
             
-            this.successMsg = 'We found your account. Enter your password or the OTP sent to your email.';
-            this.step = 'otp';
+            // Stay in loading state indefinitely while user completes login in browser
+            // When deep link returns, the global event will handle token exchange and close this view
         } catch (err) {
-            this.error = err.message || 'Failed to connect to server';
-        } finally {
+            this.error = err.message;
             this.loading = false;
         }
+    }
+
+    _generateRandomString(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+        let result = '';
+        const randomValues = new Uint8Array(length);
+        crypto.getRandomValues(randomValues);
+        for (let i = 0; i < length; i++) {
+            result += chars[randomValues[i] % chars.length];
+        }
+        return result;
+    }
+
+    async _generateCodeChallenge(verifier) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(verifier);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const base64Str = btoa(String.fromCharCode.apply(null, hashArray));
+        return base64Str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
     async _handleVerifyOtp(e) {
@@ -425,7 +474,7 @@ export class AuthView extends LitElement {
             const params = new URLSearchParams();
             params.append('username', this.email);
             params.append('password', this.otp);
-            const response = await fetch('http://localhost:8000/auth/login', {
+            const response = await fetch(`${configManager.getApiBaseUrl()}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: params
@@ -501,9 +550,9 @@ export class AuthView extends LitElement {
     _handleSSO(provider) {
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
-            ipcRenderer.invoke('open-external', `http://localhost:8000/auth/sso/${provider.toLowerCase()}/login`);
+            ipcRenderer.invoke('open-external', `${configManager.getApiBaseUrl()}/auth/sso/${provider.toLowerCase()}/login`);
         } else {
-            window.location.href = `http://localhost:8000/auth/sso/${provider.toLowerCase()}/login`;
+            window.location.href = `${configManager.getApiBaseUrl()}/auth/sso/${provider.toLowerCase()}/login`;
         }
     }
 
@@ -562,23 +611,41 @@ export class AuthView extends LitElement {
     render() {
         return html`
             <div class="auth-layout">
+                <div class="drag-region"></div>
+                <div class="window-controls">
+                    <button class="control-btn" @click=${this._handleMinimize} aria-label="Minimize">
+                        <svg width="12" height="2" viewBox="0 0 12 2"><rect width="12" height="2" fill="currentColor"/></svg>
+                    </button>
+                    <button class="control-btn" @click=${this._handleMaximize} aria-label="Maximize">
+                        <svg width="10" height="10" viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor"/></svg>
+                    </button>
+                    <button class="control-btn close" @click=${this._handleClose} aria-label="Close">
+                        <svg width="12" height="12" viewBox="0 0 12 12"><line x1="1" y1="1" x2="11" y2="11" stroke="currentColor" stroke-width="1.5"/><line x1="11" y1="1" x2="1" y2="11" stroke="currentColor" stroke-width="1.5"/></svg>
+                    </button>
+                </div>
+
                 <div class="auth-card">
                     <div class="brand-logo">
-                        <img src="./assets/images/small_icon.png" alt="HideWin" />
-                    </div>
-                    
-                    ${this.step === 'email' ? html`
-                        <h1 class="welcome-title">Welcome back</h1>
-                        <p class="welcome-subtitle">Sign in to your account</p>
+                        <img src="./assets/images/small_icon.png" alt="" />
                         
+                    </div>
+
+                    ${this.step === 'email' ? html`
+                        <h1 class="welcome-title">Sign in to HideWin</h1>
+                        <p class="welcome-subtitle">Enter your email and we will send you a login code</p>
+
                         <form @submit=${this._handleSendOtp}>
                             <div class="input-group">
                                 <label class="input-label" for="emailInput">Email address</label>
-                                <input id="emailInput" type="email" class="input-field" required .value=${this.email} @input=${e => this.email = e.target.value} placeholder="name@company.com" aria-label="Email address" />
+                                <input id="emailInput" type="email" class="input-field" required
+                                    .value=${this.email}
+                                    @input=${e => this.email = e.target.value}
+                                    placeholder="name@email.com"
+                                    aria-label="Email address" />
                             </div>
-                            
+
                             ${this.error ? html`<div class="error-message" role="alert">${this.error}</div>` : ''}
-                            
+
                             <button type="submit" class="btn-primary" ?disabled=${this.loading}>
                                 ${this.loading ? 'Signing in...' : 'Continue with Email'}
                             </button>
@@ -588,97 +655,118 @@ export class AuthView extends LitElement {
 
                         <div class="sso-row">
                             <button type="button" class="sso-btn" @click=${() => this._handleSSO('Google')} aria-label="Continue with Google">
-                                <img src="https://www.google.com/favicon.ico" alt="Google" />
+                                <img src="https://www.google.com/favicon.ico" alt="" />
                                 Google
                             </button>
                             <button type="button" class="sso-btn" @click=${() => this._handleSSO('Apple')} aria-label="Continue with Apple">
-                                <svg viewBox="0 0 384 512"><path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+                                <svg viewBox="0 0 384 512" fill="currentColor" style="width:16px;height:16px;"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.1-44.6-35.9-2.8-74.3 22.7-92.5 22.7-18.2 0-51-22.7-80.3-22.1-39 1.1-75.1 22.1-95.2 55.4-40.4 67.2-10.4 167.3 29.5 225.1 19.3 27.9 42.5 59.9 73 59.9 29.5 0 41-19 78-19s48.5 19 78.5 19c30.5 0 51.5-29.9 71-57.1 22.7-31.5 31.5-62.1 32-63.4-1.1-.5-59.9-23.7-60-80.8zm-57.6-135.8c18-21.5 29.5-50.5 26.5-80.3-25.5 1-56 16.4-74.5 37.9-15.5 17.5-29 46.5-25 75.5 28.5 2 55-11.6 73-33.1z"></path></svg>
                                 Apple
                             </button>
                         </div>
-                        <button type="button" class="sso-btn" style="width: 100%; margin-top: 0;" @click=${() => this._handleSSO('SAML')} aria-label="Single Sign-On (SSO)">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            Single Sign-On (SSO)
-                        </button>
+
+                        <div class="footer">
+                            <a role="button" tabindex="0"
+                                @click=${() => this._openModal('policy')}
+                                @keydown=${e => e.key === 'Enter' && this._openModal('policy')}>Privacy Policy</a>
+                            &nbsp;&middot;&nbsp;
+                            <a role="button" tabindex="0"
+                                @click=${() => this._openModal('terms')}
+                                @keydown=${e => e.key === 'Enter' && this._openModal('terms')}>Terms &amp; Conditions</a>
+                        </div>
                     ` : ''}
 
                     ${this.step === 'otp' ? html`
                         <h1 class="welcome-title">Check your email</h1>
                         <p class="welcome-subtitle">Enter the 6-digit code sent to<br><strong>${this.email}</strong></p>
-                        
+
                         ${this.successMsg ? html`<div class="success-message" role="status">${this.successMsg}</div>` : ''}
-                        
+
                         <form @submit=${this._handleVerifyOtp}>
                             <div class="input-group">
                                 <label class="input-label" for="codeInput">Secure Code</label>
-                                <input id="codeInput" type="text" class="input-field" required .value=${this.otp} @input=${e => this.otp = e.target.value} placeholder="123456" maxlength="6" style="font-size: 20px; letter-spacing: 4px; text-align: center; font-weight: 500;" aria-label="Secure Code" />
+                                <input id="codeInput" type="text" class="input-field" required
+                                    .value=${this.otp}
+                                    @input=${e => this.otp = e.target.value}
+                                    placeholder="123456" maxlength="6"
+                                    style="font-size:20px;letter-spacing:4px;text-align:center;font-weight:500;"
+                                    aria-label="Secure Code" />
                             </div>
-                            
+
                             ${this.error ? html`<div class="error-message" role="alert">${this.error}</div>` : ''}
-                            
+
                             <button type="submit" class="btn-primary" ?disabled=${this.loading}>
                                 ${this.loading ? 'Verifying...' : 'Verify Code'}
                             </button>
-                            
-                            <button type="button" @click=${() => { this.step = 'email'; this.otp = ''; this.successMsg = ''; this.error = ''; }} style="background: transparent; border: none; color: #6b7280; margin-top: 24px; cursor: pointer; text-decoration: underline; width: 100%; font-size: 14px; font-weight: 500;">
+
+                            <button type="button"
+                                @click=${() => { this.step = 'email'; this.otp = ''; this.successMsg = ''; this.error = ''; }}
+                                style="background:transparent;border:none;color:#6b7280;margin-top:24px;cursor:pointer;text-decoration:underline;width:100%;font-size:14px;font-weight:500;">
                                 Back to login
                             </button>
                         </form>
+
+                        <div class="footer">
+                            <a role="button" tabindex="0"
+                                @click=${() => this._openModal('policy')}
+                                @keydown=${e => e.key === 'Enter' && this._openModal('policy')}>Privacy Policy</a>
+                            &nbsp;&middot;&nbsp;
+                            <a role="button" tabindex="0"
+                                @click=${() => this._openModal('terms')}
+                                @keydown=${e => e.key === 'Enter' && this._openModal('terms')}>Terms &amp; Conditions</a>
+                        </div>
                     ` : ''}
-
-                    <div class="footer">
-                        <a role="button" tabindex="0" @click=${() => this._openModal('policy')} @keydown=${e => e.key === 'Enter' && this._openModal('policy')}>Privacy Policy</a>
-                        &nbsp;&middot;&nbsp;
-                        <a role="button" tabindex="0" @click=${() => this._openModal('terms')} @keydown=${e => e.key === 'Enter' && this._openModal('terms')}>Terms & Conditions</a>
-                    </div>
                 </div>
+
+                <div class="auth-right"></div>
+
+                ${this.showPolicyModal ? html`
+                    <div class="modal-overlay" @click=${this._closeModal}>
+                        <div class="modal-content" @click=${e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="policyTitle">
+                            <div class="modal-header">
+                                <h2 id="policyTitle" class="modal-title">Privacy Policy</h2>
+                                <button class="close-btn" @click=${this._closeModal} aria-label="Close modal">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h3>1. Information Collection</h3>
+                                <p>We only collect the essential information required to provide you with secure authentication and real-time meeting assistance. Your data is encrypted at rest and in transit.</p>
+                                <h3>2. Data Usage</h3>
+                                <p>Your authentication data is never shared with third parties. We use industry-standard security practices to ensure your account remains protected.</p>
+                                <h3>3. Contact Us</h3>
+                                <p>If you have any questions about our privacy practices, please contact our support team.</p>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${this.showTermsModal ? html`
+                    <div class="modal-overlay" @click=${this._closeModal}>
+                        <div class="modal-content" @click=${e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+                            <div class="modal-header">
+                                <h2 id="termsTitle" class="modal-title">Terms &amp; Conditions</h2>
+                                <button class="close-btn" @click=${this._closeModal} aria-label="Close modal">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h3>1. Acceptance of Terms</h3>
+                                <p>By accessing and using this application, you accept and agree to be bound by the terms and provisions of this agreement.</p>
+                                <h3>2. Service Usage</h3>
+                                <p>You agree to use this service only for its intended purposes. Unauthorized access, automated scraping, or misuse of the APIs is strictly prohibited.</p>
+                                <h3>3. Account Security</h3>
+                                <p>You are responsible for maintaining the confidentiality of your account authentication methods.</p>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
             </div>
-
-            <!-- Modals -->
-            ${this.showPolicyModal ? html`
-                <div class="modal-overlay" @click=${this._closeModal}>
-                    <div class="modal-content" @click=${e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="policyTitle">
-                        <div class="modal-header">
-                            <h2 id="policyTitle" class="modal-title">Privacy Policy</h2>
-                            <button class="close-btn" @click=${this._closeModal} aria-label="Close modal">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <h3>1. Information Collection</h3>
-                            <p>We only collect the essential information required to provide you with secure authentication and real-time meeting assistance. Your data is encrypted at rest and in transit.</p>
-                            <h3>2. Data Usage</h3>
-                            <p>Your authentication data is never shared with third parties. We use industry-standard security practices to ensure your account remains protected.</p>
-                            <h3>3. Contact Us</h3>
-                            <p>If you have any questions about our privacy practices, please contact our support team.</p>
-                        </div>
-                    </div>
-                </div>
-            ` : ''}
-
-            ${this.showTermsModal ? html`
-                <div class="modal-overlay" @click=${this._closeModal}>
-                    <div class="modal-content" @click=${e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="termsTitle">
-                        <div class="modal-header">
-                            <h2 id="termsTitle" class="modal-title">Terms & Conditions</h2>
-                            <button class="close-btn" @click=${this._closeModal} aria-label="Close modal">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <h3>1. Acceptance of Terms</h3>
-                            <p>By accessing and using this application, you accept and agree to be bound by the terms and provisions of this agreement.</p>
-                            <h3>2. Service Usage</h3>
-                            <p>You agree to use this service only for its intended purposes. Unauthorized access, automated scraping, or misuse of the APIs is strictly prohibited.</p>
-                            <h3>3. Account Security</h3>
-                            <p>You are responsible for maintaining the confidentiality of your account authentication methods.</p>
-                        </div>
-                    </div>
-                </div>
-            ` : ''}
         `;
     }
 
 }
 
 customElements.define('auth-view', AuthView);
+
+
+

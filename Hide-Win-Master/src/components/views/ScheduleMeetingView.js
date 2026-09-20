@@ -37,6 +37,8 @@ const TIMEZONES = [
     { value: "Pacific/Auckland", label: "(GMT+12:00) Auckland, Wellington, Fiji, Kamchatka" }
 ];
 
+const configManager = window.require ? window.require('./utils/configManager.js') : require('../../utils/configManager.js');
+
 export class ScheduleMeetingView extends LitElement {
     static properties = {
         editMeeting: { type: Object },
@@ -369,7 +371,7 @@ export class ScheduleMeetingView extends LitElement {
                  if (prefs.dnsIP) dnsIP = prefs.dnsIP;
             }
             
-            const baseUrl = dnsIP.includes('.loca.lt') ? `https://${dnsIP}/api/meetings` : `http://${dnsIP}:${dnsPort}/api/meetings`;
+            const baseUrl = `${configManager.getApiBaseUrl()}/api/meetings`;
             const endpointUrl = this.editMeeting ? `${baseUrl}/${this.editMeeting.id}` : baseUrl + '/';
             const reqMethod = this.editMeeting ? 'PUT' : 'POST';
             const formData = new FormData();
@@ -384,7 +386,7 @@ export class ScheduleMeetingView extends LitElement {
                 participants: [],
                 cc_participants: [],
                 bcc_participants: [],
-                invite_url_base: dnsIP.includes('.loca.lt') ? `https://${dnsIP}/invite/index.html` : `http://${dnsIP}:${dnsPort}/invite/index.html`
+                invite_url_base: `${configManager.getWebBaseUrl()}/invite/index.html`
             };
             
             const meetingDataJson = JSON.stringify(meetingData);
@@ -437,7 +439,7 @@ export class ScheduleMeetingView extends LitElement {
         const protocol = window.location.protocol.replace(':', '');
         const passcode = this.createdMeeting.recurrence && this.createdMeeting.recurrence !== 'none' ? this.createdMeeting.recurrence : (this.createdMeeting.id ? this.createdMeeting.id.split('-').pop().toLowerCase() : '');
         // Note: the backend uses the dnsIP, so we should reconstruct it safely
-        const joinLink = `http://127.0.0.1:8000/invite/index.html?channel=${this.createdMeeting.id}&passcode=${passcode}`; // fallback
+        const joinLink = `${configManager.getWebBaseUrl()}/invite/index.html?channel=${this.createdMeeting.id}&passcode=${passcode}`;
         
         const title = this.createdMeeting.title;
         const time = `${this.startDate} at ${this.startTime} (${this.timezone})`;
@@ -495,7 +497,7 @@ Passcode: ${passcode}`;
                  if (prefs && prefs.data) prefs = prefs.data;
                  if (prefs.dnsIP) dnsIP = prefs.dnsIP;
             }
-            const apiUrl = dnsIP.includes('.loca.lt') ? `https://${dnsIP}/api/meetings/${this.createdMeeting.id}/send-invites` : `http://${dnsIP}:${dnsPort}/api/meetings/${this.createdMeeting.id}/send-invites`;
+            const apiUrl = `${configManager.getApiBaseUrl()}/api/meetings/${this.createdMeeting.id}/send-invites`;
             
             const formData = new FormData();
             const editor = this.shadowRoot.querySelector('#description-editor');
@@ -505,7 +507,7 @@ Passcode: ${passcode}`;
                 participants: this.attendees,
                 cc_participants: this.ccAttendees,
                 bcc_participants: this.bccAttendees,
-                invite_url_base: dnsIP.includes('.loca.lt') ? `https://${dnsIP}/invite/index.html` : `http://${dnsIP}:${dnsPort}/invite/index.html`,
+                invite_url_base: `${configManager.getWebBaseUrl()}/invite/index.html`,
                 description_override: currentDesc
             };
             formData.append('invite_data', JSON.stringify(inviteData));

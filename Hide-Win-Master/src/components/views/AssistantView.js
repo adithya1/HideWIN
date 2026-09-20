@@ -232,6 +232,8 @@ export class AssistantView extends LitElement {
             this.isThemeMenuOpen = false;
         };
         window.addEventListener('click', this._closeMenus);
+        this._boundLoadPrefs = this._loadSessionPreferences.bind(this);
+        window.addEventListener('preferences-updated', this._boundLoadPrefs);
         
         this._loadSessionPreferences();
 
@@ -291,6 +293,7 @@ export class AssistantView extends LitElement {
         this._stopWaveformAnimation();
         
         window.removeEventListener('click', this._closeMenus);
+        window.removeEventListener('preferences-updated', this._boundLoadPrefs);
 
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
