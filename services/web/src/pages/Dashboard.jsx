@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Play, Sparkles, LayoutGrid, Zap, CheckCircle2, MoreHorizontal } from "lucide-react";
+import { Play, Sparkles, LayoutGrid, Zap, CheckCircle2, MoreHorizontal, Loader2 } from "lucide-react";
 import { API_BASE } from "../config";
 
 export default function Dashboard() {
@@ -13,7 +13,7 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const tplRes = await fetch(`${API_BASE}/user/assistants/templates`);
+                const tplRes = await fetch(\/user/assistants/templates);
                 if (tplRes.ok) {
                     const data = await tplRes.json();
                     setTemplates(data);
@@ -23,7 +23,7 @@ export default function Dashboard() {
                     }
                 }
                 
-                const astRes = await fetch(`${API_BASE}/user/assistants/`);
+                const astRes = await fetch(\/user/assistants/);
                 if (astRes.ok) setAssistants(await astRes.json());
             } catch (err) {
                 console.error("Error fetching data:", err);
@@ -35,10 +35,14 @@ export default function Dashboard() {
     }, []);
 
     const handleLaunchTemplate = (templateId) => {
-        navigate(`/assistant/create?templateId=${templateId}`);
+        navigate(/assistant/create?templateId=\);
     };
 
-    if (loading) return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#5f6368" }}>Loading ultra-posh dashboard...</div>;
+    if (loading) return (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#6b7280" }}>
+            <Loader2 className="animate-spin" size={32} />
+        </div>
+    );
 
     const uniqueCategories = [...new Set(templates.map(t => t.category || "Meeting Copilots"))];
     const filteredTemplates = templates.filter(t => (t.category || "Meeting Copilots") === activeCategory);
@@ -52,46 +56,46 @@ export default function Dashboard() {
     });
 
     return (
-        <div style={{ maxWidth: "1200px", margin: "0 auto", paddingBottom: "60px", display: "flex", gap: "40px" }} className="animate-fade-slide-up">
+        <div style={{ maxWidth: "1200px", margin: "0 auto", paddingBottom: "60px", fontFamily: 'Inter, system-ui, sans-serif' }} className="animate-fade-slide-up">
             
-            {/* Left Sidebar for Categories */}
-            <div style={{ width: "240px", flexShrink: 0, marginTop: "80px" }} className="stagger-1">
-                <h3 style={{ fontSize: "12px", fontWeight: "700", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "16px", paddingLeft: "12px" }}>Library</h3>
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    {uniqueCategories.map(cat => (
-                        <button 
-                            key={cat}
-                            onClick={() => setActiveCategory(cat)}
-                            style={{ 
-                                textAlign: "left", padding: "12px 16px", borderRadius: "12px", border: "none", cursor: "pointer", 
-                                background: activeCategory === cat ? "#f1f5f9" : "transparent",
-                                color: activeCategory === cat ? "#0f172a" : "#64748b",
-                                fontWeight: activeCategory === cat ? "600" : "500",
-                                fontSize: "15px",
-                                transition: "all 0.2s ease"
-                            }}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+            {/* Header */}
+            <div style={{ marginBottom: "32px", display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+                <div>
+                    <h1 style={{ fontSize: "28px", fontWeight: "700", margin: 0, color: "#111827", letterSpacing: "-0.02em" }}>Dashboard</h1>
+                    <p style={{ color: "#6b7280", margin: "8px 0 0 0", fontSize: "15px", fontWeight: "400" }}>Access your specialized AI copilots and active meeting assistants.</p>
                 </div>
             </div>
 
-            {/* Main Content Area */}
-            <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "12px" }}>
-                    <div style={{ background: "linear-gradient(135deg, #1a73e8, #a855f7)", padding: "10px", borderRadius: "12px", color: "white", boxShadow: "0 8px 16px -4px rgba(26, 115, 232, 0.3)" }}>
-                        <LayoutGrid size={24} />
-                    </div>
-                    <h1 style={{ fontSize: "36px", fontWeight: "800", margin: 0, color: "#0f172a", letterSpacing: "-0.03em" }}>Dashboard</h1>
-                </div>
-                <p style={{ color: "#64748b", marginBottom: "48px", fontSize: "16px", fontWeight: "500", maxWidth: "600px", lineHeight: "1.5" }}>Access your specialized AI copilots and active meeting assistants in one unified workspace.</p>
+            {/* Horizontal Tabs for Categories */}
+            <div style={{ display: "flex", gap: "32px", borderBottom: "1px solid #e5e7eb", marginBottom: "40px", overflowX: "auto" }}>
+                {uniqueCategories.map(cat => (
+                    <button 
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        style={{ 
+                            padding: "0 0 12px 0", 
+                            border: "none", 
+                            background: "transparent",
+                            cursor: "pointer", 
+                            color: activeCategory === cat ? "#4f46e5" : "#6b7280",
+                            fontWeight: activeCategory === cat ? "600" : "500",
+                            fontSize: "14px",
+                            borderBottom: activeCategory === cat ? "2px solid #4f46e5" : "2px solid transparent",
+                            transition: "all 0.2s ease",
+                            whiteSpace: "nowrap"
+                        }}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
 
+            {/* Main Content Area */}
+            <div>
                 {Object.keys(subcategories).map((subcat, idx) => (
-                    <div key={subcat} style={{ marginBottom: "56px" }} className={`animate-fade-slide-up stagger-${(idx % 3) + 1}`}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
-                            <h2 style={{ fontSize: "20px", fontWeight: "700", color: "#1e293b", margin: 0 }}>{subcat}</h2>
-                            <div style={{ height: "1px", flex: 1, background: "linear-gradient(to right, #e2e8f0, transparent)" }}></div>
+                    <div key={subcat} style={{ marginBottom: "56px" }} className={nimate-fade-slide-up stagger-\}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+                            <h2 style={{ fontSize: "18px", fontWeight: "600", color: "#1f2937", margin: 0 }}>{subcat}</h2>
                         </div>
 
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
@@ -100,34 +104,32 @@ export default function Dashboard() {
                                     key={tpl.id} 
                                     className="posh-card group"
                                     style={{ 
-                                        backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "20px", 
-                                        padding: "28px", display: "flex", flexDirection: "column", cursor: "pointer",
-                                        position: "relative", overflow: "hidden"
+                                        backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", 
+                                        padding: "24px", display: "flex", flexDirection: "column", cursor: "pointer",
+                                        position: "relative", overflow: "hidden", transition: "all 0.3s ease"
                                     }}
                                     onClick={() => handleLaunchTemplate(tpl.id)}
                                 >
-                                    <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "4px", background: "linear-gradient(to right, #3b82f6, #8b5cf6)", opacity: 0, transition: "opacity 0.3s ease" }} className="hover-bar"></div>
-                                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "20px" }}>
-                                        <div style={{ width: "56px", height: "56px", borderRadius: "16px", backgroundColor: "#f8fafc", color: "#3b82f6", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)" }}>
-                                            <Zap size={24} fill="currentColor" strokeWidth={1} />
+                                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
+                                        <div style={{ width: "48px", height: "48px", borderRadius: "12px", backgroundColor: "#eef2ff", color: "#4f46e5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            <Zap size={22} fill="currentColor" strokeWidth={1} />
                                         </div>
-                                        <button className="posh-button" style={{ background: "#f1f5f9", border: "none", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b", cursor: "pointer" }}>
-                                            <MoreHorizontal size={16} />
+                                        <button style={{ background: "transparent", border: "none", color: "#9ca3af", cursor: "pointer" }}>
+                                            <MoreHorizontal size={20} />
                                         </button>
                                     </div>
-                                    <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "700", color: "#0f172a" }}>{tpl.name}</h3>
-                                    <p style={{ color: "#64748b", fontSize: "15px", flex: 1, marginBottom: "28px", lineHeight: "1.6" }}>
+                                    <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "600", color: "#111827" }}>{tpl.name}</h3>
+                                    <p style={{ color: "#6b7280", fontSize: "14px", flex: 1, marginBottom: "24px", lineHeight: "1.5" }}>
                                         {tpl.description || "A ready-to-use co-pilot for your dynamic workflows."}
                                     </p>
                                     <button 
                                         onClick={(e) => { e.stopPropagation(); handleLaunchTemplate(tpl.id); }}
-                                        style={{ alignSelf: "flex-start", display: "flex", alignItems: "center", gap: "8px", backgroundColor: "#0f172a", color: "#ffffff", border: "none", padding: "12px 24px", borderRadius: "100px", fontWeight: "600", fontSize: "14px", cursor: "pointer", transition: "all 0.2s" }}
-                                        onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
-                                        onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
+                                        style={{ alignSelf: "flex-start", display: "flex", alignItems: "center", gap: "8px", backgroundColor: "#f3f4f6", color: "#374151", border: "1px solid #e5e7eb", padding: "10px 20px", borderRadius: "8px", fontWeight: "500", fontSize: "13px", cursor: "pointer", transition: "all 0.2s" }}
+                                        onMouseOver={e => { e.currentTarget.style.backgroundColor = "#111827"; e.currentTarget.style.color = "#ffffff"; e.currentTarget.style.borderColor = "#111827"; }}
+                                        onMouseOut={e => { e.currentTarget.style.backgroundColor = "#f3f4f6"; e.currentTarget.style.color = "#374151"; e.currentTarget.style.borderColor = "#e5e7eb"; }}
                                     >
-                                        Launch Template <span style={{ color: "#818cf8" }}>&rarr;</span>
+                                        Configure
                                     </button>
-                                    <style>{".group:hover .hover-bar { opacity: 1 !important; }"}</style>
                                 </div>
                             ))}
                         </div>
@@ -135,32 +137,31 @@ export default function Dashboard() {
                 ))}
 
                 {filteredTemplates.length === 0 && (
-                    <div style={{ padding: "60px", textAlign: "center", background: "#f8fafc", borderRadius: "24px", border: "1px dashed #cbd5e1" }}>
-                        <div style={{ width: "64px", height: "64px", background: "#e2e8f0", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px auto", color: "#94a3b8" }}><Sparkles size={32} /></div>
-                        <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: "600", color: "#334155" }}>No templates found</h3>
-                        <p style={{ margin: 0, color: "#64748b" }}>Ask your admin to create templates for this category.</p>
+                    <div style={{ padding: "60px", textAlign: "center", background: "#f9fafb", borderRadius: "16px", border: "1px dashed #d1d5db" }}>
+                        <div style={{ width: "48px", height: "48px", background: "#f3f4f6", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px auto", color: "#9ca3af" }}><Sparkles size={24} /></div>
+                        <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "600", color: "#374151" }}>No templates found</h3>
+                        <p style={{ margin: 0, color: "#6b7280", fontSize: "14px" }}>Ask your admin to create templates for this category.</p>
                     </div>
                 )}
 
-                <div className="animate-fade-slide-up stagger-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "24px", marginTop: "40px" }}>
+                <div className="animate-fade-slide-up stagger-3" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "20px", marginTop: "48px" }}>
                     <div>
-                        <h2 style={{ fontSize: "22px", fontWeight: "800", margin: 0, color: "#0f172a", letterSpacing: "-0.02em" }}>Active Assistants</h2>
-                        <p style={{ color: "#64748b", fontSize: "15px", margin: "6px 0 0 0" }}>Your customized co-pilots ready for action.</p>
+                        <h2 style={{ fontSize: "20px", fontWeight: "700", margin: 0, color: "#111827", letterSpacing: "-0.01em" }}>Active Assistants</h2>
                     </div>
                 </div>
 
-                <div className="posh-card animate-fade-slide-up stagger-3" style={{ backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "20px", overflow: "hidden" }}>
+                <div className="posh-card animate-fade-slide-up stagger-3" style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden" }}>
                     {assistants.length === 0 ? (
-                        <div style={{ padding: "40px", textAlign: "center", color: "#94a3b8", fontWeight: "500" }}>You have no active assistants.</div>
+                        <div style={{ padding: "40px", textAlign: "center", color: "#9ca3af", fontSize: "14px" }}>You have no active assistants.</div>
                     ) : (
                         assistants.map((ast, i) => (
-                            <div key={ast.id} style={{ display: "flex", alignItems: "center", padding: "20px 28px", borderBottom: i < assistants.length - 1 ? "1px solid #f1f5f9" : "none", cursor: "pointer", transition: "background 0.2s" }} onMouseOver={e => e.currentTarget.style.backgroundColor="#f8fafc"} onMouseOut={e => e.currentTarget.style.backgroundColor="transparent"}>
-                                <div style={{ marginRight: "20px", color: i % 2 === 0 ? "#3b82f6" : "#10b981" }}><CheckCircle2 size={24} /></div>
+                            <div key={ast.id} style={{ display: "flex", alignItems: "center", padding: "16px 24px", borderBottom: i < assistants.length - 1 ? "1px solid #f3f4f6" : "none", cursor: "pointer", transition: "background 0.2s" }} onMouseOver={e => e.currentTarget.style.backgroundColor="#f9fafb"} onMouseOut={e => e.currentTarget.style.backgroundColor="transparent"}>
+                                <div style={{ marginRight: "16px", color: "#10b981" }}><CheckCircle2 size={20} /></div>
                                 <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: "600", color: "#1e293b", fontSize: "16px", marginBottom: "4px" }}>{ast.name}</div>
-                                    <div style={{ fontSize: "13px", color: "#94a3b8", fontWeight: "500" }}>{ast.target_role ? `Target Role: ${ast.target_role}` : "General Assistant"}</div>
+                                    <div style={{ fontWeight: "600", color: "#111827", fontSize: "14px", marginBottom: "2px" }}>{ast.name}</div>
+                                    <div style={{ fontSize: "13px", color: "#6b7280" }}>{ast.target_role ? Role: \ : "General Assistant"}</div>
                                 </div>
-                                <button style={{ background: "white", border: "1px solid #e2e8f0", borderRadius: "100px", padding: "8px 20px", fontSize: "13px", fontWeight: "600", color: "#334155", cursor: "pointer", transition: "all 0.2s" }} onMouseOver={e => {e.currentTarget.style.borderColor = "#3b82f6"; e.currentTarget.style.color = "#3b82f6";}} onMouseOut={e => {e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.color = "#334155";}}>Manage</button>
+                                <button style={{ background: "white", border: "1px solid #d1d5db", borderRadius: "8px", padding: "6px 16px", fontSize: "13px", fontWeight: "500", color: "#374151", cursor: "pointer", transition: "all 0.2s" }} onMouseOver={e => {e.currentTarget.style.borderColor = "#4f46e5"; e.currentTarget.style.color = "#4f46e5";}} onMouseOut={e => {e.currentTarget.style.borderColor = "#d1d5db"; e.currentTarget.style.color = "#374151";}}>Manage</button>
                             </div>
                         ))
                     )}
@@ -169,4 +170,3 @@ export default function Dashboard() {
         </div>
     );
 }
-

@@ -23,3 +23,10 @@ Never guess historical intent.
 - Always use `configManager.js` for domains, URLs, and network endpoints.
 - Always use `pathManager.js` for file path resolution.
 - Exception: Admin login credentials (like `ADMIN_EMAIL` and `ADMIN_PASSWORD`) may be provided via a `.env` file, but must NEVER be hardcoded in any `.js`, `.html`, or config files.
+
+
+## Branding Policy
+- NEVER use the name "HuddleMate" in the UI. The product is strictly named "HideWin".
+- Logos and branding must be fetched dynamically from the Admin settings API (`/auth/branding`), not hardcoded as text or static images.
+- Always use horizontal tabs for internal page navigation, not nested vertical sidebars.
+- Ensure UI matches "ultra-posh" real-world SaaS standards (smooth animations, proper alignment, loading states on buttons).

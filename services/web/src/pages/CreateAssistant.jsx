@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2, UploadCloud } from "lucide-react";
+import { API_BASE } from "../config";
 
 export default function CreateAssistant() {
     const [searchParams] = useSearchParams();
@@ -10,6 +11,7 @@ export default function CreateAssistant() {
     const [templates, setTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -23,7 +25,7 @@ export default function CreateAssistant() {
     useEffect(() => {
         const fetchTemplates = async () => {
             try {
-                const res = await fetch("http://127.0.0.1:8000/user/assistants/templates");
+                const res = await fetch(\/user/assistants/templates);
                 if (res.ok) {
                     const data = await res.json();
                     setTemplates(data);
@@ -52,8 +54,9 @@ export default function CreateAssistant() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
         try {
-            const res = await fetch("http://127.0.0.1:8000/user/assistants/", {
+            const res = await fetch(\/user/assistants/, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -70,93 +73,113 @@ export default function CreateAssistant() {
             }
         } catch (err) {
             console.error(err);
+        } finally {
+            setSubmitting(false);
         }
     };
 
-    if (loading) return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#5f6368" }}>Loading...</div>;
-    if (!selectedTemplate) return <div style={{ padding: "40px", textAlign: "center", color: "#64748b" }}>No templates available. Please ask admin to configure templates.</div>;
+    if (loading) return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#6b7280" }}><Loader2 className="animate-spin" size={32} /></div>;
+    if (!selectedTemplate) return <div style={{ padding: "40px", textAlign: "center", color: "#6b7280" }}>No templates available. Please ask admin to configure templates.</div>;
 
     const isInterview = selectedTemplate.name.toLowerCase().includes("interview");
 
     const inputStyle = {
-        width: "100%", padding: "12px 16px", borderRadius: "10px", border: "1px solid #e2e8f0", 
-        fontSize: "15px", marginTop: "8px", outline: "none", color: "#0f172a", backgroundColor: "#f8fafc",
-        transition: "all 0.2s"
+        width: "100%", padding: "10px 14px", borderRadius: "8px", border: "1px solid #d1d5db", 
+        fontSize: "14px", marginTop: "6px", outline: "none", color: "#111827", backgroundColor: "#ffffff",
+        transition: "border-color 0.2s, box-shadow 0.2s", fontFamily: "Inter, system-ui, sans-serif"
     };
 
     const labelStyle = {
-        display: "block", fontSize: "13px", fontWeight: "600", color: "#334155", textTransform: "uppercase", letterSpacing: "0.05em"
+        display: "block", fontSize: "13px", fontWeight: "500", color: "#374151"
+    };
+
+    const sectionStyle = {
+        backgroundColor: "#ffffff",
+        border: "1px solid #e5e7eb",
+        borderRadius: "12px",
+        padding: "24px",
+        marginBottom: "24px",
+        boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
     };
 
     const sectionTitleStyle = {
-        fontSize: "12px", fontWeight: "700", color: "#94a3b8", textTransform: "uppercase", marginBottom: "20px", letterSpacing: "0.1em"
+        fontSize: "16px", fontWeight: "600", color: "#111827", marginBottom: "20px", borderBottom: "1px solid #e5e7eb", paddingBottom: "12px"
     };
 
     return (
-        <div style={{ maxWidth: "800px", margin: "0 auto", backgroundColor: "#fff", padding: "40px", borderRadius: "24px", boxShadow: "0 10px 40px -10px rgba(0,0,0,0.05)" }} className="animate-fade-slide-up">
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", borderBottom: "1px solid #f1f5f9", paddingBottom: "24px", marginBottom: "40px" }}>
-                <button onClick={() => navigate("/dashboard")} className="posh-button" style={{ background: "#f1f5f9", border: "none", borderRadius: "50%", width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#475569" }}>
-                    <ArrowLeft size={20} />
+        <div style={{ maxWidth: "700px", margin: "0 auto", paddingBottom: "60px", fontFamily: "Inter, system-ui, sans-serif" }} className="animate-fade-slide-up">
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
+                <button onClick={() => navigate("/dashboard")} style={{ background: "white", border: "1px solid #e5e7eb", borderRadius: "8px", width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#6b7280", transition: "all 0.2s" }} onMouseOver={e => e.currentTarget.style.backgroundColor = "#f3f4f6"} onMouseOut={e => e.currentTarget.style.backgroundColor = "white"}>
+                    <ArrowLeft size={18} />
                 </button>
-                <h1 style={{ fontSize: "24px", fontWeight: "700", margin: 0, color: "#0f172a", letterSpacing: "-0.02em" }}>Create Assistant</h1>
+                <div>
+                    <h1 style={{ fontSize: "24px", fontWeight: "700", margin: 0, color: "#111827", letterSpacing: "-0.01em" }}>Configure Assistant</h1>
+                    <p style={{ margin: "4px 0 0 0", fontSize: "14px", color: "#6b7280" }}>Customize your AI copilot parameters.</p>
+                </div>
             </div>
 
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "40px" }} className="form-field-enter stagger-1">
-                    <div style={sectionTitleStyle}>BASICS</div>
+                <div style={sectionStyle} className="form-field-enter stagger-1">
+                    <div style={sectionTitleStyle}>Basic Details</div>
                     
-                    <div style={{ marginBottom: "24px" }}>
-                        <label style={labelStyle}>Name <span style={{ color: "#ef4444" }}>*</span></label>
-                        <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="e.g. Interview Coach" style={inputStyle} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
-                        <div style={{ fontSize: "13px", color: "#64748b", marginTop: "8px" }}>Give your meeting assistant a descriptive name.</div>
+                    <div style={{ marginBottom: "20px" }}>
+                        <label style={labelStyle}>Assistant Name <span style={{ color: "#ef4444" }}>*</span></label>
+                        <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="e.g. Acme Corp Interview Prep" style={inputStyle} onFocus={e => {e.target.style.borderColor = "#4f46e5"; e.target.style.boxShadow = "0 0 0 3px rgba(79, 70, 229, 0.1)";}} onBlur={e => {e.target.style.borderColor = "#d1d5db"; e.target.style.boxShadow = "none";}} />
                     </div>
 
-                    <div style={{ marginBottom: "24px" }}>
-                        <label style={labelStyle}>Co-pilot</label>
-                        <select value={selectedTemplate.id} onChange={handleTemplateChange} style={{...inputStyle, cursor: "pointer"}} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"}>
+                    <div>
+                        <label style={labelStyle}>Template Model</label>
+                        <select value={selectedTemplate.id} onChange={handleTemplateChange} style={{...inputStyle, cursor: "pointer"}} onFocus={e => {e.target.style.borderColor = "#4f46e5"; e.target.style.boxShadow = "0 0 0 3px rgba(79, 70, 229, 0.1)";}} onBlur={e => {e.target.style.borderColor = "#d1d5db"; e.target.style.boxShadow = "none";}}>
                             {templates.map(t => (
-                                <option key={t.id} value={t.id}>{t.name}</option>
+                                <option key={t.id} value={t.id}>{t.name} ({t.category})</option>
                             ))}
                         </select>
-                        <div style={{ fontSize: "13px", color: "#64748b", marginTop: "8px" }}>Choose a pre-built co-pilot for common meeting types.</div>
                     </div>
                 </div>
 
-                {selectedTemplate.form_schema && selectedTemplate.form_schema.length > 0 && (
-                    <div style={{ marginBottom: "40px" }} className="form-field-enter stagger-2">
-                        <div style={sectionTitleStyle}>CONFIGURATION</div>
-                        {selectedTemplate.form_schema.map(field => (
-                            <div key={field.name} style={{ marginBottom: "24px" }}>
-                                <label style={labelStyle}>{field.label} {field.required && <span style={{ color: "#ef4444" }}>*</span>}</label>
-                                {field.type === "file" ? (
-                                    <button type="button" className="posh-button" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "12px", background: "#f0fdf4", border: "1px dashed #22c55e", color: "#16a34a", padding: "12px 24px", borderRadius: "100px", fontSize: "14px", fontWeight: "600", cursor: "pointer", width: "fit-content" }}>
-                                        <span style={{ fontSize: "18px" }}>+</span> Attach {field.label.toLowerCase()}
-                                    </button>
-                                ) : (
-                                    <input type={field.type} name={field.name} value={formData[field.name] || ""} onChange={handleChange} required={field.required} placeholder={field.placeholder || ""} style={inputStyle} onFocus={e => e.target.style.borderColor = "#3b82f6"} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
-                                )}
+                {isInterview && (
+                    <div style={sectionStyle} className="form-field-enter stagger-2">
+                        <div style={sectionTitleStyle}>Interview Configuration</div>
+                        
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
+                            <div>
+                                <label style={labelStyle}>Target Role <span style={{ color: "#ef4444" }}>*</span></label>
+                                <input type="text" name="target_role" value={formData.target_role} onChange={handleChange} required placeholder="e.g. Senior Frontend Engineer" style={inputStyle} onFocus={e => {e.target.style.borderColor = "#4f46e5"; e.target.style.boxShadow = "0 0 0 3px rgba(79, 70, 229, 0.1)";}} onBlur={e => {e.target.style.borderColor = "#d1d5db"; e.target.style.boxShadow = "none";}} />
                             </div>
-                        ))}
+
+                            <div>
+                                <label style={labelStyle}>Experience (Years) <span style={{ color: "#ef4444" }}>*</span></label>
+                                <input type="number" name="experience_years" value={formData.experience_years} onChange={handleChange} required placeholder="5" style={inputStyle} onFocus={e => {e.target.style.borderColor = "#4f46e5"; e.target.style.boxShadow = "0 0 0 3px rgba(79, 70, 229, 0.1)";}} onBlur={e => {e.target.style.borderColor = "#d1d5db"; e.target.style.boxShadow = "none";}} />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={labelStyle}>Resume Upload <span style={{ fontWeight: "normal", color: "#9ca3af" }}>(Optional)</span></label>
+                            <div style={{ marginTop: "8px", border: "1px dashed #d1d5db", borderRadius: "8px", padding: "32px", textAlign: "center", backgroundColor: "#f9fafb", cursor: "pointer", transition: "all 0.2s" }} onMouseOver={e => {e.currentTarget.style.borderColor = "#4f46e5"; e.currentTarget.style.backgroundColor = "#eff6ff";}} onMouseOut={e => {e.currentTarget.style.borderColor = "#d1d5db"; e.currentTarget.style.backgroundColor = "#f9fafb";}}>
+                                <UploadCloud size={24} color="#6b7280" style={{ margin: "0 auto 8px auto" }} />
+                                <div style={{ fontSize: "14px", fontWeight: "500", color: "#4f46e5" }}>Click to upload <span style={{ color: "#6b7280" }}>or drag and drop</span></div>
+                                <div style={{ fontSize: "12px", color: "#9ca3af", marginTop: "4px" }}>PDF, DOCX up to 10MB</div>
+                            </div>
+                        </div>
                     </div>
                 )}
 
-                <div style={{ marginBottom: "40px" }} className="form-field-enter stagger-3">
-                    <div style={sectionTitleStyle}>ADDITIONAL CONFIG</div>
-                    
-                    <div style={{ marginBottom: "24px" }}>
-                        <label style={labelStyle}>Materials <span style={{ fontWeight: "normal", textTransform: "none", color: "#94a3b8" }}>Optional</span></label>
-                        <button type="button" className="posh-button" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "12px", background: "#eff6ff", border: "1px dashed #3b82f6", color: "#2563eb", padding: "12px 24px", borderRadius: "100px", fontSize: "14px", fontWeight: "600", cursor: "pointer", width: "fit-content" }}>
-                            <span style={{ fontSize: "18px" }}>+</span> Add material
-                        </button>
+                <div style={sectionStyle} className="form-field-enter stagger-3">
+                    <div style={sectionTitleStyle}>Knowledge Base</div>
+                    <label style={labelStyle}>Additional Materials <span style={{ fontWeight: "normal", color: "#9ca3af" }}>(Optional)</span></label>
+                    <div style={{ marginTop: "8px", border: "1px dashed #d1d5db", borderRadius: "8px", padding: "32px", textAlign: "center", backgroundColor: "#f9fafb", cursor: "pointer", transition: "all 0.2s" }} onMouseOver={e => {e.currentTarget.style.borderColor = "#4f46e5"; e.currentTarget.style.backgroundColor = "#eff6ff";}} onMouseOut={e => {e.currentTarget.style.borderColor = "#d1d5db"; e.currentTarget.style.backgroundColor = "#f9fafb";}}>
+                        <UploadCloud size={24} color="#6b7280" style={{ margin: "0 auto 8px auto" }} />
+                        <div style={{ fontSize: "14px", fontWeight: "500", color: "#4f46e5" }}>Click to upload <span style={{ color: "#6b7280" }}>or drag and drop</span></div>
+                        <div style={{ fontSize: "12px", color: "#9ca3af", marginTop: "4px" }}>JDs, SOPs, Company Data</div>
                     </div>
                 </div>
 
-                <div className="form-field-enter stagger-3" style={{ borderTop: "1px solid #f1f5f9", paddingTop: "32px", display: "flex", justifyContent: "flex-end", gap: "16px" }}>
-                    <button type="button" onClick={() => navigate("/dashboard")} className="posh-button" style={{ background: "transparent", color: "#64748b", border: "1px solid #e2e8f0", padding: "12px 28px", borderRadius: "12px", fontWeight: "600", fontSize: "15px", cursor: "pointer" }}>
+                <div className="form-field-enter stagger-3" style={{ paddingTop: "16px", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+                    <button type="button" onClick={() => navigate("/dashboard")} disabled={submitting} style={{ background: "white", color: "#374151", border: "1px solid #d1d5db", padding: "10px 20px", borderRadius: "8px", fontWeight: "500", fontSize: "14px", cursor: submitting ? "not-allowed" : "pointer", transition: "all 0.2s" }} onMouseOver={e => !submitting && (e.currentTarget.style.backgroundColor = "#f9fafb")} onMouseOut={e => !submitting && (e.currentTarget.style.backgroundColor = "white")}>
                         Cancel
                     </button>
-                    <button type="submit" className="posh-button" style={{ background: "#2563eb", color: "#fff", border: "none", padding: "12px 32px", borderRadius: "12px", fontWeight: "600", fontSize: "15px", cursor: "pointer", boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)" }}>
-                        Create & Launch
+                    <button type="submit" disabled={submitting} style={{ background: "#4f46e5", color: "#ffffff", border: "none", padding: "10px 24px", borderRadius: "8px", fontWeight: "500", fontSize: "14px", cursor: submitting ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: "8px", transition: "all 0.2s", boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)" }} onMouseOver={e => !submitting && (e.currentTarget.style.backgroundColor = "#4338ca")} onMouseOut={e => !submitting && (e.currentTarget.style.backgroundColor = "#4f46e5")}>
+                        {submitting ? <Loader2 className="animate-spin" size={16} /> : "Create & Launch"}
                     </button>
                 </div>
             </form>
