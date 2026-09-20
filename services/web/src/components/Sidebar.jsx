@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-    LayoutDashboard, FileAudio, Users, FolderOpen, 
-    Settings, EyeOff, UserCircle, PlayCircle
+    Home, Bot, Clock, Folder, 
+    User, EyeOff, Gift, Volume2, ShieldAlert, HelpCircle, ChevronDown, Star
 } from 'lucide-react';
 import { API_BASE } from '../config';
 
@@ -18,71 +18,76 @@ export default function Sidebar() {
     }, []);
 
     const topItems = [
-        { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-        { name: 'My Copilots', path: '/assistants', icon: Users },
-        { name: 'Meeting Notes', path: '/sessions', icon: FileAudio },
-        { name: 'Knowledge Base', path: '/documents', icon: FolderOpen },
+        { name: 'Dashboard', path: '/dashboard', icon: Home },
+        { name: 'Assistants', path: '/assistants', icon: Bot },
+        { name: 'Sessions', path: '/sessions', icon: Clock },
+        { name: 'Documents', path: '/documents', icon: Folder },
     ];
 
     const bottomItems = [
-        { name: 'Settings', path: '/settings', icon: Settings },
-        { name: 'Billing', path: '/account', icon: UserCircle },
-        { name: 'Stealth Mode', path: '/invisible', icon: EyeOff },
-        { name: 'Tutorials', path: '/help', icon: PlayCircle },
+        { name: 'Account', path: '/account', icon: User, hasDropdown: true },
+        { name: 'Go Invisible', path: '/invisible', icon: EyeOff, star: true },
+        { name: 'Refer & Earn', path: '/refer', icon: Gift, badge: 'NEW' },
+        { name: 'Audio Check', path: '/audio', icon: Volume2 },
+        { name: 'Invisibility Check', path: '/invisibility-check', icon: ShieldAlert },
+        { name: 'Help', path: '/help', icon: HelpCircle },
     ];
 
     const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
 
-    const linkStyle = (active) => ({
-        display: 'flex',
-        alignItems: 'center',
-        padding: '10px 16px',
-        margin: '4px 16px',
-        borderRadius: '8px',
-        textDecoration: 'none',
-        color: active ? '#111827' : '#6b7280',
-        backgroundColor: active ? '#f3f4f6' : 'transparent',
-        fontWeight: active ? '600' : '500',
-        fontSize: '14px',
-        transition: 'all 0.2s ease'
-    });
-
     return (
-        <div style={{ width: '260px', borderRight: '1px solid #e5e7eb', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', fontFamily: 'Inter, system-ui, sans-serif' }}>
-            <div style={{ padding: '24px 20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ width: '250px', borderRight: '1px solid #e0e0e0', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+            <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
                 {branding.logo_light ? (
-                    <img src={branding.logo_light} alt="Logo" style={{ height: '32px', objectFit: 'contain' }} />
+                    <img src={branding.logo_light} alt="HideWin" style={{ height: '36px', objectFit: 'contain' }} />
                 ) : (
-                    <span style={{ fontSize: '20px', fontWeight: '700', color: '#111827', letterSpacing: '-0.02em' }}>HideWin</span>
+                    <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#000' }}>HideWin</span>
                 )}
             </div>
             
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '8px' }}>
-                <div style={{ margin: '0 24px 8px 24px', fontSize: '12px', fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Menu
-                </div>
-                {topItems.map(item => (
-                    <Link key={item.name} to={item.path} style={linkStyle(isActive(item.path))} onMouseOver={e => !isActive(item.path) && (e.currentTarget.style.backgroundColor = '#f9fafb')} onMouseOut={e => !isActive(item.path) && (e.currentTarget.style.backgroundColor = 'transparent')}>
-                        <item.icon size={18} style={{ marginRight: '12px', color: isActive(item.path) ? '#4f46e5' : '#9ca3af' }} />
-                        {item.name}
-                    </Link>
-                ))}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', padding: '0 12px' }}>
+                {topItems.map(item => {
+                    const active = isActive(item.path);
+                    return (
+                        <Link key={item.name} to={item.path} style={{
+                            display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
+                            textDecoration: 'none', color: active ? '#1a73e8' : '#5f6368',
+                            backgroundColor: active ? '#f0f4ff' : 'transparent',
+                            fontWeight: active ? '600' : '500', fontSize: '15px', position: 'relative'
+                        }}>
+                            {active && <div style={{ position: 'absolute', left: '-12px', top: '10px', bottom: '10px', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                            <item.icon size={18} style={{ marginRight: '16px', color: active ? '#1a73e8' : '#5f6368' }} strokeWidth={active ? 2.5 : 2} />
+                            {item.name}
+                        </Link>
+                    )
+                })}
 
-                <div style={{ margin: '32px 24px 8px 24px', fontSize: '12px', fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Preferences
+                <div style={{ margin: '24px 16px 8px 16px', fontSize: '11px', fontWeight: '600', color: '#9aa0a6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    MORE
                 </div>
 
-                {bottomItems.map(item => (
-                    <Link key={item.name} to={item.path} style={linkStyle(isActive(item.path))} onMouseOver={e => !isActive(item.path) && (e.currentTarget.style.backgroundColor = '#f9fafb')} onMouseOut={e => !isActive(item.path) && (e.currentTarget.style.backgroundColor = 'transparent')}>
-                        <item.icon size={18} style={{ marginRight: '12px', color: isActive(item.path) ? '#4f46e5' : '#9ca3af' }} />
-                        <span style={{ flex: 1 }}>{item.name}</span>
-                        {item.badge && (
-                            <span style={{ backgroundColor: '#4f46e5', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '100px', fontWeight: '700' }}>
-                                {item.badge}
-                            </span>
-                        )}
-                    </Link>
-                ))}
+                {bottomItems.map(item => {
+                    const active = isActive(item.path);
+                    return (
+                        <Link key={item.name} to={item.path} style={{
+                            display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
+                            textDecoration: 'none', color: active ? '#1a73e8' : '#5f6368',
+                            backgroundColor: active ? '#f0f4ff' : 'transparent',
+                            fontWeight: '500', fontSize: '15px'
+                        }}>
+                            <item.icon size={18} style={{ marginRight: '16px', color: '#5f6368' }} />
+                            <span style={{ flex: 1 }}>{item.name}</span>
+                            
+                            {item.hasDropdown && <ChevronDown size={16} color="#9aa0a6" />}
+                            {item.star && <Star size={16} color="#fbbc04" />}
+                            {item.badge && (
+                                <span style={{ backgroundColor: '#1a73e8', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
+                                    {item.badge}
+                                </span>
+                            )}
+                        </Link>
+                    )
+                })}
             </div>
         </div>
     );
