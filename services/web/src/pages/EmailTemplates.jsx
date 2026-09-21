@@ -8,6 +8,9 @@ export default function EmailTemplates() {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({});
     const [logs, setLogs] = useState([]);
+    const [analytics, setAnalytics] = useState(null);
+    const [logSearchTerm, setLogSearchTerm] = useState('');
+
     const [branding, setBranding] = useState({});
     const [activeTab, setActiveTab] = useState('templates');
     const [showCampaignModal, setShowCampaignModal] = useState(false);
@@ -46,6 +49,11 @@ export default function EmailTemplates() {
             });
             const data = await res.json();
             setLogs(data);
+
+        fetch(`${API_BASE}/admin-system/email-analytics`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
+        }).then(res => res.json()).then(setAnalytics).catch(console.error);
+
         } catch (e) {
             console.error(e);
         }
@@ -70,6 +78,29 @@ export default function EmailTemplates() {
     };
 
     
+    
+    const handleRetry = async (logId) => {
+        try {
+            const res = await fetch(`${API_BASE}/admin-system/email-logs/${logId}/retry`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
+            });
+            const data = await res.json();
+            alert(data.message || data.detail);
+            
+            // Refresh logs
+            fetch(`${API_BASE}/admin-system/email-logs`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
+            }).then(r => r.json()).then(setLogs);
+            
+            fetch(`${API_BASE}/admin-system/email-analytics`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
+            }).then(r => r.json()).then(setAnalytics);
+        } catch (e) {
+            alert('Failed to retry email.');
+        }
+    };
+
     const handleDispatchCampaign = async () => {
         const emails = campaignCustomEmails.split(',').map(e => e.trim()).filter(e => e);
         if (campaignAudience === 'custom' && emails.length === 0) {
