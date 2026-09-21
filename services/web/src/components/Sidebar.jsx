@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
     Home, Bot, Clock, Folder, 
     User, EyeOff, Gift, Volume2, ShieldAlert, HelpCircle, ChevronDown, ChevronUp, Star, Download
-} from 'lucide-react';
+, LogOut, MoreVertical, CreditCard} from 'lucide-react';
 import { API_BASE } from '../config';
 
 export default function Sidebar() {
+    const navigate = useNavigate();
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
+    const handleLogout = () => {
+        localStorage.removeItem('hidewin_token');
+        navigate('/login');
+    };
+
     const location = useLocation();
     const [branding, setBranding] = useState({ logo_light: '', logo_dark: '', browser_icon: '' });
     const [isAccountOpen, setIsAccountOpen] = useState(true); // Default open to match screenshot
@@ -147,7 +155,45 @@ export default function Sidebar() {
                             </Link>
                         )
                     })}
+
                 </div>
+                
+                {/* Profile Chip */}
+                <div style={{ padding: '16px', position: 'relative' }}>
+                    {/* Pop-up Menu */}
+                    {isProfileMenuOpen && (
+                        <div style={{ position: 'absolute', bottom: 'calc(100% - 10px)', left: '16px', right: '16px', backgroundColor: '#fff', border: '1px solid #e8eaed', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, padding: '8px 0' }}>
+                            <Link to="/account/profile" style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', textDecoration: 'none', color: '#5f6368', fontSize: '14px', fontWeight: '500' }}>
+                                <User size={16} style={{ marginRight: '12px' }} /> Profile
+                            </Link>
+                            <Link to="/account/credits" style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', textDecoration: 'none', color: '#5f6368', fontSize: '14px', fontWeight: '500' }}>
+                                <CreditCard size={16} style={{ marginRight: '12px' }} /> Credits
+                            </Link>
+                            <Link to="/help" style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', textDecoration: 'none', color: '#5f6368', fontSize: '14px', fontWeight: '500' }}>
+                                <HelpCircle size={16} style={{ marginRight: '12px' }} /> Help
+                            </Link>
+                            <div style={{ height: '1px', backgroundColor: '#e8eaed', margin: '8px 0' }} />
+                            <button onClick={handleLogout} style={{ width: '100%', display: 'flex', alignItems: 'center', padding: '10px 16px', border: 'none', background: 'transparent', color: '#ef4444', fontSize: '14px', fontWeight: '500', cursor: 'pointer', textAlign: 'left' }}>
+                                <LogOut size={16} style={{ marginRight: '12px' }} /> Logout
+                            </button>
+                        </div>
+                    )}
+                    
+                    <div 
+                        onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                        style={{ display: 'flex', alignItems: 'center', padding: '12px', border: '1px solid #e8eaed', borderRadius: '8px', cursor: 'pointer', backgroundColor: isProfileMenuOpen ? '#f8f9fa' : '#fff' }}
+                    >
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fce8e6', color: '#d93025', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', marginRight: '12px', flexShrink: 0 }}>
+                            P
+                        </div>
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                            <div style={{ fontSize: '13px', fontWeight: '600', color: '#202124', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>Post Box</div>
+                            <div style={{ fontSize: '11px', color: '#5f6368', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>postbox.send@gmail.com</div>
+                        </div>
+                        <MoreVertical size={16} color="#5f6368" style={{ flexShrink: 0 }} />
+                    </div>
+                </div>
+
             </div>
         </>
     );
