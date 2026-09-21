@@ -41,3 +41,11 @@ class MeetingAttachment(Base):
     file_path = Column(String, nullable=False)
     
     meeting = relationship("Meeting", back_populates="attachments")
+
+class MeetingReminderLog(Base):
+    __tablename__ = "meeting_reminder_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    meeting_id = Column(String, ForeignKey("meetings.id"), index=True)
+    recipient_email = Column(String, index=True)
+    reminder_type = Column(String, index=True) # e.g., '24h', '1h', '10m'
+    sent_at = Column(DateTime(timezone=True), server_default=func.now())

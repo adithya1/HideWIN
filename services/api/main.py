@@ -68,6 +68,16 @@ app.include_router(meeting.router)
 app.add_exception_handler(ApplicationError, application_error_handler)
 app.add_exception_handler(ValidationError, validation_error_handler)
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from services.api.services.reminder_service import ReminderService
+
+@app.on_event("startup")
+async def start_scheduler():
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(ReminderService.process_reminders, 'interval', minutes=5)
+    scheduler.start()
+    print("Background Meeting Reminder Scheduler started.")
+
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "environment": settings.APP_ENV}
