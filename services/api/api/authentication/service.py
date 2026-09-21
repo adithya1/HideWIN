@@ -40,14 +40,14 @@ class AuthenticationService:
 import secrets
 import time
 from services.api.core.admin_config import get_admin_settings
-from services.api.services.email_service import EmailService
+from services.api.services.email_service import EmailService, EmailNotificationService
 
 # In-memory OTP cache for legacy behavior
 _login_otps: dict = {}
 
 class OTPService:
     @staticmethod
-    async def send_otp(email: str, db) -> dict:
+    async def send_otp(email: str, db, user=None) -> dict:
         admin_settings = get_admin_settings()
         expires_at = time.time() + (admin_settings.otp_expiry_minutes * 60)
         if email.endswith("@hidewin.app"):
@@ -58,12 +58,25 @@ class OTPService:
         otp = str(secrets.randbelow(1000000)).zfill(6)
         _login_otps[email] = {"code": otp, "expires_at": expires_at}
         
-        body_html = f"Your login code is: {otp}\n\nPlease enter this code to sign in."
         print(f"\n{'='*40}\n[DEBUG] OTP FOR {email} IS: {otp}\n{'='*40}\n")
+        
+        # Decide if it's signup or login. We'll use AUTH_LOGIN_OTP as default unless we know it's a signup.
+        # But per instructions, AUTH_LOGIN_OTP is fine for now.
+        # Could also lookup if user exists.
+        
+        template_key = "AUTH_LOGIN_OTP" if user else "AUTH_SIGNUP_OTP"
+        first_name = user.first_name if user and getattr(user, 'first_name', None) else email.split("@")[0]
+
+        variables = {
+            "firstName": first_name,
+            "otpCode": otp,
+            "otpExpiryMinutes": admin_settings.otp_expiry_minutes
+        }
+        
         try:
-            await EmailService.send_email(db, email, "Your HideWIN Login Code", body_html)
+            await EmailNotificationService.dispatch(db, template_key, email, variables)
         except Exception as e:
-            print(f"Failed to send email to {email}: {e}")
+            print(f"Failed to dispatch {template_key} to {email}: {e}")
         
         return {"success": True, "message": "OTP sent successfully"}
         

@@ -9,7 +9,7 @@ import uuid
 from services.api import db_models as models
 from services.api.core.database import get_db
 from services.api.core.security import get_current_user
-from services.api.services.email_service import EmailService
+from services.api.services.email_service import EmailService, EmailNotificationService
 from datetime import timedelta
 
 router = APIRouter(prefix="/api/meetings", tags=["meetings"])
@@ -240,34 +240,31 @@ async def send_invites_for_meeting(
         desc = data.description_override if data.description_override is not None else meeting.description
 
         for email in data.participants:
-            subject = f"Meeting Invite: {meeting.title}"
             join_link = f"{data.invite_url_base}?channel={meeting.id}&passcode={passcode}"
             
-            lines = []
-            lines.append(f"Title: {meeting.title}")
-            if meeting.start_time:
-                lines.append(f"Time: {meeting.start_time.strftime('%Y-%m-%d %H:%M')} {meeting.timezone}")
-            lines.append(f"")
-            lines.append(f"Join Link: {join_link}")
-            lines.append(f"Passcode: {passcode}")
-            lines.append(f"")
-            if desc:
-                lines.append(f"Description:")
-                lines.append(desc)
-                lines.append(f"")
-                
             import urllib.parse
+            link = ""
             if meeting.start_time:
                 title_enc = urllib.parse.quote(meeting.title)
                 start_str = meeting.start_time.strftime('%Y%m%dT%H%M%SZ')
                 end_str = meeting.end_time.strftime('%Y%m%dT%H%M%SZ') if getattr(meeting, 'end_time', None) else meeting.start_time.strftime('%Y%m%dT%H%M%SZ')
                 link = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={title_enc}&dates={start_str}/{end_str}&details=Join Link: {urllib.parse.quote(join_link)}"
-                if "Add to Google Calendar:" not in chr(10).join(lines):
-                    lines.append("")
-                    lines.append("Add to Google Calendar:")
-                    lines.append(link)
-            content_str = chr(10).join(lines)
-            EmailService.send_email(db, to_email=email, subject=subject, content=content_str, cc=data.cc_participants, bcc=data.bcc_participants, attachments=att_data)
+
+            variables = {
+                "firstName": email.split('@')[0],
+                "organizerName": current_user.email,
+                "meetingTitle": meeting.title,
+                "meetingDate": meeting.start_time.strftime('%Y-%m-%d') if meeting.start_time else "TBD",
+                "meetingTime": meeting.start_time.strftime('%H:%M') if meeting.start_time else "TBD",
+                "meetingTimezone": meeting.timezone or "",
+                "meetingId": meeting.id,
+                "meetingPasscode": passcode,
+                "meetingJoinUrl": join_link,
+                "calendarUrl": link
+            }
+            
+            # Note: attachments, cc, bcc are handled natively in advanced senders, but for now we dispatch to main recipient
+            await EmailNotificationService.dispatch(db, "MEETING_INVITATION", email, variables)
 
     return {"status": "success"}
 
@@ -325,33 +322,19 @@ async def update_meeting(
         passcode = meeting.recurrence if meeting.recurrence and meeting.recurrence != 'none' else meeting.id.split('-')[-1].lower()
         
         for email in meeting_data.participants:
-            subject = f"[Rescheduled] Meeting Invite: {meeting.title}"
             join_link = f"{meeting_data.invite_url_base}?channel={meeting.id}&passcode={passcode}"
             
-            lines = []
-            lines.append(f"Title: {meeting.title}")
-            if meeting.start_time:
-                lines.append(f"Time: {meeting.start_time.strftime('%Y-%m-%d %H:%M')} {meeting.timezone}")
-            lines.append(f"")
-            lines.append(f"Join Link: {join_link}")
-            lines.append(f"Passcode: {passcode}")
-            lines.append(f"")
-            if meeting.description:
-                lines.append(f"Description:")
-                lines.append(meeting.description)
-                
-            import urllib.parse
-            if meeting.start_time:
-                title_enc = urllib.parse.quote(meeting.title)
-                start_str = meeting.start_time.strftime('%Y%m%dT%H%M%SZ')
-                end_str = meeting.end_time.strftime('%Y%m%dT%H%M%SZ') if getattr(meeting, 'end_time', None) else meeting.start_time.strftime('%Y%m%dT%H%M%SZ')
-                link = f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={title_enc}&dates={start_str}/{end_str}&details=Join Link: {urllib.parse.quote(join_link)}"
-                if "Add to Google Calendar:" not in chr(10).join(lines):
-                    lines.append("")
-                    lines.append("Add to Google Calendar:")
-                    lines.append(link)
-            content_str = chr(10).join(lines)
-            EmailService.send_email(db, to_email=email, subject=subject, content=content_str, cc=meeting_data.cc_participants, bcc=meeting_data.bcc_participants)
+            variables = {
+                "firstName": email.split('@')[0],
+                "meetingTitle": meeting.title,
+                "meetingDate": meeting.start_time.strftime('%Y-%m-%d') if meeting.start_time else "TBD",
+                "meetingTime": meeting.start_time.strftime('%H:%M') if meeting.start_time else "TBD",
+                "meetingTimezone": meeting.timezone or "",
+                "meetingId": meeting.id,
+                "meetingPasscode": passcode,
+                "meetingJoinUrl": join_link
+            }
+            await EmailNotificationService.dispatch(db, "MEETING_RESCHEDULED", email, variables)
             
     await db.commit()
     await db.refresh(meeting)
@@ -373,6 +356,18 @@ async def delete_meeting(meeting_id: str, db: Session = Depends(get_db), current
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
         
-    db.delete(meeting)
+    # Fetch participants before deletion to notify them
+    participants = await db.execute(select(models.MeetingParticipant).filter_by(meeting_id=meeting.id))
+    for p in participants.scalars().all():
+        variables = {
+            "firstName": p.email.split('@')[0],
+            "meetingTitle": meeting.title,
+            "meetingDate": meeting.start_time.strftime('%Y-%m-%d') if meeting.start_time else "TBD",
+            "meetingTime": meeting.start_time.strftime('%H:%M') if meeting.start_time else "TBD",
+            "meetingTimezone": meeting.timezone or ""
+        }
+        await EmailNotificationService.dispatch(db, "MEETING_CANCELLED", p.email, variables)
+        
+    await db.delete(meeting)
     await db.commit()
     return {"status": "success"}

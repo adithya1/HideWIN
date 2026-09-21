@@ -141,7 +141,7 @@ async def send_otp(body: SendOtpRequest, db: AsyncSession = Depends(get_db)):
                     db.add(user)
                     await db.commit()
 
-    result = await OTPService.send_otp(body.email, db)
+    result = await OTPService.send_otp(body.email, db, user)
     return result
 from services.api.schemas.auth_schema import ForgotPasswordRequest, ResetPasswordRequest
 from services.api.api.authentication.password_service import PasswordService
