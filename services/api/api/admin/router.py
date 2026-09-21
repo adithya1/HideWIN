@@ -118,6 +118,29 @@ async def update_email_branding(branding_data: EmailBrandingSchema, db: AsyncSes
     await db.commit()
     return branding
 
+from services.api.schemas.marketing_schema import CampaignDispatchRequest
+from services.api.services.marketing_service import MarketingService
+
+@router.post("/email-campaigns/dispatch")
+async def dispatch_marketing_campaign(
+    payload: CampaignDispatchRequest, 
+    db: AsyncSession = Depends(get_db), 
+    _: User = Depends(verify_admin)
+):
+    try:
+        result = await MarketingService.dispatch_campaign(
+            db, 
+            payload.template_key, 
+            payload.audience, 
+            payload.custom_emails, 
+            payload.variables_override
+        )
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/email-logs")
 async def get_email_logs(limit: int = 50, db: AsyncSession = Depends(get_db), _: User = Depends(verify_admin)):
     res = await db.execute(select(EmailLog).order_by(EmailLog.id.desc()).limit(limit))
