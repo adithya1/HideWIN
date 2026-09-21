@@ -45,8 +45,8 @@ export default function Sidebar() {
     const bottomItems = [
         { name: 'Go Invisible', path: '/invisible', icon: Download, star: true },
         { name: 'Refer & Earn', path: '/refer', icon: Gift, badge: 'NEW' },
-        { name: 'Audio Check', path: '/audio', icon: Volume2 },
-        { name: 'Invisibility Check', path: '/invisibility-check', icon: EyeOff },
+        
+        
         { name: 'Help', path: '/help', icon: HelpCircle },
     ];
 
