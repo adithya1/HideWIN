@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RichTextEditor from '../components/RichTextEditor';
-import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload } from 'lucide-react';
+import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload , ChevronDown, ChevronRight} from "lucide-react";
 
 const MODEL_HIERARCHY = {
   openai: { name: 'OpenAI', models: [{id: 'gpt-4o', name: 'GPT-4o'}, {id: 'gpt-4o-mini', name: 'GPT-4o Mini'}] },
@@ -611,38 +611,105 @@ export default function Admin() {
 
   return (
     <div className="dashboard-layout">
-      <aside className="sidebar">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-          <div className="brand-logo" style={{ marginBottom: 0 }}>
-            <img src={(theme === 'dark' ? appSettings?.logo_dark_url : appSettings?.logo_light_url) || appSettings?.logo_light_url || appSettings?.logo_dark_url || "/logo.png"} alt="HideWin" style={{ maxHeight: '32px', maxWidth: '200px' }} />
-          </div>
-          <button className="theme-toggle" onClick={toggleTheme} title="Toggle Theme">
-            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-        </div>
-        
-        <nav className="sidebar-nav">
-          <button className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')} style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}>
-            <LayoutDashboard size={20} /> Overview
-          </button>
-          <button className={`nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')} style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}>
-            <Users size={20} /> Users
-          </button>
-          <button className={`nav-item ${activeTab === 'billing' ? 'active' : ''}`} onClick={() => setActiveTab('billing')} style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}>
-            <CreditCard size={20} /> Billing
-          </button>
-          <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')} style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}>
-            <Settings size={20} /> Settings
-          </button>
-        </nav>
+      <aside className="sidebar custom-scrollbar" style={{ width: '250px', minWidth: '250px', borderRight: '1px solid #e0e0e0', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', overflowY: 'auto' }}>
+            <style>
+                {`
+                    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+                    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #8f8f8f; border-radius: 10px; }
+                    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #707070; }
+                `}
+            </style>
+            <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
+                <img src={(theme === 'dark' ? appSettings?.logo_dark_url : appSettings?.logo_light_url) || appSettings?.logo_light_url || appSettings?.logo_dark_url || "/logo.png"} alt="HideWin" style={{ maxHeight: '36px', maxWidth: '100%', objectFit: 'contain' }} />
+            </div>
 
-        <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
-          <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, padding: '12px', width: '100%', borderRadius: '8px', transition: 'background 0.2s' }} className="nav-item">
-            <LogOut size={20} /> Sign out
-          </button>
-        </div>
-      
-              </aside>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', padding: '0 12px' }}>
+                
+                {/* Regular Items */}
+                <button onClick={() => setActiveTab('overview')} style={{
+                    display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
+                    border: 'none', background: activeTab === 'overview' ? '#f0f4ff' : 'transparent',
+                    color: activeTab === 'overview' ? '#1a73e8' : '#5f6368',
+                    fontWeight: activeTab === 'overview' ? '600' : '500', fontSize: '15px', position: 'relative', cursor: 'pointer', textAlign: 'left'
+                }}>
+                    {activeTab === 'overview' && <div style={{ position: 'absolute', left: '-12px', top: '10px', bottom: '10px', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                    <LayoutDashboard size={18} style={{ marginRight: '16px', color: activeTab === 'overview' ? '#1a73e8' : '#5f6368' }} strokeWidth={activeTab === 'overview' ? 2.5 : 2} />
+                    Overview
+                </button>
+
+                <button onClick={() => setActiveTab('users')} style={{
+                    display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
+                    border: 'none', background: activeTab === 'users' ? '#f0f4ff' : 'transparent',
+                    color: activeTab === 'users' ? '#1a73e8' : '#5f6368',
+                    fontWeight: activeTab === 'users' ? '600' : '500', fontSize: '15px', position: 'relative', cursor: 'pointer', textAlign: 'left'
+                }}>
+                    {activeTab === 'users' && <div style={{ position: 'absolute', left: '-12px', top: '10px', bottom: '10px', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                    <Users size={18} style={{ marginRight: '16px', color: activeTab === 'users' ? '#1a73e8' : '#5f6368' }} strokeWidth={activeTab === 'users' ? 2.5 : 2} />
+                    Users
+                </button>
+
+                <button onClick={() => setActiveTab('billing')} style={{
+                    display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
+                    border: 'none', background: activeTab === 'billing' ? '#f0f4ff' : 'transparent',
+                    color: activeTab === 'billing' ? '#1a73e8' : '#5f6368',
+                    fontWeight: activeTab === 'billing' ? '600' : '500', fontSize: '15px', position: 'relative', cursor: 'pointer', textAlign: 'left'
+                }}>
+                    {activeTab === 'billing' && <div style={{ position: 'absolute', left: '-12px', top: '10px', bottom: '10px', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                    <CreditCard size={18} style={{ marginRight: '16px', color: activeTab === 'billing' ? '#1a73e8' : '#5f6368' }} strokeWidth={activeTab === 'billing' ? 2.5 : 2} />
+                    Billing
+                </button>
+
+                <div style={{ margin: '24px 16px 12px 16px', fontSize: '11px', fontWeight: '600', color: '#9aa0a6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    SETTINGS
+                </div>
+
+                <div 
+                    onClick={() => { setActiveTab('settings'); if (!activeSettingsTab) setActiveSettingsTab('security'); }}
+                    style={{
+                        display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
+                        cursor: 'pointer', color: activeTab === 'settings' ? '#202124' : '#5f6368',
+                        background: 'transparent', border: 'none', fontWeight: '500', fontSize: '15px', textAlign: 'left', width: '100%'
+                    }}
+                >
+                    <Settings size={18} style={{ marginRight: '16px', color: activeTab === 'settings' ? '#202124' : '#5f6368' }} />
+                    <span style={{ flex: 1 }}>Configuration</span>
+                    {activeTab === 'settings' ? <ChevronDown size={16} color="#5f6368" /> : <ChevronRight size={16} color="#5f6368" />}
+                </div>
+
+                {activeTab === 'settings' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '8px' }}>
+                        {[
+                            { id: 'security', label: 'Security & Auth' },
+                            { id: 'ai_models', label: 'AI Models & Keys' },
+                            { id: 'transcription', label: 'Live Transcription' },
+                            { id: 'architecture', label: 'Architecture' },
+                            { id: 'dns', label: 'DNS & Network' },
+                            { id: 'email_templates', label: 'Email Templates' },
+                            { id: 'branding', label: 'Branding & Logos' }
+                        ].map(sub => {
+                            const isActive = activeSettingsTab === sub.id;
+                            return (
+                                <button key={sub.id} onClick={() => setActiveSettingsTab(sub.id)} style={{
+                                    display: 'block', padding: '10px 16px 10px 50px', borderRadius: '6px',
+                                    border: 'none', background: isActive ? '#f0f4ff' : 'transparent',
+                                    color: isActive ? '#1a73e8' : '#6c7f93',
+                                    fontWeight: isActive ? '500' : '400', fontSize: '14px', textAlign: 'left', cursor: 'pointer', width: '100%'
+                                }}>
+                                    {sub.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+            
+            <div style={{ marginTop: 'auto', borderTop: '1px solid #e0e0e0', padding: '12px' }}>
+                <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, padding: '12px', width: '100%', borderRadius: '8px' }}>
+                    <LogOut size={20} style={{ marginRight: '8px' }} /> Sign out
+                </button>
+            </div>
+        </aside>
       
       <main className="main-content" style={{ overflowY: 'auto' }}>
         <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -663,17 +730,17 @@ export default function Admin() {
               <div className="card metric-card">
                 <span className="metric-title">Total Users</span>
                 <span className="metric-value">{data.overview.users}</span>
-                <span className="metric-change positive">↑ 12% vs last month</span>
+                <span className="metric-change positive">â†‘ 12% vs last month</span>
               </div>
               <div className="card metric-card">
                 <span className="metric-title">Active Devices</span>
                 <span className="metric-value">{data.overview.active}</span>
-                <span className="metric-change positive">↑ 5% vs last month</span>
+                <span className="metric-change positive">â†‘ 5% vs last month</span>
               </div>
               <div className="card metric-card">
                 <span className="metric-title">Monthly Revenue</span>
                 <span className="metric-value">{data.overview.revenue}</span>
-                <span className="metric-change positive">↑ {data.overview.mrrGrowth} vs last month</span>
+                <span className="metric-change positive">â†‘ {data.overview.mrrGrowth} vs last month</span>
               </div>
             </div>
 
@@ -1117,7 +1184,7 @@ export default function Admin() {
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: idx === 0 ? '16px' : 0, borderBottom: idx === 0 ? '1px solid var(--border)' : 'none' }}>
                           <div>
                             <div style={{ fontWeight: 500, color: 'var(--text-main)', marginBottom: '4px' }}>{session.device}</div>
-                            <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{session.location} • {session.ip}</div>
+                            <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{session.location} â€¢ {session.ip}</div>
                           </div>
                           <div style={{ textAlign: 'right' }}>
                             <div style={{ fontSize: '14px', color: session.time === 'Active now' ? '#10b981' : 'var(--text-muted)', fontWeight: 500 }}>{session.time}</div>
@@ -1358,7 +1425,7 @@ export default function Admin() {
                 const dgConf     = sttConfigs.find(c => c.provider_name === 'deepgram');
                 const localConf  = sttConfigs.find(c => c.provider_name === 'local');
                 const SttBadge = ({ conf }) => conf?.is_active
-                  ? <span className="badge badge-active">● Active</span>
+                  ? <span className="badge badge-active">â— Active</span>
                   : conf?.key_hint
                   ? <span className="badge badge-pending">Configured ({conf.key_hint})</span>
                   : <span className="badge" style={{ background: 'var(--bg-subtle)', color: 'var(--text-muted)' }}>Not configured</span>;
@@ -1367,14 +1434,14 @@ export default function Admin() {
                   if (!r) return null;
                   if (r.loading) return <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Testing...</span>;
                   return r.status === 'ok'
-                    ? <span style={{ fontSize: '13px', color: '#10b981', fontWeight: 500 }}>✓ Connected — {r.latency_ms}ms</span>
-                    : <span style={{ fontSize: '13px', color: '#ef4444' }}>✗ {r.message}</span>;
+                    ? <span style={{ fontSize: '13px', color: '#10b981', fontWeight: 500 }}>âœ“ Connected â€” {r.latency_ms}ms</span>
+                    : <span style={{ fontSize: '13px', color: '#ef4444' }}>âœ— {r.message}</span>;
                 };
                 return (
                   <div className="fade-in">
                     <div style={{ marginBottom: '24px' }}>
                       <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>Live Transcription API</h2>
-                      <p style={{ color: 'var(--text-muted)' }}>Configure your STT engine. Keys are Fernet-encrypted in the backend DB — never stored on this machine.</p>
+                      <p style={{ color: 'var(--text-muted)' }}>Configure your STT engine. Keys are Fernet-encrypted in the backend DB â€” never stored on this machine.</p>
                     </div>
 
                     {/* Active Engine Status */}
@@ -1382,10 +1449,10 @@ export default function Admin() {
                       <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '8px' }}>Active Engine</h3>
                       {activeConf
                         ? <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <span className="badge badge-active" style={{ fontSize: '13px' }}>● {activeConf.provider_name === 'groq' ? 'Groq Whisper REST' : activeConf.provider_name === 'deepgram' ? 'Deepgram Nova-2' : activeConf.provider_name === 'local' ? 'Local Whisper' : activeConf.custom_name || 'Custom'}</span>
+                            <span className="badge badge-active" style={{ fontSize: '13px' }}>â— {activeConf.provider_name === 'groq' ? 'Groq Whisper REST' : activeConf.provider_name === 'deepgram' ? 'Deepgram Nova-2' : activeConf.provider_name === 'local' ? 'Local Whisper' : activeConf.custom_name || 'Custom'}</span>
                             <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>is receiving all transcription traffic</span>
                           </div>
-                        : <span style={{ color: '#f59e0b', fontSize: '13px' }}>⚠ No engine selected — defaults to Local Whisper (port 8001)</span>
+                        : <span style={{ color: '#f59e0b', fontSize: '13px' }}>âš  No engine selected â€” defaults to Local Whisper (port 8001)</span>
                       }
                     </div>
 
@@ -1393,8 +1460,8 @@ export default function Admin() {
                     <div className="card">
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                         <div>
-                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>⚡ Groq Whisper STT</h3>
-                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>whisper-large-v3 · REST API · ~2-3s audio chunks · No local server needed</p>
+                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>âš¡ Groq Whisper STT</h3>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>whisper-large-v3 Â· REST API Â· ~2-3s audio chunks Â· No local server needed</p>
                         </div>
                         <SttBadge conf={groqConf} />
                       </div>
@@ -1449,10 +1516,10 @@ export default function Admin() {
                       <div className="input-group">
                         <label className="input-label">Audio Buffer (seconds per transcription chunk)</label>
                         <select className="select-field" value={sttForm.groq_buffer} onChange={e => setSttForm(p => ({ ...p, groq_buffer: e.target.value }))}>
-                          <option value="1">1 second — fastest, less context</option>
-                          <option value="2">2 seconds — balanced</option>
-                          <option value="3">3 seconds — recommended</option>
-                          <option value="5">5 seconds — most accurate, slower</option>
+                          <option value="1">1 second â€” fastest, less context</option>
+                          <option value="2">2 seconds â€” balanced</option>
+                          <option value="3">3 seconds â€” recommended</option>
+                          <option value="5">5 seconds â€” most accurate, slower</option>
                         </select>
                       </div>
                       <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -1466,8 +1533,8 @@ export default function Admin() {
                     <div className="card">
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                         <div>
-                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>🌊 Deepgram Nova-2 STT</h3>
-                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>WebSocket streaming · Real-time word-by-word · No local server needed</p>
+                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>ðŸŒŠ Deepgram Nova-2 STT</h3>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>WebSocket streaming Â· Real-time word-by-word Â· No local server needed</p>
                         </div>
                         <SttBadge conf={dgConf} />
                       </div>
@@ -1475,7 +1542,7 @@ export default function Admin() {
                         <label className="input-label">Deepgram API Key</label>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <div style={{ flex: 1, position: 'relative' }}>
-                            <input type={showKeys['stt_deepgram'] ? 'text' : 'password'} className="input-field" placeholder={dgConf?.key_hint ? `Saved: ${dgConf.key_hint} — enter new to update` : 'Enter Deepgram key...'} value={sttForm.deepgram_key} onChange={e => setSttForm(p => ({ ...p, deepgram_key: e.target.value }))} style={{ width: '100%', paddingRight: '40px' }} />
+                            <input type={showKeys['stt_deepgram'] ? 'text' : 'password'} className="input-field" placeholder={dgConf?.key_hint ? `Saved: ${dgConf.key_hint} â€” enter new to update` : 'Enter Deepgram key...'} value={sttForm.deepgram_key} onChange={e => setSttForm(p => ({ ...p, deepgram_key: e.target.value }))} style={{ width: '100%', paddingRight: '40px' }} />
                             <button type="button" onClick={() => toggleKeyVisibility('stt_deepgram')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
                               {showKeys['stt_deepgram'] ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
@@ -1494,8 +1561,8 @@ export default function Admin() {
                     <div className="card">
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                         <div>
-                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>🖥️ Local Whisper Server</h3>
-                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>ws://localhost:8001 · Free · Offline · Requires local server running</p>
+                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>ðŸ–¥ï¸ Local Whisper Server</h3>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>ws://localhost:8001 Â· Free Â· Offline Â· Requires local server running</p>
                         </div>
                         <SttBadge conf={localConf} />
                       </div>
@@ -1508,7 +1575,7 @@ export default function Admin() {
 
                     {/* Custom STT */}
                     <div className="card" style={{ border: '1px dashed var(--border)', background: 'transparent' }}>
-                      <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>🔧 Custom STT Endpoint</h3>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>ðŸ”§ Custom STT Endpoint</h3>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div className="input-group">
                           <label className="input-label">Display Name</label>
@@ -1538,9 +1605,9 @@ export default function Admin() {
                     <div className="card" style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                       <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '10px', color: '#10b981' }}>Security Architecture</h3>
                       <ul style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.8, paddingLeft: '16px', margin: 0 }}>
-                        <li>🔐 Keys are <strong>Fernet-encrypted</strong> before storage — unreadable without the server master key</li>
-                        <li>🎤 Audio stays local — Electron → FastAPI (localhost) → Cloud STT API (server-side)</li>
-                        <li>👁 This UI only ever sees key hints (***last4) — raw keys never leave FastAPI memory</li>
+                        <li>ðŸ” Keys are <strong>Fernet-encrypted</strong> before storage â€” unreadable without the server master key</li>
+                        <li>ðŸŽ¤ Audio stays local â€” Electron â†’ FastAPI (localhost) â†’ Cloud STT API (server-side)</li>
+                        <li>ðŸ‘ This UI only ever sees key hints (***last4) â€” raw keys never leave FastAPI memory</li>
                       </ul>
                     </div>
                   </div>
@@ -1794,7 +1861,7 @@ export default function Admin() {
                   </div>
                   <div>
                     <label className="input-label">Temporary Password</label>
-                    <input type="password" className="input-field" placeholder="••••••••" value={modalForm.password} onChange={(e) => setModalForm({...modalForm, password: e.target.value})} />
+                    <input type="password" className="input-field" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" value={modalForm.password} onChange={(e) => setModalForm({...modalForm, password: e.target.value})} />
                   </div>
                   <div>
                     <label className="input-label">Role</label>
@@ -1899,3 +1966,4 @@ export default function Admin() {
     </div>
   );
 }
+
