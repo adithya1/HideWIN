@@ -910,30 +910,7 @@ export default function Admin() {
 
         {activeTab === 'settings' && (
           <div className="tab-content fade-in settings-layout">
-            {/* Settings Sidebar */}
-            <aside className="settings-sidebar">
-              <button className={`settings-nav-item ${activeSettingsTab === 'security' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('security')}>
-                <ShieldCheck size={18} /> Security & Auth
-              </button>
-              <button className={`settings-nav-item ${activeSettingsTab === 'ai_models' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('ai_models')}>
-                <Cpu size={18} /> AI Models & Keys
-              </button>
-              <button className={`settings-nav-item ${activeSettingsTab === 'transcription' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('transcription')}>
-                <Zap size={18} /> Live Transcription API
-              </button>
-              <button className={`settings-nav-item ${activeSettingsTab === 'architecture' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('architecture')}>
-                <Network size={18} /> Advanced Architecture
-              </button>
-              <button className={`settings-nav-item ${activeSettingsTab === 'dns' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('dns')}>
-                <Globe size={18} /> DNS & Network
-              </button>
-              <button className={`settings-nav-item ${activeSettingsTab === 'email_templates' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('email_templates')}>
-                <Mail size={18} /> Email Templates
-              </button>
-              <button className={`settings-nav-item ${activeSettingsTab === 'branding' ? 'active' : ''}`} onClick={() => setActiveSettingsTab('branding')}>
-                <Sun size={18} /> Branding & Logos
-              </button>
-            </aside>
+            
 
             {/* Settings Content */}
             <div className="settings-content">
