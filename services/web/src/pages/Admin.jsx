@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import EmailTemplates from './EmailTemplates';
 import RichTextEditor from '../components/RichTextEditor';
 import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload , ChevronDown, ChevronRight} from "lucide-react";
 
@@ -916,6 +917,689 @@ export default function Admin() {
             <div className="settings-content">
               
               {/* BRANDING & LOGOS */}
+              {activeSettingsTab === 'branding' && (
+                <div className="fade-in">
+                  <div className="card">
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
+                      <div style={{ padding: '12px', background: 'rgba(234, 179, 8, 0.1)', color: '#eab308', borderRadius: '12px' }}>
+                        <Sun size={24} />
+                      </div>
+                      <div>
+                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Brand Identity</h2>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Upload your official logos and favicon here.</p>
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                      
+                      {/* Light Logo */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-subtle)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <div style={{ width: '120px', height: '60px', background: '#ffffff', border: '1px dashed #d1d5db', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            {appSettings?.logo_light_url ? <img src={appSettings.logo_light_url} alt="Light Logo" style={{ maxHeight: '100%', maxWidth: '100%' }} /> : <span style={{fontSize: '12px', color: '#9ca3af'}}>Preview</span>}
+                          </div>
+                          <div>
+                            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>Light Theme Logo</h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Displayed on light backgrounds.</p>
+                          </div>
+                        </div>
+                        <label className="btn-primary" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px 16px', borderRadius: '6px', fontSize: '14px', width: 'max-content', minWidth: '140px' }}>
+                          <Upload size={16} /> Upload Image
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => handleSettingChange('logo_light_url', ev.target.result);
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        </label>
+                      </div>
+                      
+                      {/* Dark Logo */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-subtle)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <div style={{ width: '120px', height: '60px', background: '#111827', border: '1px dashed #374151', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            {appSettings?.logo_dark_url ? <img src={appSettings.logo_dark_url} alt="Dark Logo" style={{ maxHeight: '100%', maxWidth: '100%' }} /> : <span style={{fontSize: '12px', color: '#4b5563'}}>Preview</span>}
+                          </div>
+                          <div>
+                            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>Dark Theme Logo</h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Displayed on dark backgrounds.</p>
+                          </div>
+                        </div>
+                        <label className="btn-primary" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px 16px', borderRadius: '6px', fontSize: '14px', width: 'max-content', minWidth: '140px' }}>
+                          <Upload size={16} /> Upload Image
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => handleSettingChange('logo_dark_url', ev.target.result);
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        </label>
+                      </div>
+
+                      {/* Favicon */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-subtle)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <div style={{ width: '60px', height: '60px', background: '#ffffff', border: '1px dashed #d1d5db', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            {appSettings?.browser_icon_url ? <img src={appSettings.browser_icon_url} alt="Favicon" style={{ maxHeight: '32px', maxWidth: '32px' }} /> : <span style={{fontSize: '12px', color: '#9ca3af'}}>16x16</span>}
+                          </div>
+                          <div>
+                            <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>Browser Favicon</h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Browser tab icon (.ico or image).</p>
+                          </div>
+                        </div>
+                        <label className="btn-primary" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px 16px', borderRadius: '6px', fontSize: '14px', width: 'max-content', minWidth: '140px' }}>
+                          <Upload size={16} /> Upload Icon
+                          <input type="file" accept="image/*,.ico" style={{ display: 'none' }} onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => handleSettingChange('browser_icon_url', ev.target.result);
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        </label>
+                      </div>
+                      
+                    </div>
+                    
+                    <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
+                      <button className="btn-primary" onClick={() => alert("Branding settings saved successfully!")} style={{ width: 'max-content', padding: '10px 24px' }}>
+                        Save Branding Settings
+                      </button>
+                    </div>
+                    
+                  </div>
+                </div>
+              )}
+              
+              {/* SECURITY & AUTH */}
+              {activeSettingsTab === 'security' && (
+                <div className="fade-in">
+                  <div className="card">
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
+                      <div style={{ padding: '12px', background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', borderRadius: '12px' }}>
+                        <ShieldCheck size={24} />
+                      </div>
+                      <div>
+                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Email OTP Configuration</h2>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Configure your SMTP server for sending authentication OTPs.</p>
+                      </div>
+                    </div>
+                    <div className="card" style={{ marginTop: '24px' }}>
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
+                        <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '12px' }}>
+                          <ShieldCheck size={24} />
+                        </div>
+                        <div>
+                          <h2 style={{ fontSize: '18px', fontWeight: 600 }}>OTP Rate Limiting & Blocking</h2>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Configure exponential backoff and permanent block for failed OTP attempts.</p>
+                        </div>
+                      </div>
+                      <div style={{ display: 'grid', gap: '16px', maxWidth: '500px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={appSettings?.otp_rate_limit_enabled ?? true}
+                            onChange={(e) => handleSettingChange('otp_rate_limit_enabled', e.target.checked)}
+                          />
+                          <label>Enable Progressive Rate Limiting</label>
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">Max Failed Attempts Before Lock</label>
+                          <input type="number" className="input-field" value={appSettings?.otp_max_attempts || 3} onChange={e => handleSettingChange('otp_max_attempts', parseInt(e.target.value))} />
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">Level 1 Block (Minutes)</label>
+                          <input type="number" className="input-field" value={appSettings?.otp_block_duration_1_mins || 3} onChange={e => handleSettingChange('otp_block_duration_1_mins', parseInt(e.target.value))} />
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">Level 2 Block (Minutes)</label>
+                          <input type="number" className="input-field" value={appSettings?.otp_block_duration_2_mins || 10} onChange={e => handleSettingChange('otp_block_duration_2_mins', parseInt(e.target.value))} />
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">Level 3 Block (Minutes)</label>
+                          <input type="number" className="input-field" value={appSettings?.otp_block_duration_3_mins || 120} onChange={e => handleSettingChange('otp_block_duration_3_mins', parseInt(e.target.value))} />
+                        </div>
+                      </div>
+                    </div>
+
+                    
+                    <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+                      <button 
+                        className="btn-primary" 
+                        onClick={() => setSmtpEnv('production')}
+                        style={{ flex: 1, background: smtpEnv === 'production' ? 'var(--primary)' : 'var(--bg-subtle)', color: smtpEnv === 'production' ? 'white' : 'var(--text-main)', border: smtpEnv === 'production' ? 'none' : '1px solid var(--border)' }}
+                      >
+                        Production Environment
+                      </button>
+                      <button 
+                        className="btn-primary" 
+                        onClick={() => {
+                          setSmtpEnv('test');
+                          setSmtpConfig(prev => ({ ...prev, smtp_host: 'smtp.gmail.com', smtp_port: 587 }));
+                        }}
+                        style={{ flex: 1, background: smtpEnv === 'test' ? 'var(--primary)' : 'var(--bg-subtle)', color: smtpEnv === 'test' ? 'white' : 'var(--text-main)', border: smtpEnv === 'test' ? 'none' : '1px solid var(--border)' }}
+                      >
+                        Test Environment (Gmail)
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div className="input-group">
+                        <label className="input-label">SMTP Host</label>
+                        <input type="text" className="input-field" placeholder="e.g., smtp.sendgrid.net" value={smtpConfig.smtp_host} onChange={(e) => setSmtpConfig({...smtpConfig, smtp_host: e.target.value})} />
+                      </div>
+                      <div className="input-group">
+                        <label className="input-label">SMTP Port</label>
+                        <input type="number" className="input-field" placeholder="e.g., 587" value={smtpConfig.smtp_port} onChange={(e) => setSmtpConfig({...smtpConfig, smtp_port: e.target.value})} />
+                      </div>
+                      <div className="input-group">
+                        <label className="input-label">SMTP Username</label>
+                        <input type="text" className="input-field" placeholder="Email address or API Key" value={smtpConfig.smtp_user} onChange={(e) => setSmtpConfig({...smtpConfig, smtp_user: e.target.value})} />
+                      </div>
+                      <div className="input-group">
+                        <label className="input-label">SMTP Password</label>
+                        <input type="password" className="input-field" placeholder="App Password or API Secret" value={smtpConfig.smtp_pass} onChange={(e) => setSmtpConfig({...smtpConfig, smtp_pass: e.target.value})} />
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: '16px', background: 'var(--bg-subtle)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                      <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>Test Configuration</h3>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+                        <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
+                          <label className="input-label">Send Test Email To</label>
+                          <input type="email" className="input-field" placeholder="Enter an email to verify settings" value={smtpTestEmail} onChange={(e) => setSmtpTestEmail(e.target.value)} />
+                        </div>
+                        <button className="btn-primary" onClick={handleTestSmtp} disabled={smtpStatus.loading} style={{ width: 'auto', background: 'var(--bg-subtle)', color: 'var(--text-main)', border: '1px solid var(--border)' }}>
+                          {smtpStatus.loading && !smtpStatus.message ? 'Sending...' : 'Send Test Email'}
+                        </button>
+                      </div>
+                      {smtpStatus.message && (
+                        <p style={{ marginTop: '12px', fontSize: '14px', color: smtpStatus.error ? '#ef4444' : '#10b981' }}>{smtpStatus.message}</p>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+                      <button className="btn-primary" onClick={handleSaveSmtp} disabled={smtpStatus.loading} style={{ width: 'auto' }}>
+                        {smtpStatus.loading && !smtpStatus.error && !smtpStatus.message.includes('Test') ? 'Saving...' : 'Save Configuration'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
+                      <div style={{ padding: '12px', background: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)', borderRadius: '12px' }}>
+                        <Key size={24} />
+                      </div>
+                      <div>
+                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>API Keys</h2>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Manage access tokens for programmatic API access.</p>
+                      </div>
+                    </div>
+                    <div style={{ background: 'var(--bg-subtle)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <code style={{ color: 'var(--text-main)', fontFamily: 'monospace', letterSpacing: '2px' }}>hw_live_***************************892a</code>
+                      <button className="btn-primary" style={{ width: 'auto', padding: '8px 16px', fontSize: '14px' }}>Reveal Key</button>
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
+                      <div style={{ padding: '12px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', borderRadius: '12px' }}>
+                        <Smartphone size={24} />
+                      </div>
+                      <div>
+                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Active Sessions</h2>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Devices currently logged into this admin account.</p>
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      {data.sessions.map((session, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: idx === 0 ? '16px' : 0, borderBottom: idx === 0 ? '1px solid var(--border)' : 'none' }}>
+                          <div>
+                            <div style={{ fontWeight: 500, color: 'var(--text-main)', marginBottom: '4px' }}>{session.device}</div>
+                            <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{session.location} â€¢ {session.ip}</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '14px', color: session.time === 'Active now' ? '#10b981' : 'var(--text-muted)', fontWeight: 500 }}>{session.time}</div>
+                            {session.time !== 'Active now' && <button style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '14px', cursor: 'pointer', marginTop: '4px' }}>Revoke</button>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* AI MODELS & KEYS */}
+              {activeSettingsTab === 'ai_models' && (
+                <div className="fade-in">
+                  <div style={{ marginBottom: '24px' }}>
+                    <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>AI Provider Management</h2>
+                    <p style={{ color: 'var(--text-muted)' }}>Configure multiple keys per provider for Round-Robin distribution and automatic 429 failover. Map your app features to specific model tiers below.</p>
+                  </div>
+
+                  {/* GLOBAL MODEL ROUTING */}
+                  <div className="card" style={{ borderLeft: '4px solid var(--primary)' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>Global Model Routing</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <HierarchicalModelSelect 
+                        label="High/Premium Tier" 
+                        value={appSettings.high_tier_model} 
+                        onChange={(val) => handleSettingChange('high_tier_model', val)} 
+                      />
+                      <HierarchicalModelSelect 
+                        label="Standard/Fast Tier" 
+                        value={appSettings.fast_tier_model} 
+                        onChange={(val) => handleSettingChange('fast_tier_model', val)} 
+                      />
+                      <div className="input-group" style={{ gridColumn: 'span 2' }}>
+                        <label className="input-label">Ultimate Fallback Provider (If all keys fail)</label>
+                        <select className="select-field" value={appSettings.fallback_provider} onChange={(e) => handleSettingChange('fallback_provider', e.target.value)}>
+                          <option value="anthropic">Anthropic</option>
+                          <option value="openai">OpenAI</option>
+                          <option value="google">Google</option>
+                          <option value="groq">Groq</option>
+                          <option value="deepseek">DeepSeek</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Gemini Provider */}
+                  <div className="card">
+                    <div className="provider-header">
+                      <div style={{ padding: '8px', background: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)', borderRadius: '8px' }}>
+                        <Cpu size={20} />
+                      </div>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600 }}>Google Gemini</h3>
+                      <button className="btn-primary" onClick={() => handleAddKey('gemini')} style={{ marginLeft: 'auto', width: 'auto', padding: '6px 12px', fontSize: '13px' }}>+ Add Key</button>
+                    </div>
+                    {aiKeys.gemini.map(key => (
+                      <div key={key.id} className="key-list-item" style={{ opacity: key.is_enabled ? 1 : 0.6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <ToggleSwitch checked={key.is_enabled} onChange={() => handleToggleKey(key.id)} />
+                          <code style={{ fontFamily: 'monospace', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {showKeys['ai_'+key.id] ? key.api_key_value : key.api_key_value.slice(0, 15) + '...'}
+                            <button onClick={() => toggleKeyVisibility('ai_'+key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+                              {showKeys['ai_'+key.id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                          </code>
+                          <span className={`badge ${key.status === 'Active' ? 'badge-active' : 'badge-pending'}`}>{key.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <button onClick={() => handleDeleteKey(key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Key">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* OpenAI Provider */}
+                  <div className="card">
+                    <div className="provider-header">
+                      <div style={{ padding: '8px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', borderRadius: '8px' }}>
+                        <Cpu size={20} />
+                      </div>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600 }}>OpenAI</h3>
+                      <button className="btn-primary" onClick={() => handleAddKey('openai')} style={{ marginLeft: 'auto', width: 'auto', padding: '6px 12px', fontSize: '13px' }}>+ Add Key</button>
+                    </div>
+                    {aiKeys.openai.map(key => (
+                      <div key={key.id} className="key-list-item" style={{ opacity: key.is_enabled ? 1 : 0.6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <ToggleSwitch checked={key.is_enabled} onChange={() => handleToggleKey(key.id)} />
+                          <code style={{ fontFamily: 'monospace', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {showKeys['ai_'+key.id] ? key.api_key_value : key.api_key_value.slice(0, 15) + '...'}
+                            <button onClick={() => toggleKeyVisibility('ai_'+key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+                              {showKeys['ai_'+key.id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                          </code>
+                          <span className={`badge ${key.status === 'Active' ? 'badge-active' : 'badge-pending'}`} style={key.status.includes('Cooldown') ? { background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' } : {}}>{key.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <button onClick={() => handleDeleteKey(key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Key">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Groq Provider */}
+                  <div className="card">
+                    <div className="provider-header">
+                      <div style={{ padding: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '8px' }}>
+                        <Cpu size={20} />
+                      </div>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600 }}>Groq</h3>
+                      <button className="btn-primary" onClick={() => handleAddKey('groq')} style={{ marginLeft: 'auto', width: 'auto', padding: '6px 12px', fontSize: '13px' }}>+ Add Key</button>
+                    </div>
+                    {aiKeys.groq.map(key => (
+                      <div key={key.id} className="key-list-item" style={{ opacity: key.is_enabled ? 1 : 0.6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <ToggleSwitch checked={key.is_enabled} onChange={() => handleToggleKey(key.id)} />
+                          <code style={{ fontFamily: 'monospace', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {showKeys['ai_'+key.id] ? key.api_key_value : key.api_key_value.slice(0, 15) + '...'}
+                            <button onClick={() => toggleKeyVisibility('ai_'+key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+                              {showKeys['ai_'+key.id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                          </code>
+                          <span className={`badge ${key.status === 'Active' ? 'badge-active' : 'badge-pending'}`} style={key.status.includes('Cooldown') ? { background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' } : {}}>{key.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <button onClick={() => handleDeleteKey(key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Key">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Anthropic Provider */}
+                  <div className="card">
+                    <div className="provider-header">
+                      <div style={{ padding: '8px', background: 'rgba(217, 119, 87, 0.1)', color: '#d97757', borderRadius: '8px' }}>
+                        <Cpu size={20} />
+                      </div>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600 }}>Anthropic Claude</h3>
+                      <button className="btn-primary" onClick={() => handleAddKey('claude')} style={{ marginLeft: 'auto', width: 'auto', padding: '6px 12px', fontSize: '13px' }}>+ Add Key</button>
+                    </div>
+                    {aiKeys.claude.map(key => (
+                      <div key={key.id} className="key-list-item" style={{ opacity: key.is_enabled ? 1 : 0.6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <ToggleSwitch checked={key.is_enabled} onChange={() => handleToggleKey(key.id)} />
+                          <code style={{ fontFamily: 'monospace', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {showKeys['ai_'+key.id] ? key.api_key_value : key.api_key_value.slice(0, 15) + '...'}
+                            <button onClick={() => toggleKeyVisibility('ai_'+key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+                              {showKeys['ai_'+key.id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                          </code>
+                          <span className={`badge ${key.status === 'Active' ? 'badge-active' : 'badge-pending'}`} style={key.status.includes('Cooldown') ? { background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' } : {}}>{key.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <button onClick={() => handleDeleteKey(key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Key">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* DeepSeek Provider */}
+                  <div className="card">
+                    <div className="provider-header">
+                      <div style={{ padding: '8px', background: 'rgba(78, 110, 242, 0.1)', color: '#4e6ef2', borderRadius: '8px' }}>
+                        <Cpu size={20} />
+                      </div>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600 }}>DeepSeek</h3>
+                      <button className="btn-primary" onClick={() => handleAddKey('deepseek')} style={{ marginLeft: 'auto', width: 'auto', padding: '6px 12px', fontSize: '13px' }}>+ Add Key</button>
+                    </div>
+                    {aiKeys.deepseek.map(key => (
+                      <div key={key.id} className="key-list-item" style={{ opacity: key.is_enabled ? 1 : 0.6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <ToggleSwitch checked={key.is_enabled} onChange={() => handleToggleKey(key.id)} />
+                          <code style={{ fontFamily: 'monospace', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {showKeys['ai_'+key.id] ? key.api_key_value : key.api_key_value.slice(0, 15) + '...'}
+                            <button onClick={() => toggleKeyVisibility('ai_'+key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+                              {showKeys['ai_'+key.id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                          </code>
+                          <span className={`badge ${key.status === 'Active' ? 'badge-active' : 'badge-pending'}`} style={key.status.includes('Cooldown') ? { background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' } : {}}>{key.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <button onClick={() => handleDeleteKey(key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Key">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Custom Provider */}
+                  <div className="card" style={{ border: '1px dashed var(--border)', background: 'transparent' }}>
+                    <div className="provider-header" style={{ borderBottom: 'none', paddingBottom: 0, marginBottom: '16px' }}>
+                      <div style={{ padding: '8px', background: 'var(--bg-main)', color: 'var(--text-muted)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                        <Box size={20} />
+                      </div>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600 }}>Custom Provider (Ollama / vLLM)</h3>
+                      <button className="btn-primary" onClick={() => handleAddKey('custom')} style={{ marginLeft: 'auto', width: 'auto', padding: '6px 12px', fontSize: '13px', background: 'var(--bg-main)', color: 'var(--text-main)', border: '1px solid var(--border)' }}>+ Add Custom Server</button>
+                    </div>
+                    {aiKeys.custom.map(key => (
+                      <div key={key.id} className="key-list-item" style={{ opacity: key.is_enabled ? 1 : 0.6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <ToggleSwitch checked={key.is_enabled} onChange={() => handleToggleKey(key.id)} />
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontWeight: 600, fontSize: '14px' }}>{key.custom_url}</span>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              {showKeys['ai_'+key.id] ? key.api_key_value : key.api_key_value.slice(0, 10) + '...'}
+                              <button onClick={() => toggleKeyVisibility('ai_'+key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+                                {showKeys['ai_'+key.id] ? <EyeOff size={12} /> : <Eye size={12} />}
+                              </button>
+                            </span>
+                          </div>
+                          <span className={`badge badge-active`}>{key.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <button onClick={() => handleDeleteKey(key.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Server">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+              )}
+
+              {/* LIVE TRANSCRIPTION API */}
+              {activeSettingsTab === 'transcription' && (() => {
+                const activeConf = sttConfigs.find(c => c.is_active);
+                const groqConf   = sttConfigs.find(c => c.provider_name === 'groq');
+                const dgConf     = sttConfigs.find(c => c.provider_name === 'deepgram');
+                const localConf  = sttConfigs.find(c => c.provider_name === 'local');
+                const SttBadge = ({ conf }) => conf?.is_active
+                  ? <span className="badge badge-active">â— Active</span>
+                  : conf?.key_hint
+                  ? <span className="badge badge-pending">Configured ({conf.key_hint})</span>
+                  : <span className="badge" style={{ background: 'var(--bg-subtle)', color: 'var(--text-muted)' }}>Not configured</span>;
+                const TestResult = ({ name }) => {
+                  const r = sttTestResults[name];
+                  if (!r) return null;
+                  if (r.loading) return <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Testing...</span>;
+                  return r.status === 'ok'
+                    ? <span style={{ fontSize: '13px', color: '#10b981', fontWeight: 500 }}>âœ“ Connected â€” {r.latency_ms}ms</span>
+                    : <span style={{ fontSize: '13px', color: '#ef4444' }}>âœ— {r.message}</span>;
+                };
+                return (
+                  <div className="fade-in">
+                    <div style={{ marginBottom: '24px' }}>
+                      <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>Live Transcription API</h2>
+                      <p style={{ color: 'var(--text-muted)' }}>Configure your STT engine. Keys are Fernet-encrypted in the backend DB â€” never stored on this machine.</p>
+                    </div>
+
+                    {/* Active Engine Status */}
+                    <div className="card" style={{ borderLeft: activeConf ? '4px solid #10b981' : '4px solid #f59e0b' }}>
+                      <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '8px' }}>Active Engine</h3>
+                      {activeConf
+                        ? <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span className="badge badge-active" style={{ fontSize: '13px' }}>â— {activeConf.provider_name === 'groq' ? 'Groq Whisper REST' : activeConf.provider_name === 'deepgram' ? 'Deepgram Nova-2' : activeConf.provider_name === 'local' ? 'Local Whisper' : activeConf.custom_name || 'Custom'}</span>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>is receiving all transcription traffic</span>
+                          </div>
+                        : <span style={{ color: '#f59e0b', fontSize: '13px' }}>âš  No engine selected â€” defaults to Local Whisper (port 8001)</span>
+                      }
+                    </div>
+
+                    {/* Groq STT */}
+                    <div className="card">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                        <div>
+                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>âš¡ Groq Whisper STT</h3>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>whisper-large-v3 Â· REST API Â· ~2-3s audio chunks Â· No local server needed</p>
+                        </div>
+                        <SttBadge conf={groqConf} />
+                      </div>
+                      <div className="input-group">
+                          <label className="input-label">Groq API Key (Auto-detect Models)</label>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            <div style={{ flex: 1, position: 'relative', minWidth: '200px' }}>
+                              <input type={showKeys['stt_groq'] ? 'text' : 'password'} className="input-field" placeholder={groqConf?.key_hint ? `Saved: ${groqConf.key_hint} ...` : 'gsk_...'} value={sttForm.groq_key} onChange={e => setSttForm(p => ({ ...p, groq_key: e.target.value }))} onBlur={() => { if(sttForm.groq_key) handleFetchModels('groq', sttForm.groq_key); }} style={{ width: '100%', paddingRight: '40px' }} />
+                              <button type="button" onClick={() => toggleKeyVisibility('stt_groq')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                                {showKeys['stt_groq'] ? <EyeOff size={16} /> : <Eye size={16} />}
+                              </button>
+                            </div>
+                            <button className="btn-primary" onClick={() => handleFetchModels('groq', sttForm.groq_key)} style={{ width: 'auto', padding: '0 16px', background: '#3b82f6' }} disabled={isFetchingModels}>
+                              {isFetchingModels ? 'Fetching...' : 'Fetch Models'}
+                            </button>
+                          </div>
+                        </div>
+
+                        {fetchedModels.length > 0 && (
+                          <div style={{ marginBottom: '16px', padding: '12px', border: '2px solid #3b82f6', borderRadius: '8px', background: '#eff6ff', color: '#1e3a8a', marginTop: '10px' }}>
+                            <label className="input-label" style={{ marginBottom: '8px' }}>Select Transcription Models (Multi-select pool)</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', maxHeight: '150px', overflowY: 'auto' }}>
+                              {fetchedModels.map(m => (
+                                <label key={m} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                                  <input 
+                                    type="checkbox" 
+                                    checked={selectedModels.includes(m)} 
+                                    onChange={(e) => {
+                                      if(e.target.checked) setSelectedModels(prev => [...prev, m]);
+                                      else setSelectedModels(prev => prev.filter(x => x !== m));
+                                    }}
+                                  />
+                                  {m}
+                                </label>
+                              ))}
+                            </div>
+                            <button className="btn-primary" onClick={() => {
+                              // Save as STT
+                              fetch('http://127.0.0.1:8000/admin/llm/keys', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ provider: 'groq', api_key_value: sttForm.groq_key, enabled_models: selectedModels })
+                              }).then(res => {
+                                if(!res.ok) alert('Failed to save to pool');
+                                else alert('Key and Pool saved to backend successfully!');
+                              });
+                            }} style={{ width: 'auto', padding: '6px 16px', marginTop: '12px' }}>
+                              Save Key and Pool
+                            </button>
+                          </div>
+                        )}
+                      <div className="input-group">
+                        <label className="input-label">Audio Buffer (seconds per transcription chunk)</label>
+                        <select className="select-field" value={sttForm.groq_buffer} onChange={e => setSttForm(p => ({ ...p, groq_buffer: e.target.value }))}>
+                          <option value="1">1 second â€” fastest, less context</option>
+                          <option value="2">2 seconds â€” balanced</option>
+                          <option value="3">3 seconds â€” recommended</option>
+                          <option value="5">5 seconds â€” most accurate, slower</option>
+                        </select>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button className="btn-primary" onClick={() => handleActivateStt('groq', 'groq_rest')} style={{ width: 'auto', padding: '8px 16px' }}>Set as Active Engine</button>
+                        <button className="btn-primary" onClick={() => handleTestStt('groq')} style={{ width: 'auto', padding: '8px 16px', background: 'var(--bg-subtle)', color: 'var(--text-main)', border: '1px solid var(--border)' }}>Test Connection</button>
+                        <TestResult name="groq" />
+                      </div>
+                    </div>
+
+                    {/* Deepgram STT */}
+                    <div className="card">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                        <div>
+                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>ðŸŒŠ Deepgram Nova-2 STT</h3>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>WebSocket streaming Â· Real-time word-by-word Â· No local server needed</p>
+                        </div>
+                        <SttBadge conf={dgConf} />
+                      </div>
+                      <div className="input-group">
+                        <label className="input-label">Deepgram API Key</label>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <div style={{ flex: 1, position: 'relative' }}>
+                            <input type={showKeys['stt_deepgram'] ? 'text' : 'password'} className="input-field" placeholder={dgConf?.key_hint ? `Saved: ${dgConf.key_hint} â€” enter new to update` : 'Enter Deepgram key...'} value={sttForm.deepgram_key} onChange={e => setSttForm(p => ({ ...p, deepgram_key: e.target.value }))} style={{ width: '100%', paddingRight: '40px' }} />
+                            <button type="button" onClick={() => toggleKeyVisibility('stt_deepgram')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                              {showKeys['stt_deepgram'] ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          </div>
+                          <button className="btn-primary" onClick={() => handleSaveSttKey('deepgram')} disabled={sttSaving === 'deepgram'} style={{ width: 'auto', padding: '0 16px', whiteSpace: 'nowrap' }}>{sttSaving === 'deepgram' ? 'Saving...' : 'Save Key'}</button>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button className="btn-primary" onClick={() => handleActivateStt('deepgram', 'deepgram_ws')} style={{ width: 'auto', padding: '8px 16px' }}>Set as Active Engine</button>
+                        <button className="btn-primary" onClick={() => handleTestStt('deepgram')} style={{ width: 'auto', padding: '8px 16px', background: 'var(--bg-subtle)', color: 'var(--text-main)', border: '1px solid var(--border)' }}>Test Connection</button>
+                        <TestResult name="deepgram" />
+                      </div>
+                    </div>
+
+                    {/* Local Whisper */}
+                    <div className="card">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                        <div>
+                          <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>ðŸ–¥ï¸ Local Whisper Server</h3>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>ws://localhost:8001 Â· Free Â· Offline Â· Requires local server running</p>
+                        </div>
+                        <SttBadge conf={localConf} />
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button className="btn-primary" onClick={() => handleActivateStt('local', 'local_ws')} style={{ width: 'auto', padding: '8px 16px' }}>Set as Active Engine</button>
+                        <button className="btn-primary" onClick={() => handleTestStt('local')} style={{ width: 'auto', padding: '8px 16px', background: 'var(--bg-subtle)', color: 'var(--text-main)', border: '1px solid var(--border)' }}>Test Connection</button>
+                        <TestResult name="local" />
+                      </div>
+                    </div>
+
+                    {/* Custom STT */}
+                    <div className="card" style={{ border: '1px dashed var(--border)', background: 'transparent' }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>ðŸ”§ Custom STT Endpoint</h3>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="input-group">
+                          <label className="input-label">Display Name</label>
+                          <input type="text" className="input-field" placeholder="e.g. Azure STT" value={sttForm.custom_name} onChange={e => setSttForm(p => ({ ...p, custom_name: e.target.value }))} />
+                        </div>
+                        <div className="input-group">
+                          <label className="input-label">WebSocket URL</label>
+                          <input type="text" className="input-field" placeholder="wss://your-stt-endpoint.com/ws" value={sttForm.custom_url} onChange={e => setSttForm(p => ({ ...p, custom_url: e.target.value }))} />
+                        </div>
+                        <div className="input-group" style={{ gridColumn: 'span 2' }}>
+                          <label className="input-label">API Key (Optional)</label>
+                          <div style={{ position: 'relative' }}>
+                            <input type={showKeys['stt_custom'] ? 'text' : 'password'} className="input-field" placeholder="Bearer token or key..." value={sttForm.custom_key} onChange={e => setSttForm(p => ({ ...p, custom_key: e.target.value }))} style={{ width: '100%', paddingRight: '40px' }} />
+                            <button type="button" onClick={() => toggleKeyVisibility('stt_custom')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                              {showKeys['stt_custom'] ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                        <button className="btn-primary" onClick={() => handleSaveSttKey('custom')} style={{ width: 'auto', padding: '8px 16px' }}>Save Custom Provider</button>
+                        <button className="btn-primary" onClick={() => handleActivateStt('custom', 'custom_ws')} style={{ width: 'auto', padding: '8px 16px', background: 'var(--bg-subtle)', color: 'var(--text-main)', border: '1px solid var(--border)' }}>Set as Active</button>
+                      </div>
+                    </div>
+
+                    {/* Security Note */}
+                    <div className="card" style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                      <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '10px', color: '#10b981' }}>Security Architecture</h3>
+                      <ul style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.8, paddingLeft: '16px', margin: 0 }}>
+                        <li>ðŸ” Keys are <strong>Fernet-encrypted</strong> before storage â€” unreadable without the server master key</li>
+                        <li>ðŸŽ¤ Audio stays local â€” Electron â†’ FastAPI (localhost) â†’ Cloud STT API (server-side)</li>
+                        <li>ðŸ‘ This UI only ever sees key hints (***last4) â€” raw keys never leave FastAPI memory</li>
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              
+                
+                {/* EMAIL TEMPLATES */}
+                {activeSettingsTab === 'email_templates' && (
+                    <EmailTemplates />
+                )}
+                
+                {/* BRANDING & LOGOS */}
               {activeSettingsTab === 'branding' && (
                 <div className="fade-in">
                   <div className="card">

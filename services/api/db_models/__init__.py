@@ -28,7 +28,7 @@ from .session import Session, SessionParticipant, ShadowContext
 from .meeting import Meeting, MeetingParticipant
 
 # Email Templates
-from .email_template import EmailTemplate
+from .email_template import EmailTemplate, EmailBranding, EmailLog
 
 # System domain
 from .system import InviteToken, Notification, AuditLog
@@ -50,7 +50,7 @@ __all__ = [
         "InviteToken", "Notification", "AuditLog",
     # Meeting
     "Meeting", "MeetingParticipant",
-    "EmailTemplate",
+    "EmailTemplate", "EmailBranding", "EmailLog",
     # AI Config
     "ApiConfig", "AppSetting", "AiProviderKey", "SttProviderKey",
 ]

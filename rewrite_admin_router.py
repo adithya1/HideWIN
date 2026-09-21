@@ -1,29 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from typing import List
-from pydantic import BaseModel
-import json
-import os
-import uuid
+import re
 
-from services.api.core.database import get_db
-from services.api.core.security import get_current_user
-from services.api.models.user import User
-from services.api.db_models.email_template import EmailTemplate
+with open("services/api/api/admin/router.py", "r", encoding="utf-8") as f:
+    text = f.read()
 
-router = APIRouter(prefix="/admin-system", tags=["Admin Settings & Compliance"])
+# Replace the EmailTemplateSchema and endpoints with the new ones
+# Let's find where the email template section starts and ends.
+start_idx = text.find("class EmailTemplateSchema")
+end_idx = text.find("class AuditChunkUpload")
 
-async def verify_admin(current_user: User = Depends(get_current_user)):
-    from services.api.core.admin_config import get_admin_settings
-    settings = get_admin_settings()
-    
-    # Allow if role is admin OR if their email matches the global admin email
-    if current_user.role not in ("ADMIN", "SUPER_ADMIN") and current_user.email != settings.admin_email:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
-    return current_user
-
-from typing import Optional, Dict, Any
+if start_idx != -1 and end_idx != -1:
+    new_endpoints = """from typing import Optional, Dict, Any
 from services.api.db_models.email_template import EmailBranding, EmailLog
 
 class EmailTemplateSchema(BaseModel):
@@ -123,25 +109,10 @@ async def get_email_logs(limit: int = 50, db: AsyncSession = Depends(get_db), _:
     res = await db.execute(select(EmailLog).order_by(EmailLog.id.desc()).limit(limit))
     return res.scalars().all()
 
-class AuditChunkUpload(BaseModel):
-    session_id: str
-    chunk_index: int
-    encrypted_payload: str
-
-@router.post("/compliance/audit-chunk")
-async def upload_audit_chunk(chunk: AuditChunkUpload, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
-    audit_dir = os.path.join(os.path.dirname(__file__), "..", "..", "secure_audit_logs")
-    os.makedirs(audit_dir, exist_ok=True)
-    
-    filename = f"{chunk.session_id}_chunk_{chunk.chunk_index}_{uuid.uuid4().hex[:4]}.json"
-    filepath = os.path.join(audit_dir, filename)
-    
-    with open(filepath, "w") as f:
-        json.dump({
-            "user": current_user.email,
-            "role": current_user.role,
-            "timestamp": str(datetime.utcnow()),
-            "payload": chunk.encrypted_payload
-        }, f)
-        
-    return {"status": "uploaded"}
+"""
+    new_text = text[:start_idx] + new_endpoints + text[end_idx:]
+    with open("services/api/api/admin/router.py", "w", encoding="utf-8") as f:
+        f.write(new_text)
+    print("Replaced email routes.")
+else:
+    print("Could not find start or end index.")
