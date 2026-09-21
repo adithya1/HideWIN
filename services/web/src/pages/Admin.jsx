@@ -125,7 +125,9 @@ export default function Admin() {
   const [sttTestResults, setSttTestResults] = useState({});
   const [sttSaving, setSttSaving] = useState('');
 
-  const [dbUsers, setDbUsers] = useState([]);
+  
+  const [isAdminProfileOpen, setIsAdminProfileOpen] = useState(false);
+const [dbUsers, setDbUsers] = useState([]);
   const [modalConfig, setModalConfig] = useState({ isOpen: false, type: null, payload: null });
   const [modalForm, setModalForm] = useState({ email: '', password: '', role: 'USER', provider: '', apiKey: '', customUrl: '' });
   const [modalError, setModalError] = useState('');
@@ -665,50 +667,48 @@ export default function Admin() {
                     SETTINGS
                 </div>
 
-                <div 
+                <button 
                     onClick={() => { setActiveTab('settings'); if (!activeSettingsTab) setActiveSettingsTab('security'); }}
                     style={{
                         display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
-                        cursor: 'pointer', color: activeTab === 'settings' ? '#202124' : '#5f6368',
-                        background: 'transparent', border: 'none', fontWeight: '500', fontSize: '15px', textAlign: 'left', width: '100%'
+                        cursor: 'pointer', color: activeTab === 'settings' ? '#1a73e8' : '#5f6368',
+                        backgroundColor: activeTab === 'settings' ? '#f0f4ff' : 'transparent',
+                        border: 'none', fontWeight: activeTab === 'settings' ? '600' : '500', fontSize: '15px', textAlign: 'left', width: '100%', position: 'relative'
                     }}
                 >
-                    <Settings size={18} style={{ marginRight: '16px', color: activeTab === 'settings' ? '#202124' : '#5f6368' }} />
+                    {activeTab === 'settings' && <div style={{ position: 'absolute', left: '-12px', top: '10px', bottom: '10px', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                    <Settings size={18} style={{ marginRight: '16px', color: activeTab === 'settings' ? '#1a73e8' : '#5f6368' }} strokeWidth={activeTab === 'settings' ? 2.5 : 2} />
                     <span style={{ flex: 1 }}>Configuration</span>
-                    {activeTab === 'settings' ? <ChevronDown size={16} color="#5f6368" /> : <ChevronRight size={16} color="#5f6368" />}
-                </div>
-
-                {activeTab === 'settings' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '8px' }}>
-                        {[
-                            { id: 'security', label: 'Security & Auth' },
-                            { id: 'ai_models', label: 'AI Models & Keys' },
-                            { id: 'transcription', label: 'Live Transcription' },
-                            { id: 'architecture', label: 'Architecture' },
-                            { id: 'dns', label: 'DNS & Network' },
-                            { id: 'email_templates', label: 'Email Templates' },
-                            { id: 'branding', label: 'Branding & Logos' }
-                        ].map(sub => {
-                            const isActive = activeSettingsTab === sub.id;
-                            return (
-                                <button key={sub.id} onClick={() => setActiveSettingsTab(sub.id)} style={{
-                                    display: 'block', padding: '10px 16px 10px 50px', borderRadius: '6px',
-                                    border: 'none', background: isActive ? '#f0f4ff' : 'transparent',
-                                    color: isActive ? '#1a73e8' : '#6c7f93',
-                                    fontWeight: isActive ? '500' : '400', fontSize: '14px', textAlign: 'left', cursor: 'pointer', width: '100%'
-                                }}>
-                                    {sub.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
+                </button>
             </div>
             
-            <div style={{ marginTop: 'auto', borderTop: '1px solid #e0e0e0', padding: '12px' }}>
-                <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, padding: '12px', width: '100%', borderRadius: '8px' }}>
-                    <LogOut size={20} style={{ marginRight: '8px' }} /> Sign out
-                </button>
+            {/* Profile Chip */}
+            <div style={{ padding: '16px', position: 'relative', marginTop: 'auto', borderTop: '1px solid #e0e0e0' }}>
+                {/* Pop-up Menu */}
+                {isAdminProfileOpen && (
+                    <div style={{ position: 'absolute', bottom: 'calc(100% - 10px)', left: '16px', right: '16px', backgroundColor: '#fff', border: '1px solid #e8eaed', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, padding: '8px 0' }}>
+                        <div style={{ padding: '10px 16px', color: '#5f6368', fontSize: '13px', fontWeight: '500', borderBottom: '1px solid #e8eaed', marginBottom: '8px' }}>
+                            Administrator
+                        </div>
+                        <button onClick={handleLogout} style={{ width: '100%', display: 'flex', alignItems: 'center', padding: '10px 16px', border: 'none', background: 'transparent', color: '#ef4444', fontSize: '14px', fontWeight: '500', cursor: 'pointer', textAlign: 'left' }}>
+                            <LogOut size={16} style={{ marginRight: '12px' }} /> Logout
+                        </button>
+                    </div>
+                )}
+                
+                <div 
+                    onClick={() => setIsAdminProfileOpen(!isAdminProfileOpen)}
+                    style={{ display: 'flex', alignItems: 'center', padding: '12px', border: '1px solid #e8eaed', borderRadius: '8px', cursor: 'pointer', backgroundColor: isAdminProfileOpen ? '#f8f9fa' : '#fff' }}
+                >
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fce8e6', color: '#d93025', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', marginRight: '12px', flexShrink: 0 }}>
+                        A
+                    </div>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#202124', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>Admin</div>
+                        <div style={{ fontSize: '11px', color: '#5f6368', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>admin@system</div>
+                    </div>
+                    <MoreVertical size={16} color="#5f6368" style={{ flexShrink: 0 }} />
+                </div>
             </div>
         </aside>
       

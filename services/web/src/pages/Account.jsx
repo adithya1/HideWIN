@@ -16,16 +16,7 @@ export default function Account() {
 
     const renderProfile = () => (
         <div style={{ maxWidth: "800px" }}>
-            <div style={{ display: "flex", gap: "24px", marginBottom: "24px" }}>
-                <div style={{ flex: 1 }}>
-                    <label style={{ display: "block", fontSize: "14px", fontWeight: "500", color: "#202124", marginBottom: "8px" }}>First name</label>
-                    <input type="text" defaultValue="Post Box" style={{ width: "100%", padding: "10px 12px", border: "1px solid #dadce0", borderRadius: "4px", fontSize: "14px", outline: "none" }} />
-                </div>
-                <div style={{ flex: 1 }}>
-                    <label style={{ display: "block", fontSize: "14px", fontWeight: "500", color: "#202124", marginBottom: "8px" }}>Last name</label>
-                    <input type="text" style={{ width: "100%", padding: "10px 12px", border: "1px solid #dadce0", borderRadius: "4px", fontSize: "14px", outline: "none" }} />
-                </div>
-            </div>
+            
             <div style={{ marginBottom: "24px" }}>
                 <label style={{ display: "block", fontSize: "14px", fontWeight: "500", color: "#202124", marginBottom: "4px" }}>Email address</label>
                 <div style={{ fontSize: "12px", color: "#80868b", marginBottom: "8px" }}>

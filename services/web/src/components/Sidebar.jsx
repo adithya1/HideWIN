@@ -101,38 +101,18 @@ export default function Sidebar() {
                         MORE
                     </div>
 
-                    {/* Account Accordion */}
-                    <div 
-                        onClick={() => setIsAccountOpen(!isAccountOpen)}
-                        style={{
-                            display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
-                            cursor: 'pointer', color: isAccountOpen ? '#202124' : '#5f6368',
-                            backgroundColor: 'transparent', fontWeight: '500', fontSize: '15px'
-                        }}
-                    >
-                        <User size={18} style={{ marginRight: '16px', color: isAccountOpen ? '#202124' : '#5f6368' }} />
-                        <span style={{ flex: 1 }}>Account</span>
-                        {isAccountOpen ? <ChevronUp size={16} color="#5f6368" /> : <ChevronDown size={16} color="#5f6368" />}
-                    </div>
+                                        {/* Account Link */}
+                    <Link to="/account/profile" style={{
+                        display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
+                        textDecoration: 'none', color: isActive('/account') ? '#1a73e8' : '#5f6368',
+                        backgroundColor: isActive('/account') ? '#f0f4ff' : 'transparent',
+                        fontWeight: isActive('/account') ? '600' : '500', fontSize: '15px'
+                    }}>
+                        {isActive('/account') && <div style={{ position: 'absolute', left: '-12px', top: '10px', bottom: '10px', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                        <User size={18} style={{ marginRight: '16px', color: isActive('/account') ? '#1a73e8' : '#5f6368' }} strokeWidth={isActive('/account') ? 2.5 : 2} />
+                        Account
+                    </Link>
 
-                    {/* Account Sub-items */}
-                    {isAccountOpen && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '8px' }}>
-                            {accountSubItems.map(sub => {
-                                const active = location.pathname === sub.path;
-                                return (
-                                    <Link key={sub.name} to={sub.path} style={{
-                                        display: 'block', padding: '10px 16px 10px 50px', borderRadius: '6px',
-                                        textDecoration: 'none', color: active ? '#1a73e8' : '#6c7f93',
-                                        backgroundColor: active ? '#f0f4ff' : 'transparent',
-                                        fontWeight: active ? '500' : '400', fontSize: '14px'
-                                    }}>
-                                        {sub.name}
-                                    </Link>
-                                )
-                            })}
-                        </div>
-                    )}
 
                     {bottomItems.map(item => {
                         const active = isActive(item.path);
