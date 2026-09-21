@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import EmailTemplates from './EmailTemplates';
 import RichTextEditor from '../components/RichTextEditor';
-import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload , ChevronDown, ChevronRight} from "lucide-react";
+import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload , ChevronDown, ChevronRight, User, MoreVertical} from "lucide-react";
 
 const MODEL_HIERARCHY = {
   openai: { name: 'OpenAI', models: [{id: 'gpt-4o', name: 'GPT-4o'}, {id: 'gpt-4o-mini', name: 'GPT-4o Mini'}] },
@@ -911,6 +911,31 @@ const [dbUsers, setDbUsers] = useState([]);
 
         {activeTab === 'settings' && (
           <div className="tab-content fade-in settings-layout">
+            <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', marginBottom: '24px', gap: '24px', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                {[
+                    { id: 'security', label: 'Security & Auth' },
+                    { id: 'ai_models', label: 'AI Models & Keys' },
+                    { id: 'transcription', label: 'Live Transcription' },
+                    { id: 'architecture', label: 'Architecture' },
+                    { id: 'dns', label: 'DNS & Network' },
+                    { id: 'email_templates', label: 'Email Templates' },
+                    { id: 'branding', label: 'Branding & Logos' }
+                ].map(tab => (
+                    <div 
+                        key={tab.id}
+                        onClick={() => setActiveSettingsTab(tab.id)}
+                        style={{ 
+                            padding: '12px 0', 
+                            cursor: 'pointer', 
+                            color: activeSettingsTab === tab.id ? '#1a73e8' : '#5f6368', 
+                            fontWeight: activeSettingsTab === tab.id ? '600' : '500', 
+                            borderBottom: activeSettingsTab === tab.id ? '3px solid #1a73e8' : '3px solid transparent'
+                        }}
+                    >
+                        {tab.label}
+                    </div>
+                ))}
+            </div>
             
 
             {/* Settings Content */}
