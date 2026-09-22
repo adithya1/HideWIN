@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import EmailTemplates from './EmailTemplates';
 import RichTextEditor from '../components/RichTextEditor';
-import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload , ChevronDown, ChevronRight} from "lucide-react";
+import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload, ChevronDown, Menu, ChevronLeft, ChevronRight } from "lucide-react";
 
 const MODEL_HIERARCHY = {
   openai: { name: 'OpenAI', models: [{id: 'gpt-4o', name: 'GPT-4o'}, {id: 'gpt-4o-mini', name: 'GPT-4o Mini'}] },
@@ -55,6 +55,34 @@ const HierarchicalModelSelect = ({ label, value, onChange }) => {
 export default function Admin() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [sidebarWidth, setSidebarWidth] = useState(250);
+  const [isResizing, setIsResizing] = useState(false);
+
+  useEffect(() => {
+      const handleMouseMove = (e) => {
+          if (!isResizing) return;
+          let newWidth = e.clientX;
+          if (newWidth < 200) newWidth = 200;
+          if (newWidth > 400) newWidth = 400;
+          setSidebarWidth(newWidth);
+      };
+      const handleMouseUp = () => {
+          setIsResizing(false);
+          document.body.style.cursor = 'default';
+      };
+      if (isResizing) {
+          document.addEventListener('mousemove', handleMouseMove);
+          document.addEventListener('mouseup', handleMouseUp);
+          document.body.style.cursor = 'col-resize';
+      }
+      return () => {
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+      };
+  }, [isResizing]);
+
     const [activeSettingsTab, setActiveSettingsTab] = useState('email_templates');
   const [emailTemplates, setEmailTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -136,8 +164,36 @@ export default function Admin() {
 
   const [smtpConfig, setSmtpConfig] = useState({ smtp_host: '', smtp_port: 587, smtp_user: '', smtp_pass: '' });
   const [smtpTestEmail, setSmtpTestEmail] = useState('');
+
+  const [oauthConfig, setOauthConfig] = useState({ google_client_id: '', google_client_secret: '', outlook_client_id: '', outlook_client_secret: '' });
+  const [oauthSaving, setOauthSaving] = useState(false);
+
+  const handleSaveOauth = async () => {
+      if (oauthConfig.google_client_id && !oauthConfig.google_client_secret) return alert("Google Client Secret is required.");
+      if (!oauthConfig.google_client_id && oauthConfig.google_client_secret) return alert("Google Client ID is required.");
+      if (oauthConfig.outlook_client_id && !oauthConfig.outlook_client_secret) return alert("Outlook Client Secret is required.");
+      if (!oauthConfig.outlook_client_id && oauthConfig.outlook_client_secret) return alert("Outlook Client ID is required.");
+
+      setOauthSaving(true);
+      try {
+          const token = localStorage.getItem('hidewin_token');
+          const res = await fetch('http://127.0.0.1:8000/admin/settings', {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify(oauthConfig)
+          });
+          if (!res.ok) throw new Error("Failed to save OAuth config");
+          alert("OAuth configuration saved successfully!");
+      } catch(e) {
+          alert(e.message);
+      }
+      setOauthSaving(false);
+  };
+
+  const [showSmtpPass, setShowSmtpPass] = useState(false);
   const [smtpStatus, setSmtpStatus] = useState({ loading: false, message: '', error: false });
   const [smtpEnv, setSmtpEnv] = useState('production');
+  const [showPasswords, setShowPasswords] = useState({});
 
 
   useEffect(() => {
@@ -220,13 +276,19 @@ export default function Admin() {
       if (settingsRes.ok) {
         const data = await settingsRes.json();
         setAppSettings(prev => ({ ...prev, ...data.settings }));
+          setOauthConfig({
+             google_client_id: data.settings.google_client_id || '',
+             google_client_secret: data.settings.google_client_secret || '',
+             outlook_client_id: data.settings.outlook_client_id || '',
+             outlook_client_secret: data.settings.outlook_client_secret || ''
+          });
         if (data.settings.browser_icon_url) {
           const link = document.querySelector("link[rel~='icon']");
           if (link) { link.href = data.settings.browser_icon_url; }
         }
       }
 
-      const smtpRes = await fetch('http://127.0.0.1:8000/api/admin/smtp', { headers });
+      const smtpRes = await fetch('http://127.0.0.1:8000/admin/smtp', { headers });
       if (smtpRes.ok) {
         const data = await smtpRes.json();
         if (data.config) {
@@ -428,7 +490,7 @@ export default function Admin() {
     setSmtpStatus({ loading: true, message: '', error: false });
     try {
       const token = localStorage.getItem('hidewin_token');
-      const res = await fetch('http://127.0.0.1:8000/api/admin/smtp', {
+      const res = await fetch('http://127.0.0.1:8000/admin/smtp', {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(smtpConfig)
@@ -449,7 +511,7 @@ export default function Admin() {
     setSmtpStatus({ loading: true, message: 'Sending test email...', error: false });
     try {
       const token = localStorage.getItem('hidewin_token');
-      const res = await fetch('http://127.0.0.1:8000/api/admin/smtp/test', {
+      const res = await fetch('http://127.0.0.1:8000/admin/smtp/test', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ test_email: smtpTestEmail })
@@ -612,20 +674,34 @@ export default function Admin() {
 
   return (
     <div className="dashboard-layout">
-      <aside className="sidebar custom-scrollbar" style={{ width: '250px', minWidth: '250px', borderRight: '1px solid #e0e0e0', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', overflowY: 'auto' }}>
+      <aside className="sidebar custom-scrollbar" style={{ width: isSidebarOpen ? `${sidebarWidth}px` : '72px', minWidth: isSidebarOpen ? `${sidebarWidth}px` : '72px', borderRight: '1px solid #e2e8f0', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', overflowY: 'auto', overflowX: 'hidden', position: 'relative', transition: isResizing ? 'none' : 'width 0.2s, min-width 0.2s', userSelect: isResizing ? 'none' : 'auto' }}>
             <style>
                 {`
                     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #8f8f8f; border-radius: 10px; }
-                    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #707070; }
+                    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+                    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
                 `}
             </style>
-            <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
-                <img src={(theme === 'dark' ? appSettings?.logo_dark_url : appSettings?.logo_light_url) || appSettings?.logo_light_url || appSettings?.logo_dark_url || "/logo.png"} alt="HideWin" style={{ maxHeight: '36px', maxWidth: '100%', objectFit: 'contain' }} />
+            <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: isSidebarOpen ? 'space-between' : 'center', marginBottom: '8px' }}>
+                {isSidebarOpen && (
+                    <img src={(theme === 'dark' ? appSettings?.logo_dark_url : appSettings?.logo_light_url) || appSettings?.logo_light_url || appSettings?.logo_dark_url || "/logo.png"} alt="HideWin" style={{ maxHeight: '36px', maxWidth: '100%', objectFit: 'contain' }} />
+                )}
+                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px' }}>
+                    {isSidebarOpen ? <ChevronLeft size={20} /> : <Menu size={20} />}
+                </button>
             </div>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', padding: '0 12px' }}>
+            {isSidebarOpen && (
+                <div 
+                    onMouseDown={() => setIsResizing(true)}
+                    style={{ position: 'absolute', top: 0, right: 0, width: '4px', height: '100%', cursor: 'col-resize', backgroundColor: isResizing ? '#1a73e8' : 'transparent', transition: 'background-color 0.2s', zIndex: 10 }}
+                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(26, 115, 232, 0.5)'}
+                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = isResizing ? '#1a73e8' : 'transparent'}
+                />
+            )}
+
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', padding: '0 12px' }}>
                 
                 {/* Regular Items */}
                 <button onClick={() => setActiveTab('overview')} style={{

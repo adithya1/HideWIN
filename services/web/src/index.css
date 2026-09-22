@@ -1131,3 +1131,79 @@ input:checked + .slider:before {
   background: #94a3b8;
 }
 
+
+/* Posh Pagination Styles */
+.posh-pagination-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 0;
+    transition: opacity 0.3s ease;
+}
+.posh-pagination-wrapper.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+.posh-page-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-main, #374151);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.posh-page-btn:hover:not(:disabled) {
+    background: var(--bg-subtle, #f3f4f6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.posh-page-btn.active {
+    background: var(--primary, #2563eb);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+.posh-page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.posh-page-btn.nav-btn {
+    background: white;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.posh-page-btn.nav-btn:hover:not(:disabled) {
+    border-color: #d1d5db;
+    color: var(--primary, #2563eb);
+}
+.posh-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: #9ca3af;
+}
+
+/* Lazy loading skeleton */
+.lazy-skeleton {
+    animation: pulse-skeleton 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+}
+@keyframes pulse-skeleton {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+}
+.skeleton-row {
+    height: 40px;
+    width: 100%;
+    margin-bottom: 12px;
+}

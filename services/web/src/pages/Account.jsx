@@ -9,10 +9,37 @@ export default function Account() {
     const activeTab = tab || "profile";
     const tabs = [
         { id: "profile", label: "Profile" },
+        { id: "calendar", label: "Calendar Sync" },
         { id: "credits", label: "Credits" },
         { id: "transactions", label: "Transactions" },
         { id: "credit-history", label: "Credit History" }
     ];
+
+    const handleGoogleConnect = () => {
+        window.location.href = "http://127.0.0.1:8000/auth/google/login";
+    };
+
+    const handleOutlookConnect = () => {
+        window.location.href = "http://127.0.0.1:8000/auth/sso/outlook/login";
+    };
+
+    const renderCalendarSync = () => (
+        <div style={{ maxWidth: "800px" }}>
+            <h3 style={{ fontSize: "18px", fontWeight: "500", color: "#202124", marginBottom: "16px" }}>Google Calendar Integration</h3>
+            <p style={{ fontSize: "14px", color: "#5f6368", marginBottom: "16px" }}>Connect your Google Calendar to automatically push scheduled meetings and keep them in sync.</p>
+            <button onClick={handleGoogleConnect} style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: "#fff", color: "#3c4043", border: "1px solid #dadce0", borderRadius: "4px", padding: "10px 24px", fontSize: "14px", fontWeight: "500", cursor: "pointer", marginBottom: "32px" }}>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="18" height="18" alt="Google" />
+                Connect Google Calendar
+            </button>
+
+            <h3 style={{ fontSize: "18px", fontWeight: "500", color: "#202124", marginBottom: "16px", borderTop: "1px solid #dadce0", paddingTop: "32px" }}>Microsoft Outlook Integration</h3>
+            <p style={{ fontSize: "14px", color: "#5f6368", marginBottom: "16px" }}>Connect your Microsoft Outlook account to sync HideWin meetings bidirectionally.</p>
+            <button onClick={handleOutlookConnect} style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: "#fff", color: "#3c4043", border: "1px solid #dadce0", borderRadius: "4px", padding: "10px 24px", fontSize: "14px", fontWeight: "500", cursor: "pointer" }}>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg" width="18" height="18" alt="Outlook" />
+                Connect Outlook
+            </button>
+        </div>
+    );
 
     const renderProfile = () => (
         <div style={{ maxWidth: "800px" }}>

@@ -57,6 +57,12 @@ async def create_meeting(
     base_id = 'HW-' + str(uuid.uuid4()).split('-')[0].upper() + '-' + str(uuid.uuid4()).split('-')[1].upper()
     passcode = base_id.split('-')[-1].lower()
 
+    # Resolve correct user ID from full db_models
+    from services.api.db_models.user import User as FullUser
+    full_user_res = await db.execute(select(FullUser).filter(FullUser.email == current_user.email))
+    full_user = full_user_res.scalars().first()
+    uid = full_user.id if full_user else current_user.id
+
     occurrences = 1
     if meeting.recurrence == "daily":
         occurrences = 5
@@ -81,7 +87,7 @@ async def create_meeting(
 
         db_meeting = models.Meeting(
             id=meeting_id,
-            host_id=current_user.id,
+            host_id=uid,
             title=meeting.title,
             description=meeting.description,
             start_time=start_time,
@@ -164,11 +170,16 @@ async def create_meeting(
             EmailService.send_email(db, to_email=email, subject=subject, content=content_str, cc=meeting.cc_participants, bcc=meeting.bcc_participants, attachments=att_data)
 
 
+    await db.commit()
     
-    for m in created_meetings:
-        await db.refresh(m)
-        
-    return created_meetings
+    # Reload meetings with participants eagerly loaded to satisfy the response model
+    from sqlalchemy.orm import selectinload
+    created_ids = [m.id for m in created_meetings]
+    if created_ids:
+        res = await db.execute(select(models.Meeting).options(selectinload(models.Meeting.participants)).filter(models.Meeting.id.in_(created_ids)))
+        return res.scalars().all()
+    
+    return []
 
 
 class SendInvitesRequest(BaseModel):
@@ -274,8 +285,15 @@ async def get_upcoming_meetings(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    result = await db.execute(select(models.Meeting).filter(
-        models.Meeting.host_id == current_user.id,
+    # Resolve the correct ID from the full user model
+    from services.api.db_models.user import User as FullUser
+    full_user_res = await db.execute(select(FullUser).filter(FullUser.email == current_user.email))
+    full_user = full_user_res.scalars().first()
+    uid = full_user.id if full_user else current_user.id
+
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(select(models.Meeting).options(selectinload(models.Meeting.participants)).filter(
+        models.Meeting.host_id == uid,
         models.Meeting.status.in_(["SCHEDULED", "ACTIVE"])
     ).order_by(models.Meeting.created_at.desc()))
     meetings = result.scalars().all()
@@ -286,9 +304,15 @@ async def get_historical_meetings(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    result = await db.execute(select(models.Meeting).filter(
-        models.Meeting.host_id == current_user.id,
-        models.Meeting.status == "COMPLETED"
+    from services.api.db_models.user import User as FullUser
+    full_user_res = await db.execute(select(FullUser).filter(FullUser.email == current_user.email))
+    full_user = full_user_res.scalars().first()
+    uid = full_user.id if full_user else current_user.id
+
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(select(models.Meeting).options(selectinload(models.Meeting.participants)).filter(
+        models.Meeting.host_id == uid,
+        models.Meeting.status.in_(["COMPLETED", "CANCELLED"])
     ).order_by(models.Meeting.created_at.desc()))
     meetings = result.scalars().all()
     return meetings
@@ -301,9 +325,15 @@ async def update_meeting(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    result = await db.execute(select(models.Meeting).filter(
+    from services.api.db_models.user import User as FullUser
+    full_user_res = await db.execute(select(FullUser).filter(FullUser.email == current_user.email))
+    full_user = full_user_res.scalars().first()
+    uid = full_user.id if full_user else current_user.id
+
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(select(models.Meeting).options(selectinload(models.Meeting.participants)).filter(
         models.Meeting.id == meeting_id,
-        models.Meeting.host_id == current_user.id
+        models.Meeting.host_id == uid
     ))
     meeting = result.scalars().first()
     if not meeting:
@@ -337,20 +367,31 @@ async def update_meeting(
             await EmailNotificationService.dispatch(db, "MEETING_RESCHEDULED", email, variables)
             
     await db.commit()
-    await db.refresh(meeting)
-    return meeting
+    # Eagerly load participants before returning
+    result = await db.execute(select(models.Meeting).options(selectinload(models.Meeting.participants)).filter(models.Meeting.id == meeting.id))
+    return result.scalars().first()
 
 @router.delete("/clear-all")
 async def clear_all_meetings(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    await db.execute(delete(models.Meeting).filter(models.Meeting.host_id == current_user.id))
+    from services.api.db_models.user import User as FullUser
+    full_user_res = await db.execute(select(FullUser).filter(FullUser.email == current_user.email))
+    full_user = full_user_res.scalars().first()
+    uid = full_user.id if full_user else current_user.id
+
+    await db.execute(delete(models.Meeting).filter(models.Meeting.host_id == uid))
     await db.commit()
     return {"status": "success"}
 
 @router.delete("/{meeting_id}")
 async def delete_meeting(meeting_id: str, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    from services.api.db_models.user import User as FullUser
+    full_user_res = await db.execute(select(FullUser).filter(FullUser.email == current_user.email))
+    full_user = full_user_res.scalars().first()
+    uid = full_user.id if full_user else current_user.id
+
     result = await db.execute(select(models.Meeting).filter(
         models.Meeting.id == meeting_id,
-        models.Meeting.host_id == current_user.id
+        models.Meeting.host_id == uid
     ))
     meeting = result.scalars().first()
     if not meeting:

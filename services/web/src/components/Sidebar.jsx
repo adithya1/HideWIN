@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
     Home, Bot, Clock, Folder, 
-    User, EyeOff, Gift, Volume2, ShieldAlert, HelpCircle, ChevronDown, ChevronUp, Star, Download
-, LogOut, MoreVertical, CreditCard} from 'lucide-react';
+    User, EyeOff, Gift, Volume2, ShieldAlert, HelpCircle, ChevronDown, ChevronUp, Star, Download, Calendar, LogOut, MoreVertical, CreditCard, Menu, ChevronLeft, ChevronRight, UserPlus
+} from 'lucide-react';
 import { API_BASE } from '../config';
 
 export default function Sidebar() {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [sidebarWidth, setSidebarWidth] = useState(250);
+    const [isResizing, setIsResizing] = useState(false);
+    const sidebarRef = useRef(null);
+
     const navigate = useNavigate();
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
@@ -17,7 +22,17 @@ export default function Sidebar() {
 
     const location = useLocation();
     const [branding, setBranding] = useState({ logo_light: '', logo_dark: '', browser_icon: '' });
-    const [isAccountOpen, setIsAccountOpen] = useState(true); // Default open to match screenshot
+    const [currentUser, setCurrentUser] = useState(() => {
+        // Decode email from JWT immediately so sidebar never shows "Loading..."
+        try {
+            const token = localStorage.getItem('hidewin_token');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.sub) return { email: payload.sub, full_name: null };
+            }
+        } catch {}
+        return null;
+    });
 
     useEffect(() => {
         fetch(`${API_BASE}/auth/branding`)
@@ -26,27 +41,51 @@ export default function Sidebar() {
             .catch(err => console.error('Failed to load branding', err));
     }, []);
 
+    useEffect(() => {
+        const token = localStorage.getItem('hidewin_token');
+        if (token) {
+            fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+                .then(res => res.ok ? res.json() : null)
+                .then(data => { if (data) setCurrentUser(data); })
+                .catch(() => {});
+        }
+    }, []);
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (!isResizing) return;
+            let newWidth = e.clientX;
+            if (newWidth < 200) newWidth = 200;
+            if (newWidth > 400) newWidth = 400;
+            setSidebarWidth(newWidth);
+        };
+        const handleMouseUp = () => {
+            setIsResizing(false);
+            document.body.style.cursor = 'default';
+        };
+        if (isResizing) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = 'col-resize';
+        }
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizing]);
+
     const topItems = [
         { name: 'Dashboard', path: '/dashboard', icon: Home },
-        { name: 'Assistants', path: '/assistants', icon: Bot },
+        { name: 'My Assistants', path: '/assistants', icon: Bot },
         { name: 'Sessions', path: '/sessions', icon: Clock },
+        { name: 'Meetings', path: '/meetings', icon: Calendar },
         { name: 'Documents', path: '/documents', icon: Folder },
-    ];
-
-    const accountSubItems = [
-        { name: 'Profile', path: '/account/profile' },
-        { name: 'Credits', path: '/account/credits' },
-        { name: 'Transactions', path: '/account/transactions' },
-        { name: 'Credit History', path: '/account/credit-history' },
-        
-        
+        { name: 'Invite', path: '/invite', icon: UserPlus },
     ];
 
     const bottomItems = [
-        { name: 'Go Invisible', path: '/invisible', icon: Download, star: true },
-        { name: 'Refer & Earn', path: '/refer', icon: Gift, badge: 'NEW' },
-        
-        
+        { name: 'Go Invisible', path: '/go-invisible', icon: EyeOff, star: true },
+        { name: 'Refer & Earn', path: '/refer', icon: Gift, badge: 'Free' },
         { name: 'Help', path: '/help', icon: HelpCircle },
     ];
 
@@ -56,125 +95,183 @@ export default function Sidebar() {
         <>
             <style>
                 {`
-                    .custom-scrollbar::-webkit-scrollbar {
-                        width: 6px;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-track {
-                        background: transparent;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background-color: #8f8f8f;
-                        border-radius: 10px;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                        background-color: #707070;
-                    }
+                    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+                    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+                    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
                 `}
             </style>
-            <div className="custom-scrollbar" style={{ width: '250px', minWidth: '250px', borderRight: '1px solid #e0e0e0', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', fontFamily: 'system-ui, -apple-system, sans-serif', overflowY: 'auto' }}>
-                <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
-                    {branding.logo_light ? (
-                        <img src={branding.logo_light} alt="HideWin" style={{ height: '36px', objectFit: 'contain' }} />
-                    ) : (
-                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#000' }}>HideWin</span>
+            <div 
+                ref={sidebarRef}
+                className="custom-scrollbar" 
+                style={{ 
+                    width: isSidebarOpen ? `${sidebarWidth}px` : '72px', 
+                    minWidth: isSidebarOpen ? `${sidebarWidth}px` : '72px', 
+                    borderRight: '1px solid #e2e8f0', 
+                    height: '100vh', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    backgroundColor: '#ffffff', 
+                    fontFamily: 'system-ui, -apple-system, sans-serif', 
+                    overflowY: 'auto', 
+                    overflowX: 'hidden', 
+                    transition: isResizing ? 'none' : 'width 0.2s, min-width 0.2s',
+                    position: 'relative',
+                    userSelect: isResizing ? 'none' : 'auto'
+                }}
+            >
+                <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: isSidebarOpen ? 'space-between' : 'center', marginBottom: '8px' }}>
+                    {isSidebarOpen && (
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                            {branding.logo_light ? (
+                                <img src={branding.logo_light} alt="HideWin" style={{ maxHeight: '36px', maxWidth: '100%', objectFit: 'contain' }} />
+                            ) : (
+                                <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#0f172a' }}>HideWin</span>
+                            )}
+                        </div>
                     )}
+                    <button 
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+                        style={{ 
+                            background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px' 
+                        }}
+                    >
+                        {isSidebarOpen ? <ChevronLeft size={20} /> : <Menu size={20} />}
+                    </button>
                 </div>
                 
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', padding: '0 12px' }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', padding: '0 12px' }}>
                     {topItems.map(item => {
                         const active = isActive(item.path);
                         return (
                             <Link key={item.name} to={item.path} style={{
-                                display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
-                                textDecoration: 'none', color: active ? '#1a73e8' : '#5f6368',
-                                backgroundColor: active ? '#f0f4ff' : 'transparent',
-                                fontWeight: active ? '600' : '500', fontSize: '15px', position: 'relative'
+                                display: 'flex', alignItems: 'center', padding: isSidebarOpen ? '10px 16px' : '10px', gap: '16px', borderRadius: '8px',
+                                textDecoration: 'none', color: active ? '#1a73e8' : '#475569',
+                                backgroundColor: active ? '#eff6ff' : 'transparent',
+                                fontWeight: active ? '600' : '500', fontSize: '14px', position: 'relative',
+                                justifyContent: isSidebarOpen ? 'flex-start' : 'center',
+                                whiteSpace: 'nowrap', overflow: 'hidden'
                             }}>
-                                {active && <div style={{ position: 'absolute', left: '-12px', top: '10px', bottom: '10px', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
-                                <item.icon size={18} style={{ marginRight: '16px', color: active ? '#1a73e8' : '#5f6368' }} strokeWidth={active ? 2.5 : 2} />
-                                {item.name}
+                                {active && <div style={{ position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', height: '60%', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                                <item.icon size={18} style={{ minWidth: '18px', color: active ? '#1a73e8' : '#64748b' }} strokeWidth={active ? 2.5 : 2} />
+                                <span style={{ opacity: isSidebarOpen ? 1 : 0, width: isSidebarOpen ? 'auto' : 0, overflow: 'hidden', textOverflow: 'ellipsis', transition: 'opacity 0.2s' }}>
+                                    {item.name}
+                                </span>
                             </Link>
                         )
                     })}
 
-                    <div style={{ margin: '24px 16px 12px 16px', fontSize: '11px', fontWeight: '600', color: '#9aa0a6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <div style={{ margin: '24px 16px 8px 16px', fontSize: '11px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', display: isSidebarOpen ? 'block' : 'none' }}>
                         MORE
                     </div>
 
-                                        {/* Account Link */}
                     <Link to="/account/profile" style={{
-                        display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
-                        textDecoration: 'none', color: isActive('/account') ? '#1a73e8' : '#5f6368',
-                        backgroundColor: isActive('/account') ? '#f0f4ff' : 'transparent',
-                        fontWeight: isActive('/account') ? '600' : '500', fontSize: '15px'
+                        display: 'flex', alignItems: 'center', padding: isSidebarOpen ? '10px 16px' : '10px', gap: '16px', borderRadius: '8px',
+                        textDecoration: 'none', color: isActive('/account') ? '#1a73e8' : '#475569',
+                        backgroundColor: isActive('/account') ? '#eff6ff' : 'transparent',
+                        fontWeight: isActive('/account') ? '600' : '500', fontSize: '14px', position: 'relative',
+                        justifyContent: isSidebarOpen ? 'flex-start' : 'center',
+                        whiteSpace: 'nowrap', overflow: 'hidden'
                     }}>
-                        {isActive('/account') && <div style={{ position: 'absolute', left: '-12px', top: '10px', bottom: '10px', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
-                        <User size={18} style={{ marginRight: '16px', color: isActive('/account') ? '#1a73e8' : '#5f6368' }} strokeWidth={isActive('/account') ? 2.5 : 2} />
-                        Account
+                        {isActive('/account') && <div style={{ position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', height: '60%', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                        <User size={18} style={{ minWidth: '18px', color: isActive('/account') ? '#1a73e8' : '#64748b' }} strokeWidth={isActive('/account') ? 2.5 : 2} />
+                        <span style={{ opacity: isSidebarOpen ? 1 : 0, width: isSidebarOpen ? 'auto' : 0, overflow: 'hidden', textOverflow: 'ellipsis', transition: 'opacity 0.2s' }}>
+                            Account
+                        </span>
                     </Link>
-
 
                     {bottomItems.map(item => {
                         const active = isActive(item.path);
                         return (
                             <Link key={item.name} to={item.path} style={{
-                                display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: '6px',
-                                textDecoration: 'none', color: active ? '#1a73e8' : '#5f6368',
-                                backgroundColor: active ? '#f0f4ff' : 'transparent',
-                                fontWeight: '500', fontSize: '15px'
+                                display: 'flex', alignItems: 'center', padding: isSidebarOpen ? '10px 16px' : '10px', gap: '16px', borderRadius: '8px',
+                                textDecoration: 'none', color: active ? '#1a73e8' : '#475569',
+                                backgroundColor: active ? '#eff6ff' : 'transparent',
+                                fontWeight: active ? '600' : '500', fontSize: '14px', position: 'relative',
+                                justifyContent: isSidebarOpen ? 'flex-start' : 'center',
+                                whiteSpace: 'nowrap', overflow: 'hidden'
                             }}>
-                                <item.icon size={18} style={{ marginRight: '16px', color: '#5f6368' }} />
-                                <span style={{ flex: 1 }}>{item.name}</span>
+                                <item.icon size={18} style={{ minWidth: '18px', color: active ? '#1a73e8' : '#64748b' }} strokeWidth={active ? 2.5 : 2} />
+                                <span style={{ flex: 1, opacity: isSidebarOpen ? 1 : 0, width: isSidebarOpen ? 'auto' : 0, overflow: 'hidden', textOverflow: 'ellipsis', transition: 'opacity 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    {item.name}
+                                    {item.star && <Star size={16} color="#f59e0b" style={{ strokeWidth: 2 }} />}
+                                </span>
                                 
-                                {item.star && <Star size={16} color="#fbbc04" style={{ strokeWidth: 1.5 }} />}
-                                {item.badge && (
-                                    <span style={{ backgroundColor: '#1a73e8', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
+                                {item.badge && isSidebarOpen && (
+                                    <span style={{ backgroundColor: '#1d4ed8', color: 'white', fontSize: '10px', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
                                         {item.badge}
                                     </span>
                                 )}
                             </Link>
                         )
                     })}
-
                 </div>
                 
+                {/* Resizer Handle */}
+                {isSidebarOpen && (
+                    <div 
+                        onMouseDown={() => setIsResizing(true)}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            width: '4px',
+                            height: '100%',
+                            cursor: 'col-resize',
+                            backgroundColor: isResizing ? '#1a73e8' : 'transparent',
+                            transition: 'background-color 0.2s',
+                            zIndex: 10
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(26, 115, 232, 0.5)'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = isResizing ? '#1a73e8' : 'transparent'}
+                    />
+                )}
+
                 {/* Profile Chip */}
-                <div style={{ padding: '16px', position: 'relative' }}>
-                    {/* Pop-up Menu */}
+                <div style={{ padding: '16px', position: 'relative', borderTop: '1px solid #e2e8f0', marginTop: 'auto' }}>
                     {isProfileMenuOpen && (
-                        <div style={{ position: 'absolute', bottom: 'calc(100% - 10px)', left: '16px', right: '16px', backgroundColor: '#fff', border: '1px solid #e8eaed', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, padding: '8px 0' }}>
-                            <Link to="/account/profile" style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', textDecoration: 'none', color: '#5f6368', fontSize: '14px', fontWeight: '500' }}>
-                                <User size={16} style={{ marginRight: '12px' }} /> Profile
+                        <div style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: '16px', right: '16px', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', zIndex: 10, padding: '8px 0', overflow: 'hidden' }}>
+                            <Link to="/account/profile" style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', gap: '12px', textDecoration: 'none', color: '#475569', fontSize: '14px', fontWeight: '500' }}>
+                                <User size={16} /> Profile
                             </Link>
-                            <Link to="/account/credits" style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', textDecoration: 'none', color: '#5f6368', fontSize: '14px', fontWeight: '500' }}>
-                                <CreditCard size={16} style={{ marginRight: '12px' }} /> Credits
+                            <Link to="/account/credits" style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', gap: '12px', textDecoration: 'none', color: '#475569', fontSize: '14px', fontWeight: '500' }}>
+                                <CreditCard size={16} /> Billing
                             </Link>
-                            <Link to="/help" style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', textDecoration: 'none', color: '#5f6368', fontSize: '14px', fontWeight: '500' }}>
-                                <HelpCircle size={16} style={{ marginRight: '12px' }} /> Help
-                            </Link>
-                            <div style={{ height: '1px', backgroundColor: '#e8eaed', margin: '8px 0' }} />
-                            <button onClick={handleLogout} style={{ width: '100%', display: 'flex', alignItems: 'center', padding: '10px 16px', border: 'none', background: 'transparent', color: '#ef4444', fontSize: '14px', fontWeight: '500', cursor: 'pointer', textAlign: 'left' }}>
-                                <LogOut size={16} style={{ marginRight: '12px' }} /> Logout
+                            <div style={{ height: '1px', backgroundColor: '#e2e8f0', margin: '4px 0' }}></div>
+                            <button onClick={handleLogout} style={{ width: '100%', display: 'flex', alignItems: 'center', padding: '10px 16px', gap: '12px', textDecoration: 'none', color: '#ef4444', fontSize: '14px', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+                                <LogOut size={16} /> Log Out
                             </button>
                         </div>
                     )}
-                    
-                    <div 
+                    <button 
                         onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                        style={{ display: 'flex', alignItems: 'center', padding: '12px', border: '1px solid #e8eaed', borderRadius: '8px', cursor: 'pointer', backgroundColor: isProfileMenuOpen ? '#f8f9fa' : '#fff' }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarOpen ? 'space-between' : 'center', width: '100%', padding: isSidebarOpen ? '8px 12px' : '8px', background: isProfileMenuOpen ? '#f1f5f9' : 'transparent', border: 'none', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s' }}
                     >
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fce8e6', color: '#d93025', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', marginRight: '12px', flexShrink: 0 }}>
-                            P
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#1a73e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'bold', color: '#fff', fontSize: '14px' }}>
+                                {currentUser
+                                    ? (currentUser.full_name ? currentUser.full_name.charAt(0).toUpperCase() : currentUser.email.charAt(0).toUpperCase())
+                                    : '?'}
+                            </div>
+                            {isSidebarOpen && (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                                    <span style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%' }}>
+                                        {currentUser
+                                            ? (currentUser.full_name ? currentUser.full_name.split(' ')[0] : currentUser.email.split('@')[0])
+                                            : 'Loading...'}
+                                    </span>
+                                    <span style={{ fontSize: '12px', color: '#64748b', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%' }}>
+                                        {currentUser ? currentUser.email : ''}
+                                    </span>
+                                </div>
+                            )}
                         </div>
-                        <div style={{ flex: 1, overflow: 'hidden' }}>
-                            <div style={{ fontSize: '13px', fontWeight: '600', color: '#202124', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>Post Box</div>
-                            <div style={{ fontSize: '11px', color: '#5f6368', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>postbox.send@gmail.com</div>
-                        </div>
-                        <MoreVertical size={16} color="#5f6368" style={{ flexShrink: 0 }} />
-                    </div>
+                        {isSidebarOpen && <MoreVertical size={16} color="#94a3b8" />}
+                    </button>
                 </div>
-
             </div>
+            {isProfileMenuOpen && <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 5 }} onClick={() => setIsProfileMenuOpen(false)}></div>}
         </>
     );
 }

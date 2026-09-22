@@ -196,3 +196,21 @@ async def oauth_login(provider: str, db: AsyncSession = Depends(get_db)):
 async def oauth_callback(provider: str, code: str, db: AsyncSession = Depends(get_db)):
     if provider == "google": return await google_callback(code=code, db=db)
     raise HTTPException(status_code=400, detail=f"Unsupported provider: {provider}")
+
+
+@router.get("/me")
+async def get_current_user_profile(db: AsyncSession = Depends(get_db), current_user=Depends(get_current_user)):
+    """Returns the logged-in user's basic profile info for the sidebar."""
+    from sqlalchemy.future import select as sa_select
+    from services.api.db_models.user import User as FullUser
+    result = await db.execute(sa_select(FullUser).filter(FullUser.email == current_user.email))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "role": user.role,
+        "is_premium": user.is_premium,
+    }

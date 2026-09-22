@@ -4,13 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from services.api.db_models.ai_config import ApiConfig
 from services.api.models.user import User
+from services.api.core.admin_config import get_admin_settings
 
 class GoogleOAuthService:
     @staticmethod
     async def get_login_url(db: AsyncSession) -> str:
-        result = await db.execute(select(ApiConfig).filter(ApiConfig.key == "google_client_id"))
-        cfg = result.scalars().first()
-        client_id = cfg.value if cfg else None
+        settings = get_admin_settings()
+        client_id = settings.google_client_id
         if not client_id:
             raise HTTPException(status_code=503, detail="Google OAuth not configured. Admin must set google_client_id via admin panel.")
         
@@ -26,14 +26,9 @@ class GoogleOAuthService:
 
     @staticmethod
     async def handle_callback(code: str, db: AsyncSession) -> User:
-        result_id = await db.execute(select(ApiConfig).filter(ApiConfig.key == "google_client_id"))
-        result_sec = await db.execute(select(ApiConfig).filter(ApiConfig.key == "google_client_secret"))
-        
-        cfg_id = result_id.scalars().first()
-        cfg_sec = result_sec.scalars().first()
-        
-        client_id = cfg_id.value if cfg_id else None
-        client_secret = cfg_sec.value if cfg_sec else None
+        settings = get_admin_settings()
+        client_id = settings.google_client_id
+        client_secret = settings.google_client_secret
         
         if not client_id or not client_secret:
             raise HTTPException(status_code=503, detail="Google OAuth not fully configured.")

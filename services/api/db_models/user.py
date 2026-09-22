@@ -25,6 +25,18 @@ class User(Base):
     session_purpose = Column(String, nullable=True)
     context_data = Column(Text, nullable=True)
     google_id = Column(String, nullable=True)
+    
+    # Calendar Sync & Tokens
+    google_access_token = Column(String, nullable=True)
+    google_refresh_token = Column(String, nullable=True)
+    google_token_expiry = Column(DateTime(timezone=True), nullable=True)
+    sync_google_calendar = Column(Boolean, default=False)
+    
+    outlook_access_token = Column(String, nullable=True)
+    outlook_refresh_token = Column(String, nullable=True)
+    outlook_token_expiry = Column(DateTime(timezone=True), nullable=True)
+    sync_outlook_calendar = Column(Boolean, default=False)
+
     stripe_customer_id = Column(String, nullable=True)
     
     # OTP Progressive Rate Limiting & Lockout

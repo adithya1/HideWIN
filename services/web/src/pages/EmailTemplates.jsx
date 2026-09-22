@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Plus, Save, Eye, RefreshCw, Layers, Send } from 'lucide-react';
+import Pagination from '../components/Pagination';
 import { API_BASE } from '../config';
 
 export default function EmailTemplates() {
     const [templates, setTemplates] = useState([]);
+    const [templatesPage, setTemplatesPage] = useState(1);
+    const [isTemplatesLoading, setIsTemplatesLoading] = useState(false);
+    const TEMPLATES_PER_PAGE = 10;
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({});
     const [logs, setLogs] = useState([]);
+    const [logsPage, setLogsPage] = useState(1);
+    const [isLogsLoading, setIsLogsLoading] = useState(false);
+    const LOGS_PER_PAGE = 10;
     const [analytics, setAnalytics] = useState(null);
     const [logSearchTerm, setLogSearchTerm] = useState('');
 
@@ -19,14 +26,17 @@ export default function EmailTemplates() {
  // templates, branding, logs
 
     const fetchTemplates = async () => {
+        setIsTemplatesLoading(true);
         try {
             const res = await fetch(`${API_BASE}/admin-system/email-templates`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
             });
             const data = await res.json();
-            setTemplates(data);
+            setTemplates(Array.isArray(data) ? data : (data.templates || []));
+            setIsTemplatesLoading(false);
         } catch (e) {
             console.error(e);
+            setIsTemplatesLoading(false);
         }
     };
 
@@ -43,12 +53,14 @@ export default function EmailTemplates() {
     };
     
     const fetchLogs = async () => {
+        setIsLogsLoading(true);
         try {
             const res = await fetch(`${API_BASE}/admin-system/email-logs`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
             });
             const data = await res.json();
-            setLogs(data);
+            setLogs(Array.isArray(data) ? data : (data.logs || []));
+            setIsLogsLoading(false);
 
         fetch(`${API_BASE}/admin-system/email-analytics`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
@@ -56,6 +68,7 @@ export default function EmailTemplates() {
 
         } catch (e) {
             console.error(e);
+            setIsLogsLoading(false);
         }
     };
 
@@ -91,7 +104,7 @@ export default function EmailTemplates() {
             // Refresh logs
             fetch(`${API_BASE}/admin-system/email-logs`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
-            }).then(r => r.json()).then(setLogs);
+            }).then(r => r.json()).then(d => setLogs(Array.isArray(d) ? d : (d.logs || [])));
             
             fetch(`${API_BASE}/admin-system/email-analytics`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }
@@ -184,30 +197,46 @@ export default function EmailTemplates() {
                 <button onClick={() => setActiveTab('logs')} style={{ background: activeTab === 'logs' ? '#1a73e8' : '#f1f3f4', color: activeTab === 'logs' ? '#fff' : '#3c4043', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>Delivery Logs</button>
             </div>
 
-            {activeTab === 'templates' && !isEditing && (
-                <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                        <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>Email Templates</h2>
-                        <button onClick={handleCreateNew} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Plus size={16} /> New Template
-                        </button>
-                    </div>
-                    <div style={{ display: 'grid', gap: '12px' }}>
-                        {templates.map(t => (
-                            <div key={t.id} onClick={() => handleSelect(t)} style={{ padding: '16px', background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
-                                    <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#202124' }}>{t.name}</div>
-                                    <div style={{ fontSize: '13px', color: '#5f6368', marginTop: '4px' }}>Key: {t.template_key} | Subject: {t.subject}</div>
-                                </div>
-                                <div style={{ background: t.enabled ? '#e6f4ea' : '#fce8e6', color: t.enabled ? '#137333' : '#c5221f', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>
-                                    {t.enabled ? 'ACTIVE' : 'DISABLED'}
-                                </div>
-                            </div>
-                        ))}
-                        {templates.length === 0 && <div style={{ padding: '32px', textAlign: 'center', color: '#5f6368' }}>No templates found.</div>}
-                    </div>
-                </div>
-            )}
+              {activeTab === 'templates' && !isEditing && (() => {
+                  const paginatedTemplates = templates.slice((templatesPage - 1) * TEMPLATES_PER_PAGE, templatesPage * TEMPLATES_PER_PAGE);
+                  return (
+                  <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                          <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>Email Templates</h2>
+                          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                              <Pagination currentPage={templatesPage} totalPages={Math.ceil(templates.length / TEMPLATES_PER_PAGE)} onPageChange={setTemplatesPage} isLoading={isTemplatesLoading} />
+                              <button onClick={handleCreateNew} style={{ background: '#10b981', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <Plus size={16} /> New Template
+                              </button>
+                          </div>
+                      </div>
+                      <div style={{ display: 'grid', gap: '12px' }}>
+                          {isTemplatesLoading && templates.length === 0 ? (
+                              Array.from({ length: 4 }).map((_, i) => (
+                                  <div key={`sk-${i}`} className="lazy-skeleton skeleton-row" style={{ height: '70px', borderRadius: '8px' }}></div>
+                              ))
+                          ) : templates.length === 0 ? (
+                              <div style={{ padding: '32px', textAlign: 'center', color: '#5f6368' }}>No templates found.</div>
+                          ) : (
+                              paginatedTemplates.map(t => (
+                                  <div key={t.id} onClick={() => handleSelect(t)} style={{ padding: '16px', background: 'white', border: '1px solid #e0e0e0', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                      <div>
+                                          <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#202124' }}>{t.name}</div>
+                                          <div style={{ fontSize: '13px', color: '#5f6368', marginTop: '4px' }}>Key: {t.template_key} | Subject: {t.subject}</div>
+                                      </div>
+                                      <div style={{ background: t.enabled ? '#e6f4ea' : '#fce8e6', color: t.enabled ? '#137333' : '#c5221f', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>
+                                          {t.enabled ? 'ACTIVE' : 'DISABLED'}
+                                      </div>
+                                  </div>
+                              ))
+                          )}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                          <Pagination currentPage={templatesPage} totalPages={Math.ceil(templates.length / TEMPLATES_PER_PAGE)} onPageChange={setTemplatesPage} isLoading={isTemplatesLoading} />
+                      </div>
+                  </div>
+                  );
+              })()}
 
             {activeTab === 'templates' && isEditing && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
@@ -309,40 +338,61 @@ export default function EmailTemplates() {
                 </div>
             )}
 
-            {activeTab === 'logs' && (
-                <div className="card">
-                    <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '24px' }}>Delivery Logs</h2>
-                    <p style={{ color: '#5f6368', marginBottom: '16px' }}>Showing recent email dispatch attempts. OTPs and secure tokens are redacted.</p>
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e0e0e0', textAlign: 'left' }}>
-                                    <th style={{ padding: '12px 16px' }}>Date</th>
-                                    <th style={{ padding: '12px 16px' }}>Recipient</th>
-                                    <th style={{ padding: '12px 16px' }}>Template</th>
-                                    <th style={{ padding: '12px 16px' }}>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {logs.length > 0 ? logs.map(log => (
-                                    <tr key={log.id} style={{ borderBottom: '1px solid #e0e0e0' }}>
-                                        <td style={{ padding: '12px 16px', color: '#5f6368' }}>{new Date(log.created_at).toLocaleString()}</td>
-                                        <td style={{ padding: '12px 16px', fontWeight: '500' }}>{log.recipient}</td>
-                                        <td style={{ padding: '12px 16px' }}>{log.template_key}</td>
-                                        <td style={{ padding: '12px 16px' }}>
-                                            <span style={{ background: log.status === 'DELIVERED' || log.status === 'SENT' ? '#e6f4ea' : log.status === 'FAILED' ? '#fce8e6' : '#fef7e0', color: log.status === 'DELIVERED' || log.status === 'SENT' ? '#137333' : log.status === 'FAILED' ? '#c5221f' : '#b06000', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>
-                                                {log.status}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                )) : (
-                                    <tr><td colSpan="4" style={{ padding: '24px', textAlign: 'center', color: '#5f6368' }}>No recent logs found.</td></tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
+            {activeTab === 'logs' && (() => {
+                  const filteredLogs = logs.filter(log => (log.recipient || log.recipient_email || '').toLowerCase().includes(logSearchTerm.toLowerCase()));
+                  const paginatedLogs = filteredLogs.slice((logsPage - 1) * LOGS_PER_PAGE, logsPage * LOGS_PER_PAGE);
+                  return (
+                  <div className="card">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                          <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>Delivery Logs</h2>
+                          <Pagination currentPage={logsPage} totalPages={Math.ceil(filteredLogs.length / LOGS_PER_PAGE)} onPageChange={setLogsPage} isLoading={isLogsLoading} />
+                      </div>
+                      <p style={{ color: '#5f6368', marginBottom: '16px' }}>Showing recent email dispatch attempts. OTPs and secure tokens are redacted.</p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                          <input type="text" placeholder="Search by recipient email..." value={logSearchTerm} onChange={e => {setLogSearchTerm(e.target.value); setLogsPage(1);}} style={{ width: '100%', maxWidth: '300px', padding: '8px 12px', borderRadius: '6px', border: '1px solid #d4d80' }} />
+                      </div>
+                      <div style={{ overflowX: 'auto' }}>
+                          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                  <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #e0e0e0', textAlign: 'left' }}>
+                                      <th style={{ padding: '12px 16px' }}>Date</th>
+                                      <th style={{ padding: '12px 16px' }}>Recipient</th>
+                                      <th style={{ padding: '12px 16px' }}>Template</th>
+                                      <th style={{ padding: '12px 16px' }}>Status</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {isLogsLoading && filteredLogs.length === 0 ? (
+                                      Array.from({ length: 5 }).map((_, i) => (
+                                          <tr key={`sk-${i}`}>
+                                              <td colSpan="4">
+                                                  <div className="lazy-skeleton skeleton-row" style={{ height: '30px', margin: '4px 0' }}></div>
+                                              </td>
+                                          </tr>
+                                      ))
+                                  ) : filteredLogs.length === 0 ? (
+                                      <tr><td colSpan="4" style={{ padding: '32px', textAlign: 'center', color: '#5f6368' }}>No logs found.</td></tr>
+                                  ) : paginatedLogs.map(log => (
+                                      <tr key={log.id} style={{ borderBottom: '1px solid #e0e0e0' }}>
+                                          <td style={{ padding: '12px 16px', color: '#5f6368' }}>{new Date(log.created_at).toLocaleString()}</td>
+                                          <td style={{ padding: '12px 16px', fontWeight: '500' }}>{log.recipient || log.recipient_email}</td>
+                                          <td style={{ padding: '12px 16px' }}>{log.template_key || log.action_trigger}</td>
+                                          <td style={{ padding: '12px 16px' }}>
+                                              <span style={{ background: log.status === 'DELIVERED' || log.status === 'SENT' ? '#e6f4ea' : log.status === 'FAILED' ? '#fce8e6' : '#fef7e0', color: log.status === 'DELIVERED' || log.status === 'SENT' ? '#137333' : log.status === 'FAILED' ? '#c5221f' : '#b06000', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>
+                                                  {log.status}
+                                              </span>
+                                          </td>
+                                      </tr>
+                                  ))}
+                              </tbody>
+                          </table>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                          <Pagination currentPage={logsPage} totalPages={Math.ceil(filteredLogs.length / LOGS_PER_PAGE)} onPageChange={setLogsPage} isLoading={isLogsLoading} />
+                      </div>
+                  </div>
+                  );
+              })()}
         
             {showCampaignModal && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>

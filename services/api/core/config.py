@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = "admin@example.com"
     ADMIN_PASSWORD: str = "changeme"
     JWT_SECRET_KEY: str = "supersecret"
-    JWT_EXPIRE_MINUTES: int = 60
+    JWT_EXPIRE_MINUTES: int = 60 * 24 * 7
     LOG_LEVEL: str = "INFO"
 
     # STT Settings

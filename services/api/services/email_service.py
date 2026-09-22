@@ -1,3 +1,4 @@
+from services.api.core.admin_config import get_admin_settings
 import smtplib
 import json
 import logging
@@ -58,37 +59,56 @@ class EmailNotificationService:
 
     @staticmethod
     def render_layout(body_html: str, branding: dict) -> str:
-        """Wraps the email body in the global HTML envelope."""
+        """Wraps the email body in the global HTML envelope (Meta/Ultra-Clean Minimalist Style)."""
+        from datetime import datetime
         year = datetime.now().year
-        logo_html = f'<img src="{branding["logo_light"]}" alt="{branding["company_name"]}" style="max-height:36px; margin-bottom: 24px;" />' if branding.get("logo_light") else f'<h2 style="margin: 0 0 24px 0; color: {branding["text_color"]};">{branding["company_name"]}</h2>'
         
+        theme = branding.get("theme", "light")
+        bg_color = "#ffffff" if theme != "dark" else "#000000"
+        text_color = "#1c1e21" if theme != "dark" else "#e4e6eb"
+        muted_text = "#8a8d91" if theme != "dark" else "#b0b3b8"
+        
+        # Force CID logo attachment
+        logo_html = f'<img src="cid:logo_img" alt="{branding.get("company_name", "HideWin")}" style="height: 32px; display: block;" />'
+            
         layout = f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body {{ font-family: Arial, Helvetica, sans-serif; background-color: {branding['background_color']}; margin: 0; padding: 0; }}
-  .email-wrapper {{ width: 100%; background-color: {branding['background_color']}; padding: 40px 20px; }}
-  .email-container {{ max-width: 600px; margin: 0 auto; background-color: {branding['card_background']}; border: 1px solid {branding['border_color']}; border-radius: 8px; padding: 32px; overflow: hidden; }}
-  .email-content {{ color: {branding['text_color']}; font-size: 15px; line-height: 1.6; }}
-  .email-footer {{ max-width: 600px; margin: 24px auto 0; text-align: center; color: {branding['muted_text_color']}; font-size: 13px; }}
-  hr {{ border: none; border-top: 1px solid {branding['border_color']}; margin: 24px 0; }}
+  body, table, td, a {{ -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }}
+  table, td {{ mso-table-lspace: 0pt; mso-table-rspace: 0pt; }}
+  img {{ -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }}
+  body {{ height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }}
 </style>
 </head>
-<body>
-  <div class="email-wrapper">
-    <div class="email-container">
-      {logo_html}
-      <div class="email-content">
-        {body_html}
-      </div>
-    </div>
-    <div class="email-footer">
-      <p>{branding['footer_text']}</p>
-      <p>&copy; {year} {branding['company_name']}. All rights reserved.</p>
-    </div>
-  </div>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: {bg_color}; margin: 0; padding: 0;">
+  
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: {bg_color};">
+    <tr>
+      <td align="center" style="padding: 24px 16px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+          <tr>
+            <td align="left" style="padding-bottom: 24px; border-bottom: 1px solid #e5e7eb;">
+              {logo_html}
+            </td>
+          </tr>
+          <tr>
+            <td align="left" style="padding: 32px 0; color: {text_color}; font-size: 15px; line-height: 1.6;">
+              {body_html}
+            </td>
+          </tr>
+          <tr>
+            <td align="left" style="padding-top: 24px; border-top: 1px solid #e5e7eb; color: {muted_text}; font-size: 12px; line-height: 1.5;">
+              <p style="margin: 0 0 8px 0;">This message was sent to you by {branding.get('company_name', 'HideWin')}.</p>
+              <p style="margin: 0;">&copy; {year} {branding.get('company_name', 'HideWin')} Inc. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>"""
         return layout
@@ -142,11 +162,16 @@ class EmailNotificationService:
 class EmailService:
     @staticmethod
     async def send_email(db: Session, to_email: str, subject: str, content: str, cc: list = None, bcc: list = None, attachments: list = None):
-        keys = ["smtp_host", "smtp_port", "smtp_user", "smtp_pass",
-                "smtp_from_name", "smtp_from_email", "smtp_ssl"]
-        result = await db.execute(select(models.ApiConfig).filter(models.ApiConfig.key.in_(keys)))
-        configs = result.scalars().all()
-        data = {c.key: c.value for c in configs}
+        settings = get_admin_settings()
+        data = {
+            "smtp_host": settings.smtp_host,
+            "smtp_port": settings.smtp_port,
+            "smtp_user": settings.smtp_user,
+            "smtp_pass": settings.smtp_pass,
+            "smtp_from_name": getattr(settings, "smtp_from_name", "HideWin"),
+            "smtp_from_email": getattr(settings, "smtp_from_email", settings.smtp_user),
+            "smtp_ssl": getattr(settings, "smtp_ssl", "false")
+        }
 
         host     = data.get("smtp_host")
         port     = int(data.get("smtp_port", 587)) if data.get("smtp_port") else 587
@@ -164,14 +189,25 @@ class EmailService:
         from_header = f"{from_name} <{from_email}>" if from_name else from_email
 
         try:
-            msg = EmailMessage()
-            msg.set_content(content)
-            # Content is already an HTML layout from render_layout
-            msg.add_alternative(content, subtype='html')
+            import os
+            from email.message import EmailMessage
+            from email.utils import make_msgid
             
+            msg = EmailMessage()
             msg["Subject"] = subject
             msg["From"]    = from_header
             msg["To"]      = to_email
+            
+            msg.set_content("Please enable HTML to view this email.")
+            msg.add_alternative(content, subtype='html')
+            
+            # Attach local logo as CID
+            logo_path = os.path.join("services", "web", "public", "logo.png")
+            if os.path.exists(logo_path):
+                with open(logo_path, 'rb') as f:
+                    img_data = f.read()
+                msg.get_payload()[1].add_related(img_data, maintype='image', subtype='png', cid='<logo_img>')
+
 
             if cc: msg["Cc"] = ", ".join(cc)
             if bcc: msg["Bcc"] = ", ".join(bcc)

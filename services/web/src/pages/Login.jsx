@@ -18,6 +18,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [step, setStep] = useState('email'); // 'email' | 'otp'
   const [loading, setLoading] = useState(false);
+  const [showPasswords, setShowPasswords] = useState({});
   const [error, setError] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
   const [expiryTimer, setExpiryTimer] = useState(180);

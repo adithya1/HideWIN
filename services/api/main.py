@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 from services.api.core.config import settings
-from services.api.routers import admin, ws, ai_proxy, meeting
+from services.api.routers import calendar_webhooks, admin, ws, ai_proxy, meeting, user_meetings, email_templates
 from services.api.api.authentication.router import router as auth
 from services.api.api.transcription.admin import router as stt_admin
 from services.api.api.transcription.websocket import router as stt_ws
@@ -38,6 +38,7 @@ app.add_middleware(
 )
 
 app.include_router(admin.router)
+app.include_router(admin.api_admin_router)
 app.include_router(auth)
 app.include_router(stt_admin)
 app.include_router(stt_ws)
@@ -64,6 +65,10 @@ app.include_router(orders_user_router)
 app.include_router(ws.router)
 app.include_router(ai_proxy.router)
 app.include_router(meeting.router)
+app.include_router(user_meetings.router)
+app.include_router(user_meetings.public_router)
+app.include_router(calendar_webhooks.router)
+app.include_router(email_templates.router)
 
 app.add_exception_handler(ApplicationError, application_error_handler)
 app.add_exception_handler(ValidationError, validation_error_handler)

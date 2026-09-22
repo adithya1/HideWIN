@@ -74,3 +74,147 @@ async def unblock_user(
     db.add(user)
     await db.commit()
     return {"success": True, "message": f"User {user.email} unblocked successfully."}
+
+from pydantic import BaseModel
+from services.api.services.email_service import EmailService
+
+class SmtpConfig(BaseModel):
+    smtp_host: str
+    smtp_port: int
+    smtp_user: str
+    smtp_pass: str
+
+@router.put("/smtp")
+async def update_smtp(
+    config: SmtpConfig,
+    admin_email: str = Depends(require_admin),
+    settings: AdminSettings = Depends(get_admin_settings)
+):
+    settings.smtp_host = config.smtp_host
+    settings.smtp_port = config.smtp_port
+    settings.smtp_user = config.smtp_user
+    settings.smtp_pass = config.smtp_pass
+    save_admin_settings(settings)
+    return {"success": True, "config": settings.dict()}
+
+@router.get("/smtp")
+async def get_smtp(
+    admin_email: str = Depends(require_admin),
+    settings: AdminSettings = Depends(get_admin_settings)
+):
+    return {"config": {"smtp_host": settings.smtp_host, "smtp_port": settings.smtp_port, "smtp_user": settings.smtp_user, "smtp_pass": settings.smtp_pass}}
+
+class TestEmailRequest(BaseModel):
+    test_email: str
+
+@router.post("/smtp/test")
+async def test_smtp(
+    req: TestEmailRequest,
+    admin_email: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    success = await EmailService.send_email(
+        db=db,
+        to_email=req.test_email,
+        subject="HideWin SMTP Test",
+        content="<p>This is a test email to verify your SMTP configuration.</p>"
+    )
+    if success:
+        return {"success": True, "message": "Test email sent successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to send test email. Check server logs.")
+
+
+# ─── /api/admin/user/* — User Management Endpoints ───────────────────────────
+# The Admin dashboard frontend calls these under /api/admin prefix.
+
+api_admin_router = APIRouter(prefix="/api/admin", tags=["admin-user-management"])
+
+def require_api_admin(
+    current_user=Depends(get_current_user),
+    admin_settings: AdminSettings = Depends(get_admin_settings)
+):
+    if current_user.email != admin_settings.admin_email and current_user.role not in ("ADMIN", "SUPER_ADMIN"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required")
+    return current_user.email
+
+
+class CreateUserRequest(BaseModel):
+    email: str
+    password: str
+
+
+class UpdateRoleRequest(BaseModel):
+    role: str
+
+
+@api_admin_router.post("/user/create")
+async def create_user(
+    role: str = "USER",
+    body: CreateUserRequest = None,
+    admin_email: str = Depends(require_api_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Create / invite a new user from the Admin dashboard."""
+    from sqlalchemy.future import select as sa_select
+    from services.api.api.authentication.service import AuthenticationService
+
+    if not body or not body.email or not body.password:
+        raise HTTPException(status_code=400, detail="Email and password are required")
+
+    # Check if user already exists
+    existing = await db.execute(sa_select(User).filter(User.email == body.email))
+    if existing.scalars().first():
+        raise HTTPException(status_code=409, detail="A user with that email already exists")
+
+    new_user = User(
+        email=body.email,
+        hashed_password=AuthenticationService.get_password_hash(body.password),
+        role=role.upper(),
+        is_active=True,
+        is_verified=True,  # Admin-created users are pre-verified
+    )
+    db.add(new_user)
+    await db.commit()
+    await db.refresh(new_user)
+    return {"success": True, "message": f"User {new_user.email} created successfully", "id": new_user.id}
+
+
+@api_admin_router.delete("/user/{user_id}")
+async def delete_user(
+    user_id: int,
+    admin_email: str = Depends(require_api_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Permanently delete a user from the Admin dashboard."""
+    from sqlalchemy.future import select as sa_select
+
+    result = await db.execute(sa_select(User).filter(User.id == user_id))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    await db.delete(user)
+    await db.commit()
+    return {"success": True, "message": f"User {user.email} deleted"}
+
+
+@api_admin_router.put("/user/{user_id}/role")
+async def update_user_role(
+    user_id: int,
+    body: UpdateRoleRequest,
+    admin_email: str = Depends(require_api_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Update a user's role from the Admin dashboard."""
+    from sqlalchemy.future import select as sa_select
+
+    result = await db.execute(sa_select(User).filter(User.id == user_id))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.role = body.role.upper()
+    db.add(user)
+    await db.commit()
+    return {"success": True, "message": f"User {user.email} role updated to {user.role}"}

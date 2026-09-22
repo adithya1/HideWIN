@@ -18,6 +18,19 @@ class AdminSettings(BaseModel):
     otp_block_duration_3_mins: int = 120
     otp_expiry_minutes: int = 3
     
+
+    # SMTP
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_pass: str = ""
+    
+    # OAuth
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    outlook_client_id: str = ""
+    outlook_client_secret: str = ""
+    
     # Branding
     logo_light_url: str = ''
     logo_dark_url: str = ''

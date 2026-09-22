@@ -14,6 +14,8 @@ class Meeting(Base):
     timezone = Column(String, default="UTC")
     recurrence = Column(String, default="none")
     status = Column(String, default="SCHEDULED") # SCHEDULED, ACTIVE, COMPLETED
+    google_event_id = Column(String, nullable=True)
+    outlook_event_id = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     host = relationship("User")
