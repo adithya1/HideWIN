@@ -1,4 +1,4 @@
-export const API_BASE = "http://127.0.0.1:8000";
+export const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 const handleResponse = async (res) => {
     if (res.status === 401 || res.status === 403) {

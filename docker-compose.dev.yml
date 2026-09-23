@@ -7,35 +7,22 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./services/api:/app
+      - ./:/app_root
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/hidewin
-      - REDIS_URL=redis://redis:6379/0
-      - ENVIRONMENT=development
+      - APP_ENV=development
+      - DEBUG=true
+      - DATABASE_URL=sqlite+aiosqlite:////app_root/hidewin.db
     ports:
       - "8000:8000"
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-    depends_on:
-      - postgres
-      - redis
 
-  postgres:
-    image: postgres:15-alpine
+  web:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./services/web:/app
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=hidewin
+      - VITE_API_URL=http://127.0.0.1:8000
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
-volumes:
-  postgres_data:
-  redis_data:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
