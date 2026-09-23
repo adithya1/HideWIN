@@ -13,6 +13,7 @@ class User(Base):
     role = Column(String, default="USER")
     is_active = Column(Boolean, default=True)
     is_suspended = Column(Boolean, default=False)
+    credit_balance = Column(Integer, default=0)
     full_name = Column(String, nullable=True)
     is_premium = Column(Boolean, default=False)
     is_verified = Column(Boolean, default=False)

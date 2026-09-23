@@ -14,6 +14,7 @@ export default function Sidebar() {
 
     const navigate = useNavigate();
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const [isAccountExpanded, setIsAccountExpanded] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem('hidewin_token');
@@ -166,20 +167,33 @@ export default function Sidebar() {
                         MORE
                     </div>
 
-                    <Link to="/account/profile" style={{
-                        display: 'flex', alignItems: 'center', padding: isSidebarOpen ? '10px 16px' : '10px', gap: '16px', borderRadius: '8px',
-                        textDecoration: 'none', color: isActive('/account') ? '#1a73e8' : '#475569',
-                        backgroundColor: isActive('/account') ? '#eff6ff' : 'transparent',
-                        fontWeight: isActive('/account') ? '600' : '500', fontSize: '14px', position: 'relative',
-                        justifyContent: isSidebarOpen ? 'flex-start' : 'center',
-                        whiteSpace: 'nowrap', overflow: 'hidden'
-                    }}>
-                        {isActive('/account') && <div style={{ position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', height: '60%', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
-                        <User size={18} style={{ minWidth: '18px', color: isActive('/account') ? '#1a73e8' : '#64748b' }} strokeWidth={isActive('/account') ? 2.5 : 2} />
-                        <span style={{ opacity: isSidebarOpen ? 1 : 0, width: isSidebarOpen ? 'auto' : 0, overflow: 'hidden', textOverflow: 'ellipsis', transition: 'opacity 0.2s' }}>
-                            Account
-                        </span>
-                    </Link>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <button onClick={() => setIsAccountExpanded(!isAccountExpanded)} style={{
+                            display: 'flex', alignItems: 'center', padding: isSidebarOpen ? '10px 16px' : '10px', gap: '16px', borderRadius: '8px',
+                            border: 'none', cursor: 'pointer',
+                            color: isActive('/account') ? '#1a73e8' : '#475569',
+                            backgroundColor: isActive('/account') ? '#eff6ff' : 'transparent',
+                            fontWeight: isActive('/account') ? '600' : '500', fontSize: '14px', position: 'relative',
+                            justifyContent: isSidebarOpen ? 'flex-start' : 'center',
+                            whiteSpace: 'nowrap', overflow: 'hidden'
+                        }}>
+                            {isActive('/account') && <div style={{ position: 'absolute', left: '0', top: '50%', transform: 'translateY(-50%)', height: '60%', width: '3px', backgroundColor: '#1a73e8', borderRadius: '0 4px 4px 0' }} />}
+                            <User size={18} style={{ minWidth: '18px', color: isActive('/account') ? '#1a73e8' : '#64748b' }} strokeWidth={isActive('/account') ? 2.5 : 2} />
+                            <span style={{ flex: 1, opacity: isSidebarOpen ? 1 : 0, width: isSidebarOpen ? 'auto' : 0, overflow: 'hidden', textOverflow: 'ellipsis', transition: 'opacity 0.2s', textAlign: 'left' }}>
+                                Account
+                            </span>
+                            {isSidebarOpen && (isAccountExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                        </button>
+                        
+                        {isAccountExpanded && isSidebarOpen && (
+                            <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: '44px', marginTop: '4px', gap: '4px' }}>
+                                <Link to="/account/profile" style={{ textDecoration: 'none', color: location.pathname.includes('profile') ? '#1a73e8' : '#64748b', fontSize: '13px', padding: '6px 0' }}>Profile</Link>
+                                <Link to="/account/credits" style={{ textDecoration: 'none', color: location.pathname.includes('credits') ? '#1a73e8' : '#64748b', fontSize: '13px', padding: '6px 0' }}>Credits</Link>
+                                <Link to="/account/transactions" style={{ textDecoration: 'none', color: location.pathname.includes('transactions') ? '#1a73e8' : '#64748b', fontSize: '13px', padding: '6px 0' }}>Transactions</Link>
+                                <Link to="/account/credit-history" style={{ textDecoration: 'none', color: location.pathname.includes('credit-history') ? '#1a73e8' : '#64748b', fontSize: '13px', padding: '6px 0' }}>Credit History</Link>
+                            </div>
+                        )}
+                    </div>
 
                     {bottomItems.map(item => {
                         const active = isActive(item.path);

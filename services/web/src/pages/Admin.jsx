@@ -1,5 +1,7 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
+import AdminBilling from './AdminBilling';
 import EmailTemplates from './EmailTemplates';
 import RichTextEditor from '../components/RichTextEditor';
 import { Globe, Mail, ShieldCheck, LayoutDashboard, Users, CreditCard, Settings, LogOut, Sun, Moon, Activity, Key, Smartphone, HardDrive, DownloadCloud, Server, Cpu, Database, Network, Trash2, Box, X, Zap, Edit2, Eye, EyeOff, Upload, ChevronDown, Menu, ChevronLeft, ChevronRight } from "lucide-react";
@@ -915,37 +917,9 @@ export default function Admin() {
 
         {/* BILLING TAB */}
         {activeTab === 'billing' && (
-          <div className="tab-content fade-in">
-            <div className="card" style={{ background: 'linear-gradient(135deg, var(--primary), #1e3a8a)', color: 'white', border: 'none' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 500, opacity: 0.9, marginBottom: '8px' }}>Enterprise Plan</h3>
-                  <div style={{ fontSize: '36px', fontWeight: 700 }}>$14,200 <span style={{ fontSize: '16px', fontWeight: 400, opacity: 0.8 }}>/ ARR</span></div>
-                </div>
-                <button style={{ background: 'white', color: 'var(--primary)', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Manage Subscription</button>
-              </div>
+            <div className="tab-content fade-in">
+              <AdminBilling />
             </div>
-            
-            <div className="card">
-              <h3 style={{ marginBottom: '24px', fontSize: '18px', fontWeight: 600 }}>Recent Invoices</h3>
-              <table className="data-table" style={{ margin: '-24px', width: 'calc(100% + 48px)' }}>
-                <tbody>
-                  <tr>
-                    <td style={{ fontWeight: 500 }}>INV-2026-001</td>
-                    <td style={{ color: 'var(--text-muted)' }}>Aug 01, 2026</td>
-                    <td>$1,183.33</td>
-                    <td><span className="badge badge-active">Paid</span></td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 500 }}>INV-2026-002</td>
-                    <td style={{ color: 'var(--text-muted)' }}>Jul 01, 2026</td>
-                    <td>$1,183.33</td>
-                    <td><span className="badge badge-active">Paid</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         )}
 
         {/* NESTED SETTINGS TAB */}

@@ -1,12 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../api";
 import { useParams, useNavigate } from "react-router-dom";
 import { Check, Info, Tag, ChevronRight, ShoppingCart, Lock, ArrowUpRight, ChevronsLeft, ChevronLeft, ChevronsRight } from "lucide-react";
 
 export default function Account() {
     const { tab } = useParams();
     const navigate = useNavigate();
+
+
     
     const activeTab = tab || "profile";
+
+    const [balance, setBalance] = useState(0);
+    const [transactions, setTransactions] = useState([]);
+    const [creditHistory, setCreditHistory] = useState([]);
+                const [paymentMethods, setPaymentMethods] = useState([]);
+    
+    const [packages, setPackages] = useState([]);
+    const [selectedPackage, setSelectedPackage] = useState(null);
+    const [showCheckout, setShowCheckout] = useState(false);
+    const [quantity, setQuantity] = useState(1);
+    const [countryCode, setCountryCode] = useState("US");
+    const [currencySymbol, setCurrencySymbol] = useState("$");
+    
+    // Fetch geolocation once on mount
+    useEffect(() => {
+        fetch('https://ipapi.co/json/')
+            .then(res => res.json())
+            .then(data => {
+                if (data.country_code) setCountryCode(data.country_code);
+            })
+            .catch(e => console.error("Geolocation failed:", e));
+    }, []);
+
+    useEffect(() => {
+        if (activeTab === 'credits') {
+            api.get(`/user/billing/packages?country=${countryCode}`).then(res => {
+                const pkgs = res.data.items || [];
+                setPackages(pkgs);
+                if(pkgs.length > 0) {
+                    setCurrencySymbol(pkgs[0].currency_symbol || '$');
+                    if (!selectedPackage) setSelectedPackage(pkgs[0]);
+                }
+            }).catch(e => console.error(e));
+            
+            api.get(`/user/billing/methods?country=${countryCode}`).then(res => setPaymentMethods(res.data.items || [])).catch(e => console.error(e));
+            api.get('/user/billing/balance').then(res => setBalance(res.data.credit_balance || 0)).catch(e => console.error(e));
+        } else if (activeTab === 'transactions') {
+            api.get('/user/billing/transactions').then(res => setTransactions(res.data.items || [])).catch(e => console.error(e));
+        } else if (activeTab === 'credit-history') {
+            api.get('/user/billing/credit-history').then(res => setCreditHistory(res.data.items || [])).catch(e => console.error(e));
+        }
+    }, [activeTab, countryCode]);
+
     const tabs = [
         { id: "profile", label: "Profile" },
         { id: "calendar", label: "Calendar Sync" },
@@ -57,7 +103,20 @@ export default function Account() {
         </div>
     );
 
+    
+    const handleCancel = async () => {
+        if (!cancelReason) return alert("Please select a reason");
+        try {
+            await api.post('/user/billing/cancel', { reason: cancelReason, details: cancelDetails });
+            alert("Subscription cancelled successfully.");
+            setShowCancelModal(false);
+        } catch(e) {
+            alert("Failed to cancel.");
+        }
+    };
+    
     const renderCredits = () => (
+
         <div>
             {/* Warning Banner */}
             <div style={{ backgroundColor: "#fffde7", border: "1px solid #fbbc04", borderRadius: "8px", padding: "16px", display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "24px" }}>
@@ -73,7 +132,7 @@ export default function Account() {
                 <div style={{ flex: 1, border: "1px solid #e8eaed", borderRadius: "8px", backgroundColor: "#fff", padding: "24px" }}>
                     <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#202124", margin: "0 0 24px 0" }}>Your Balance</h3>
                     <div style={{ textAlign: "center", marginBottom: "32px", padding: "24px", backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
-                        <div style={{ fontSize: "48px", fontWeight: "bold", color: "#1a73e8", lineHeight: 1 }}>0</div>
+                        <div style={{ fontSize: "48px", fontWeight: "bold", color: "#1a73e8", lineHeight: 1 }}>{balance}</div>
                         <div style={{ fontSize: "12px", color: "#5f6368", marginTop: "8px" }}>credits/minutes available</div>
                     </div>
 
@@ -96,58 +155,101 @@ export default function Account() {
                 </div>
 
                 {/* Right Card: Purchase */}
-                <div style={{ flex: 1, border: "1px solid #e8eaed", borderRadius: "8px", backgroundColor: "#fff", padding: "24px" }}>
-                    <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#202124", margin: "0 0 24px 0" }}>Purchase More Credits</h3>
+                <div style={{ flex: 1, border: "1px solid #e8eaed", borderRadius: "8px", backgroundColor: "#fff", padding: "24px", position: "relative" }}>
                     
-                    <label style={{ display: "block", fontSize: "13px", fontWeight: "500", color: "#202124", marginBottom: "12px" }}>Select Hours</label>
-                    <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
-                        <button style={{ border: "1px solid #dadce0", background: "#fff", borderRadius: "4px", padding: "8px 16px", color: "#5f6368", cursor: "pointer" }}>-</button>
-                        <input type="text" readOnly value="1" style={{ flex: 1, textAlign: "center", border: "1px solid #dadce0", borderRadius: "4px", outline: "none", fontSize: "14px", fontWeight: "500" }} />
-                        <button style={{ border: "1px solid #dadce0", background: "#fff", borderRadius: "4px", padding: "8px 16px", color: "#5f6368", cursor: "pointer" }}>+</button>
-                    </div>
+                    {!showCheckout ? (
+                        <>
+                            <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#202124", margin: "0 0 24px 0" }}>Purchase More Credits</h3>
+                            
+                            <label style={{ display: "block", fontSize: "13px", fontWeight: "500", color: "#202124", marginBottom: "12px" }}>Select Hours</label>
+                            <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ border: "1px solid #dadce0", background: "#fff", borderRadius: "4px", padding: "8px 16px", color: "#5f6368", cursor: "pointer" }}>-</button>
+                                <input type="text" readOnly value={quantity} style={{ flex: 1, textAlign: "center", border: "1px solid #dadce0", borderRadius: "4px", outline: "none", fontSize: "14px", fontWeight: "500" }} />
+                                <button onClick={() => setQuantity(quantity + 1)} style={{ border: "1px solid #dadce0", background: "#fff", borderRadius: "4px", padding: "8px 16px", color: "#5f6368", cursor: "pointer" }}>+</button>
+                            </div>
 
-                    <div style={{ display: "flex", gap: "8px", marginBottom: "32px" }}>
-                        <button style={{ flex: 1, backgroundColor: "#1a73e8", color: "#fff", border: "none", borderRadius: "4px", padding: "8px", fontSize: "13px", fontWeight: "500", cursor: "pointer" }}>1h</button>
-                        <button style={{ flex: 1, backgroundColor: "#fff", color: "#3c4043", border: "1px solid #dadce0", borderRadius: "4px", padding: "8px", fontSize: "13px", fontWeight: "500", cursor: "pointer" }}>5h</button>
-                        <button style={{ flex: 1, backgroundColor: "#fff", color: "#3c4043", border: "1px solid #dadce0", borderRadius: "4px", padding: "8px", fontSize: "13px", fontWeight: "500", cursor: "pointer" }}>10h</button>
-                        <button style={{ flex: 1, backgroundColor: "#fff", color: "#3c4043", border: "1px solid #dadce0", borderRadius: "4px", padding: "8px", fontSize: "13px", fontWeight: "500", cursor: "pointer" }}>25h</button>
-                    </div>
+                            <div style={{ display: "flex", gap: "8px", marginBottom: "32px", overflowX: "auto", paddingBottom: "8px" }}>
+                                {packages.map(p => (
+                                    <button key={p.id} onClick={() => setSelectedPackage(p)} style={{ flex: "0 0 auto", minWidth: "80px", backgroundColor: selectedPackage?.id === p.id ? "#1a73e8" : "#fff", color: selectedPackage?.id === p.id ? "#fff" : "#3c4043", border: selectedPackage?.id === p.id ? "none" : "1px solid #dadce0", borderRadius: "4px", padding: "12px", fontSize: "14px", fontWeight: "600", cursor: "pointer" }}>
+                                        {p.name}
+                                    </button>
+                                ))}
+                            </div>
 
-                    <div style={{ backgroundColor: "#f8f9fa", borderRadius: "8px", padding: "20px", marginBottom: "24px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", fontWeight: "600", color: "#5f6368", marginBottom: "16px" }}>
-                            <ShoppingCart size={14} /> Order Summary
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#5f6368", marginBottom: "12px" }}>
-                            <span>Hours</span>
-                            <span style={{ fontWeight: "500", color: "#202124" }}>1 hour (60 credits/minutes)</span>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#5f6368", marginBottom: "16px", paddingBottom: "16px", borderBottom: "1px solid #e8eaed" }}>
-                            <span>Per hour</span>
-                            <span style={{ fontWeight: "500", color: "#202124" }}>$9.99</span>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: "600" }}>
-                            <span style={{ color: "#202124" }}>Total</span>
-                            <span style={{ color: "#137333" }}>$9.99</span>
-                        </div>
-                    </div>
+                            {selectedPackage && (
+                            <div style={{ backgroundColor: "#f8f9fa", borderRadius: "8px", padding: "20px", marginBottom: "24px" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", fontWeight: "600", color: "#5f6368", marginBottom: "16px" }}>
+                                    <ShoppingCart size={14} /> Order Summary
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#5f6368", marginBottom: "12px" }}>
+                                    <span>Package</span>
+                                    <span style={{ fontWeight: "500", color: "#202124" }}>{quantity}x {selectedPackage.name} ({quantity * selectedPackage.credits} credits/minutes)</span>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#5f6368", marginBottom: "16px", paddingBottom: "16px", borderBottom: "1px solid #e8eaed" }}>
+                                    <span>Price per unit</span>
+                                    <span style={{ fontWeight: "500", color: "#202124", textDecoration: selectedPackage.discount_percentage > 0 ? "line-through" : "none" }}>{currencySymbol}{selectedPackage.base_price.toFixed(2)}</span>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "16px", fontWeight: "600" }}>
+                                    <span style={{ color: "#202124" }}>Total</span>
+                                    <span style={{ color: "#137333" }}>{currencySymbol}{(quantity * selectedPackage.base_price * (1 - selectedPackage.discount_percentage/100)).toFixed(2)}</span>
+                                </div>
+                            </div>
+                            )}
 
-                    <button style={{ width: "100%", backgroundColor: "#1a73e8", color: "white", border: "none", borderRadius: "4px", padding: "12px", fontSize: "14px", fontWeight: "500", cursor: "pointer", marginBottom: "12px" }}>
-                        Purchase 1 Hour
-                    </button>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "11px", color: "#80868b" }}>
-                        <Lock size={12} /> Secure payment via Stripe
-                    </div>
+                            <button onClick={() => { if(selectedPackage) setShowCheckout(true); }} style={{ width: "100%", backgroundColor: "#3b82f6", color: "white", border: "none", borderRadius: "4px", padding: "12px", fontSize: "14px", fontWeight: "500", cursor: "pointer", marginBottom: "16px" }}>
+                                Purchase {quantity}x {selectedPackage ? selectedPackage.name : "Credits"}
+                            </button>
+
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "11px", color: "#80868b" }}>
+                                <Lock size={12} /> Secure payment via Stripe
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px", cursor: "pointer", color: "#5f6368", fontSize: "14px", fontWeight: "500" }} onClick={() => setShowCheckout(false)}>
+                                <ChevronLeft size={18} /> Back to packages
+                            </div>
+                            <h3 style={{ fontSize: "14px", fontWeight: "600", color: "#202124", margin: "0 0 24px 0" }}>Select Payment Gateway</h3>
+
+                            {selectedPackage && (
+                            <div style={{ backgroundColor: "#f8f9fa", borderRadius: "8px", padding: "16px", marginBottom: "24px", border: "1px solid #e8eaed" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: "600" }}>
+                                    <span style={{ color: "#202124" }}>Total Due</span>
+                                    <span style={{ color: "#137333" }}>{currencySymbol}{(quantity * selectedPackage.base_price * (1 - selectedPackage.discount_percentage/100)).toFixed(2)}</span>
+                                </div>
+                            </div>
+                            )}
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "12px" }}>
+                                {paymentMethods.length > 0 ? paymentMethods.map(pm => (
+                                    <button key={pm.id} onClick={async () => {
+                                        try {
+                                            const res = await api.post('/user/billing/checkout', { provider: pm.provider, package_id: selectedPackage.id, quantity: quantity, country: countryCode });
+                                            window.location.href = res.data.url;
+                                        } catch(e) {
+                                            alert("Checkout failed");
+                                        }
+                                    }} style={{ width: "100%", backgroundColor: pm.provider === 'Stripe' ? "#1a73e8" : pm.provider === 'Razorpay' ? "#3b82f6" : pm.provider === 'PayPal' ? "#003087" : "#1a73e8", color: "white", border: "none", borderRadius: "4px", padding: "12px", fontSize: "14px", fontWeight: "500", cursor: "pointer" }}>
+                                        Subscribe via {pm.method_name}
+                                    </button>
+                                )) : (
+                                    <div style={{ padding: "12px", textAlign: "center", fontSize: "14px", color: "#5f6368", border: "1px solid #ddd", borderRadius: "4px" }}>No payment methods available</div>
+                                )}
+                            </div>
+                            
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "11px", color: "#80868b", marginTop: "16px" }}>
+                                <Lock size={12} /> Secure encrypted checkout
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
     );
 
+
     const renderTransactions = () => {
-        const mockTxs = [
-            { id: 1, date: "Sep 10, 2026, 11:24:54 AM", type: "Purchase", amount: "$9.99", status: "Completed" },
-            { id: 2, date: "Aug 19, 2026, 3:44:33 PM", type: "Purchase", amount: "$9.99", status: "Completed" },
-            { id: 3, date: "Aug 19, 2026, 3:41:40 PM", type: "Purchase", amount: "$9.99", status: "Completed" }
-        ];
+        
         return (
             <div style={{ border: "1px solid #e8eaed", borderRadius: "8px", backgroundColor: "#fff" }}>
                 <div style={{ padding: "20px 24px", borderBottom: "1px solid #e8eaed" }}>
@@ -160,12 +262,12 @@ export default function Account() {
                     <div style={{ flex: 1 }}>AMOUNT</div>
                     <div style={{ flex: 1 }}>STATUS</div>
                 </div>
-                {mockTxs.map((tx, i) => (
+                {transactions.map((tx, i) => (
                     <div key={tx.id} style={{ padding: "16px 24px", borderBottom: "1px solid #e8eaed", display: "flex", alignItems: "center", fontSize: "13px" }}>
                         <div style={{ width: "60px", color: "#1a73e8" }}>{i + 1}</div>
-                        <div style={{ flex: 1.5, color: "#3c4043" }}>{tx.date}</div>
+                        <div style={{ flex: 1.5, color: "#3c4043" }}>{new Date(tx.created_at).toLocaleString()}</div>
                         <div style={{ flex: 1, color: "#3c4043" }}>{tx.type}</div>
-                        <div style={{ flex: 1, color: "#3c4043" }}>{tx.amount}</div>
+                        <div style={{ flex: 1, color: "#3c4043" }}> {tx.currency}</div>
                         <div style={{ flex: 1 }}>
                             <span style={{ backgroundColor: "#e6f4ea", color: "#137333", border: "1px solid #ceead6", borderRadius: "12px", padding: "2px 8px", fontSize: "11px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}>
                                 <Check size={12} strokeWidth={3} /> {tx.status}
@@ -186,11 +288,7 @@ export default function Account() {
     };
 
     const renderCreditHistory = () => {
-        const mockHis = [
-            { id: 1, date: "Sep 10, 2026, 11:28 AM", credits: "+60", tid: "6aa2d9d6e37442917131d75a", notes: "Purchased 1 hour(s)" },
-            { id: 2, date: "Aug 19, 2026, 3:45 PM", credits: "+60", tid: "6a8615b139c6115ccc043c2f", notes: "Purchased 1 hour(s)" },
-            { id: 3, date: "Aug 19, 2026, 3:43 PM", credits: "+60", tid: "6a86150439e6115cce0430dc", notes: "Purchased 1 hour(s)" }
-        ];
+        
         return (
             <div style={{ border: "1px solid #e8eaed", borderRadius: "8px", backgroundColor: "#fff" }}>
                 <div style={{ padding: "20px 24px", borderBottom: "1px solid #e8eaed" }}>
@@ -203,17 +301,17 @@ export default function Account() {
                     <div style={{ flex: 1.5 }}>TRANSACTION ID</div>
                     <div style={{ flex: 1.5 }}>NOTES</div>
                 </div>
-                {mockHis.map((h, i) => (
+                {creditHistory.map((h, i) => (
                     <div key={h.id} style={{ padding: "16px 24px", borderBottom: "1px solid #e8eaed", display: "flex", alignItems: "center", fontSize: "13px" }}>
                         <div style={{ width: "60px", color: "#1a73e8" }}>{i + 1}</div>
-                        <div style={{ flex: 1.5, color: "#3c4043" }}>{h.date}</div>
+                        <div style={{ flex: 1.5, color: "#3c4043" }}>{new Date(h.created_at).toLocaleString()}</div>
                         <div style={{ flex: 1 }}>
                             <span style={{ backgroundColor: "#e6f4ea", color: "#137333", border: "1px solid #ceead6", borderRadius: "12px", padding: "2px 8px", fontSize: "12px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                                <ArrowUpRight size={14} strokeWidth={2.5} /> {h.credits}
+                                <ArrowUpRight size={14} strokeWidth={2.5} /> {h.credit_change > 0 ? `+${h.credit_change}` : h.credit_change}
                             </span>
                         </div>
-                        <div style={{ flex: 1.5, color: "#5f6368" }}>{h.tid}</div>
-                        <div style={{ flex: 1.5, color: "#3c4043" }}>{h.notes}</div>
+                        <div style={{ flex: 1.5, color: "#5f6368" }}>{h.transaction_id || "N/A"}</div>
+                        <div style={{ flex: 1.5, color: "#3c4043" }}>{h.notes || h.source}</div>
                     </div>
                 ))}
                 <div style={{ padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#fafafa", borderRadius: "0 0 8px 8px" }}>
@@ -269,6 +367,9 @@ export default function Account() {
                 {activeTab === "transactions" && renderTransactions()}
                 {activeTab === "credit-history" && renderCreditHistory()}
             </div>
+
+            
         </div>
     );
+
 }

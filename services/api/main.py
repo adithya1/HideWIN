@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 from services.api.core.config import settings
-from services.api.routers import calendar_webhooks, admin, ws, ai_proxy, meeting, user_meetings, email_templates
+from services.api.routers import calendar_webhooks, admin, ws, ai_proxy, meeting, user_meetings, email_templates, admin_billing
 from services.api.api.authentication.router import router as auth
 from services.api.api.transcription.admin import router as stt_admin
 from services.api.api.transcription.websocket import router as stt_ws
@@ -86,3 +86,8 @@ async def start_scheduler():
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "environment": settings.APP_ENV}
+app.include_router(admin_billing.router)
+from services.api.routers import user_billing
+app.include_router(user_billing.router)
+from services.api.routers import admin_pricing
+app.include_router(admin_pricing.router)

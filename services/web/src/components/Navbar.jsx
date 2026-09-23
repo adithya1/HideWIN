@@ -15,6 +15,22 @@ function getInitials(email) {
 
 export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelDetails, setCancelDetails] = useState("");
+
+  const handleCancel = async () => {
+      if (!cancelReason) return alert("Please select a reason");
+      try {
+          await api.post('/user/billing/cancel', { reason: cancelReason, details: cancelDetails });
+          alert("Subscription cancelled successfully.");
+          setShowCancelModal(false);
+      } catch(e) {
+          alert("Failed to cancel.");
+      }
+  };
+
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -81,6 +97,28 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      {showCancelModal && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ background: "white", padding: "24px", borderRadius: "8px", width: "400px" }}>
+                  <h3 style={{ marginTop: 0, fontSize: "18px", color: "#202124" }}>Cancel Subscription</h3>
+                  <p style={{ fontSize: "14px", color: "#5f6368", marginBottom: "16px" }}>We're sorry to see you go. Why are you cancelling?</p>
+                  <select value={cancelReason} onChange={e => setCancelReason(e.target.value)} style={{ width: "100%", padding: "8px", marginBottom: "12px", borderRadius: "4px", border: "1px solid #ddd" }}>
+                      <option value="">Select a reason</option>
+                      <option value="too_expensive">Too expensive</option>
+                      <option value="not_using_enough">Not using it enough</option>
+                      <option value="missing_features">Missing features</option>
+                      <option value="other">Other</option>
+                  </select>
+                  <textarea placeholder="Tell us more (optional)" value={cancelDetails} onChange={e => setCancelDetails(e.target.value)} style={{ width: "100%", padding: "8px", height: "80px", marginBottom: "16px", borderRadius: "4px", border: "1px solid #ddd" }}></textarea>
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+                      <button onClick={() => setShowCancelModal(false)} style={{ background: "transparent", border: "none", color: "#5f6368", cursor: "pointer", fontWeight: 500 }}>Keep Subscription</button>
+                      <button onClick={handleCancel} style={{ background: "#d93025", color: "white", border: "none", padding: "8px 16px", borderRadius: "4px", cursor: "pointer", fontWeight: 500 }}>Confirm Cancel</button>
+                  </div>
+              </div>
+          </div>
+      )}
     </nav>
+
   );
 }
