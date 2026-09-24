@@ -440,9 +440,10 @@ export class AuthView extends LitElement {
             sessionStorage.setItem('oauth_state', state);
 
             const clientId = "c0b65c72458d40d5a3f477dcf3c07f4c";
-            const protocol = window.configManager && window.configManager.getProtocolName ? window.configManager.getProtocolName() : 'hidewin';
+            const cm = window.configManager || (window.require ? window.require('./utils/configManager.js') : null);
+            const protocol = cm && cm.getProtocolName ? cm.getProtocolName() : 'hidewin';
             const redirectUri = `${protocol}://callback`;
-            const webBaseUrl = window.configManager?.getWebBaseUrl?.();
+            const webBaseUrl = cm?.getWebBaseUrl?.() || 'http://127.0.0.1:5173';
             if (!webBaseUrl) throw new Error('Web application URL is not configured.');
             
             const returnUrl = `${webBaseUrl}/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&code_challenge=${challenge}&code_challenge_method=S256&state=${state}&scope=openid%20profile%20email`;
@@ -571,10 +572,18 @@ export class AuthView extends LitElement {
     }
 
     _handleSSO(provider) {
+        const cm = window.configManager || (window.require ? window.require('./utils/configManager.js') : null);
+        const apiBaseUrl = cm?.getApiBaseUrl?.() || 'http://127.0.0.1:8000';
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
-            ipcRenderer.invoke('open-external', `${configManager.getApiBaseUrl()}/auth/sso/${provider.toLowerCase()}/login`);
+            ipcRenderer.invoke('open-external', `${apiBaseUrl}/auth/sso/${provider.toLowerCase()}/login`);
         } else {
+            window.location.href = `${apiBaseUrl}/auth/sso/${provider.toLowerCase()}/login`;
+        }
+    } else {
+            window.location.href = ${apiBaseUrl}/auth/sso//login;
+        }
+    } else {
             window.location.href = `${configManager.getApiBaseUrl()}/auth/sso/${provider.toLowerCase()}/login`;
         }
     }
