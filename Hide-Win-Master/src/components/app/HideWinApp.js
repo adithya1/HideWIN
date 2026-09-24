@@ -1120,7 +1120,7 @@ export class HideWinApp extends LitElement {
             return html`
                 <div class="floating-brand-panel" @mousedown=${e => this._startMove(e)} @click=${e => { if (!e.target.closest('button')) this._handlePanelClick(); }} style="display:flex;align-items:center;justify-content:space-between;width:calc(100% - 12px);height:54px;margin:6px;padding:6px 9px 6px 12px;gap:10px;border:1px solid rgba(255,255,255,.16);border-radius:28px;background:linear-gradient(135deg,rgba(34,43,59,.98),rgba(17,23,34,.98));box-shadow:0 10px 28px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.12);color:#f8fafc;">
                     <div style="display:flex;align-items:center;min-width:0;flex:1;pointer-events:none;">
-                        ${logoUrl ? html`<img src=${logoUrl} alt="HideWin" style="display:block;max-width:120px;width:auto;height:36px;object-fit:contain;object-position:left center;" />` : ''}
+                        ${logoUrl ? html`<img src=${logoUrl} alt="HideWin" style="display:block;max-width:120px;width:auto;height:36px;object-fit:contain;object-position:left center;" />` : html`<span style="font-size:17px;font-weight:700;letter-spacing:-0.3px;margin-left:4px;user-select:none;">HideWin</span>`}
                     </div>
                     ${this.isAuthenticated ? html`
                         <button @click=${async e => { e.stopPropagation(); const { ipcRenderer } = window.require('electron'); const result = await ipcRenderer.invoke('panel-toggle-main'); this._panelMainOpen = result?.visible !== false; this.requestUpdate(); }} aria-label=${this._panelMainOpen ? 'Hide main window' : 'Show main window'} title=${this._panelMainOpen ? 'Hide main window' : 'Show main window'} style="width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -1130,7 +1130,7 @@ export class HideWinApp extends LitElement {
                             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.95-.08-.02a1.7 1.7 0 0 0-1.82.56l-.05.07h-3.4l-.03-.08a1.7 1.7 0 0 0-1.55-1.08 1.7 1.7 0 0 0-1.17.45l-.06.06-2.95-1.7.02-.08a1.7 1.7 0 0 0-.56-1.82l-.07-.05v-3.4l.08-.03a1.7 1.7 0 0 0 1.08-1.55 1.7 1.7 0 0 0-.45-1.17l-.06-.06 1.7-2.95.08.02a1.7 1.7 0 0 0 1.82-.56l.05-.07h3.4l.03.08a1.7 1.7 0 0 0 1.55 1.08 1.7 1.7 0 0 0 1.17-.45l.06-.06 2.95 1.7-.02.08a1.7 1.7 0 0 0 .56 1.82l.07.05v3.4l-.08.03a1.7 1.7 0 0 0-1.08 1.55z"/></svg>
                         </button>
                     ` : html`
-                        <button @click=${e => { e.stopPropagation(); this._openSignIn(); }} style="height:36px;padding:0 16px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:#3b82f6;color:white;font-size:12px;font-weight:650;white-space:nowrap;cursor:pointer;box-shadow:0 2px 8px rgba(59,130,246,.28);">Sign in to continue <span aria-hidden="true">→</span></button>
+                        <button @click=${e => { e.stopPropagation(); this._openSignIn(); }} style="height:36px;padding:0 16px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:#3b82f6;color:white;font-size:12px;font-weight:650;white-space:nowrap;cursor:pointer;box-shadow:0 2px 8px rgba(59,130,246,.28);">Sign in to continue <span aria-hidden="true">?</span></button>
                     `}
                 </div>
             `;

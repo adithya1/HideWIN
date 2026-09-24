@@ -580,12 +580,6 @@ export class AuthView extends LitElement {
         } else {
             window.location.href = `${apiBaseUrl}/auth/sso/${provider.toLowerCase()}/login`;
         }
-    } else {
-            window.location.href = ${apiBaseUrl}/auth/sso//login;
-        }
-    } else {
-            window.location.href = `${configManager.getApiBaseUrl()}/auth/sso/${provider.toLowerCase()}/login`;
-        }
     }
 
 
