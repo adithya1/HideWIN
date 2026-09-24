@@ -5,6 +5,7 @@ from sqlalchemy import select
 from services.api.db_models.ai_config import ApiConfig
 from services.api.models.user import User
 from services.api.core.admin_config import get_admin_settings
+from services.api.core.config import settings as app_settings
 
 class GoogleOAuthService:
     @staticmethod
@@ -14,9 +15,9 @@ class GoogleOAuthService:
         if not client_id:
             raise HTTPException(status_code=503, detail="Google OAuth not configured. Admin must set google_client_id via admin panel.")
         
-        redirect_uri = "http://localhost:8000/auth/google/callback"
+        redirect_uri = f"{app_settings.API_BASE_URL.rstrip('/')}/auth/google/callback"
         url = (
-            f"https://accounts.google.com/o/oauth2/v2/auth"
+            f"{app_settings.GOOGLE_OAUTH_AUTHORIZE_URL}"
             f"?client_id={client_id}"
             f"&redirect_uri={redirect_uri}"
             f"&response_type=code"
@@ -33,11 +34,11 @@ class GoogleOAuthService:
         if not client_id or not client_secret:
             raise HTTPException(status_code=503, detail="Google OAuth not fully configured.")
 
-        redirect_uri = "http://localhost:8000/auth/google/callback"
+        redirect_uri = f"{app_settings.API_BASE_URL.rstrip('/')}/auth/google/callback"
         
         try:
             async with httpx.AsyncClient() as client:
-                token_resp = await client.post("https://oauth2.googleapis.com/token", data={
+                token_resp = await client.post(app_settings.GOOGLE_OAUTH_TOKEN_URL, data={
                     "code": code, "client_id": client_id, "client_secret": client_secret,
                     "redirect_uri": redirect_uri, "grant_type": "authorization_code",
                 }, timeout=10)
@@ -47,7 +48,7 @@ class GoogleOAuthService:
                 if not access_token:
                     raise HTTPException(status_code=400, detail=f"Google token exchange failed: {token_data}")
 
-                user_resp = await client.get("https://www.googleapis.com/oauth2/v3/userinfo",
+                user_resp = await client.get(app_settings.GOOGLE_USERINFO_URL,
                                              headers={"Authorization": f"Bearer {access_token}"}, timeout=10)
                 profile = user_resp.json()
                 

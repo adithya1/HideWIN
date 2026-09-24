@@ -31,11 +31,8 @@ Hide-WIN/
 │       │       ├── AssistantView.js + .styles.js + AssistantViewRenderers.js
 │       │       ├── NotesView.js + .styles.js + NotesViewRenderer.js
 │       │       ├── CustomizeView.js + .styles.js + CustomizeViewRenderer.js
-│       │       ├── InviteView.js + .styles.js + InviteViewRenderer.js
 │       │       ├── HistoryView.js + HistoryView.styles.js
 │       │       ├── AICustomizeView.js + AICustomizeView.styles.js
-│       │       ├── ScheduleMeetingView.js + ScheduleMeetingView.styles.js
-│       │       ├── MeetingDashboardView.js + MeetingDashboardView.styles.js
 │       │       ├── AuthView.js, OnboardingView.js, BrowseView.js ...
 │       │       └── sharedPageStyles.js      # Shared Lit CSS design tokens
 │       └── utils/
@@ -78,11 +75,11 @@ Hide-WIN/
 │       ├── integrations/     │
 │       ├── reports/          │
 │       ├── admin/            │
-│       ├── team/             │  (WebRTC + Third-Eye WS)
+│       ├── team/             │  (Third-Eye WS)
 │       └── guest/            │  (Guest collaboration WS)
 
-├── _archive/                 # ALL legacy scripts (never deleted)
-│   └── development-history/action-scripts/   # ~70 patch_*, fix_*, etc.
+├── deleted/                  # Reversibly archived code and development artifacts
+├── _archive/                 # Older retained repository history
 
 ├── scripts/
 │   ├── setup/                # create_admin.py, create_docker.py
@@ -166,7 +163,7 @@ class MyView extends LitElement {
 ## Design Rules (Non-negotiable)
 
 1. **Files describe WHAT THEY ARE.** ix_auth.py ❌ → pi/authentication/router.py ✅
-2. **Never permanently delete production code.** Rename .migrated or move to _archive/.
+2. **Never permanently delete production code.** Rename .migrated or move to deleted/ or _archive/.
 3. **Git history is the source of truth** for any recovery.
 4. **services/api/src/ is fully retired.** All files renamed *.migrated.
 5. **Security:** Never log or return API keys to the frontend. Mask all credentials.

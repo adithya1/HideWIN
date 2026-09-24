@@ -81,6 +81,8 @@ function initHiddenWindows() {
 let preStealthMouseEventsIgnored = true;
 let mainWindowId = null;
 let sessionWindowId = null;
+let mainWindowRef = null;
+let controlPanelWindowRef = null;
 
 const enforceStealthTop = () => {
     if (stealthCursorWindow && !stealthCursorWindow.isDestroyed()) {
@@ -103,12 +105,12 @@ function createWindow(sendToRenderer, geminiSessionRef) {
         height: windowHeight,
         minWidth: MIN_WINDOW_SIZE.width,
         minHeight: MIN_WINDOW_SIZE.height,
-        resizable: true,
+        resizable: false,
         frame: false,
         title: 'HideWin',
-        skipTaskbar: false,
+        skipTaskbar: true,
         transparent: true,
-        hasShadow: true,
+        hasShadow: false,
         alwaysOnTop: false,
         webPreferences: {
             nodeIntegration: true,
@@ -123,9 +125,15 @@ function createWindow(sendToRenderer, geminiSessionRef) {
             devTools: false, // Prevent Ctrl+Shift+I / F12 from opening DevTools
         },
         backgroundColor: '#00000000',
+        show: false,
     });
+    mainWindowRef = mainWindow;
 
     mainWindow.setIgnoreMouseEvents(false);
+    mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+    mainWindow.webContents.on('will-navigate', (event, targetUrl) => {
+        if (!targetUrl.startsWith('file:')) event.preventDefault();
+    });
 
     const { session, desktopCapturer } = require('electron');
     session.defaultSession.setDisplayMediaRequestHandler(
@@ -202,6 +210,47 @@ function createWindow(sendToRenderer, geminiSessionRef) {
     return mainWindow;
 }
 
+function createControlPanelWindow(mainWindow) {
+    if (controlPanelWindowRef && !controlPanelWindowRef.isDestroyed()) return controlPanelWindowRef;
+    const panelSize = { width: 330, height: 66 };
+    const workArea = screen.getPrimaryDisplay().workArea;
+    const x = workArea.x + Math.round((workArea.width - panelSize.width) / 2);
+    const y = workArea.y + 80;
+    controlPanelWindowRef = new BrowserWindow({
+        ...panelSize,
+        x,
+        y,
+        frame: false,
+        transparent: true,
+        backgroundColor: '#00000000',
+        hasShadow: false,
+        resizable: false,
+        movable: false,
+        minimizable: false,
+        maximizable: false,
+        skipTaskbar: true,
+        alwaysOnTop: true,
+        focusable: true,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            backgroundThrottling: false,
+            devTools: false,
+        },
+    });
+    controlPanelWindowRef.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    controlPanelWindowRef.setAlwaysOnTop(true, 'screen-saver');
+    controlPanelWindowRef.loadFile(path.join(__dirname, '../index.html'), { query: { windowType: 'panel' } });
+    controlPanelWindowRef.once('ready-to-show', () => controlPanelWindowRef?.show());
+    controlPanelWindowRef.on('closed', () => { controlPanelWindowRef = null; });
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.on('show', () => controlPanelWindowRef?.webContents?.send('panel-main-visibility', true));
+        mainWindow.on('hide', () => controlPanelWindowRef?.webContents?.send('panel-main-visibility', false));
+    }
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindowRef = mainWindow;
+    return controlPanelWindowRef;
+}
+
 function createSessionWindow(sendToRenderer, geminiSessionRef, options = {}) {
     const config = storage.getConfig();
     let windowWidth = config.sessionWindowWidth || DEFAULT_SESSION_WINDOW_SIZE.width;
@@ -237,6 +286,10 @@ function createSessionWindow(sendToRenderer, geminiSessionRef, options = {}) {
     sessionWindowId = sessionWindow.webContents.id;
 
     sessionWindow.setIgnoreMouseEvents(false);
+    sessionWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+    sessionWindow.webContents.on('will-navigate', (event, targetUrl) => {
+        if (!targetUrl.startsWith('file:')) event.preventDefault();
+    });
     sessionWindow.setContentProtection(true);
     sessionWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
@@ -377,7 +430,6 @@ function updateGlobalShortcuts(keybinds, mainWindow, sendToRenderer, geminiSessi
                     mainWindow.setSkipTaskbar(true);
                 } else {
                     mainWindow.show();
-                    mainWindow.setSkipTaskbar(false);
                     mainWindow.focus();
                     try {
                         const { setupTray } = require('./tray');
@@ -955,6 +1007,65 @@ function setupWindowIpcHandlers(sendToRenderer, geminiSessionRef) {
     if (isWindowIpcRegistered) return;
     isWindowIpcRegistered = true;
 
+    const showMainBelowPanel = (panelWindow) => {
+        const win = mainWindowRef;
+        if (!win || win.isDestroyed()) return { success: false };
+        const panelBounds = panelWindow.getBounds();
+        const display = screen.getDisplayNearestPoint({ x: panelBounds.x, y: panelBounds.y });
+        const area = display.workArea;
+        const config = storage.getConfig();
+        const width = Math.max(MIN_WINDOW_SIZE.width, config.mainWindowWidth || DEFAULT_MAIN_WINDOW_SIZE.width);
+        const height = Math.max(MIN_WINDOW_SIZE.height, config.mainWindowHeight || DEFAULT_MAIN_WINDOW_SIZE.height);
+        const x = Math.max(area.x, Math.min(panelBounds.x + (panelBounds.width - width) / 2, area.x + area.width - width));
+        const y = Math.max(area.y, Math.min(panelBounds.y + panelBounds.height + 8, area.y + area.height - height));
+        win.setBounds({ x, y, width, height });
+        if (!win.isVisible()) win.show();
+        win.focus();
+        if (controlPanelWindowRef && !controlPanelWindowRef.isDestroyed()) {
+            controlPanelWindowRef.setAlwaysOnTop(true, 'screen-saver');
+        }
+        return { success: true, visible: true, bounds: win.getBounds() };
+    };
+
+    ipcMain.handle('panel-open-main', (event) => showMainBelowPanel(BrowserWindow.fromWebContents(event.sender)));
+    ipcMain.handle('panel-toggle-main', (event) => {
+        const panel = BrowserWindow.fromWebContents(event.sender);
+        if (!mainWindowRef || mainWindowRef.isDestroyed()) return { success: false };
+        if (mainWindowRef.isVisible()) {
+            mainWindowRef.hide();
+            return { success: true, visible: false };
+        }
+        return showMainBelowPanel(panel);
+    });
+    ipcMain.handle('panel-open-settings', (event) => {
+        const result = showMainBelowPanel(BrowserWindow.fromWebContents(event.sender));
+        if (result.success && mainWindowRef.webContents) mainWindowRef.webContents.send('panel-navigate-settings');
+        return result;
+    });
+    ipcMain.handle('panel-move-windows', (event, { x, y }) => {
+        const panel = BrowserWindow.fromWebContents(event.sender);
+        if (!panel || panel.isDestroyed()) return { success: false };
+        const px = Math.round(x);
+        const py = Math.round(y);
+        const panelBounds = panel.getBounds();
+        panel.setBounds({ x: px, y: py, width: panelBounds.width, height: panelBounds.height });
+        if (mainWindowRef && !mainWindowRef.isDestroyed() && mainWindowRef.isVisible()) {
+            const bounds = mainWindowRef.getBounds();
+            mainWindowRef.setBounds({
+                x: Math.round(px + (panelBounds.width - bounds.width) / 2),
+                y: py + panelBounds.height + 8,
+                width: bounds.width,
+                height: bounds.height
+            });
+        }
+        return { success: true };
+    });
+    ipcMain.on('panel-auth-state', (_event, authenticated) => {
+        if (controlPanelWindowRef && !controlPanelWindowRef.isDestroyed()) {
+            controlPanelWindowRef.webContents.send('panel-auth-state', Boolean(authenticated));
+        }
+    });
+
     ipcMain.handle('get-window-bounds', (event) => {
         const win = BrowserWindow.fromWebContents(event.sender);
         if (win && !win.isDestroyed()) {
@@ -985,13 +1096,30 @@ function setupWindowIpcHandlers(sendToRenderer, geminiSessionRef) {
                 width: newW,
                 height: newH
             });
+            if (win === mainWindowRef && controlPanelWindowRef && !controlPanelWindowRef.isDestroyed()) {
+                const bounds = win.getBounds();
+                const panel = controlPanelWindowRef.getBounds();
+                controlPanelWindowRef.setPosition(
+                    Math.round(bounds.x + (bounds.width - panel.width) / 2),
+                    bounds.y - panel.height - 8
+                );
+            }
         }
     });
 
     ipcMain.handle('move-window', (event, { x, y }) => {
         const win = BrowserWindow.fromWebContents(event.sender);
         if (win && !win.isDestroyed()) {
-            win.setPosition(Math.round(x), Math.round(y));
+            const nextX = Math.round(x);
+            const nextY = Math.round(y);
+            win.setPosition(nextX, nextY);
+            if (win === mainWindowRef && controlPanelWindowRef && !controlPanelWindowRef.isDestroyed()) {
+                const panelBounds = controlPanelWindowRef.getBounds();
+                controlPanelWindowRef.setPosition(
+                    Math.round(nextX + (win.getBounds().width - panelBounds.width) / 2),
+                    nextY - panelBounds.height - 8
+                );
+            }
         }
     });
 
@@ -1072,7 +1200,23 @@ function setupWindowIpcHandlers(sendToRenderer, geminiSessionRef) {
         return { success: false };
     });
 
-    ipcMain.handle('minimize-to-bottom-left', (event, { width, height }) => {
+    ipcMain.handle('restore-window-from-panel', (event, { width, height, minWidth = 1, minHeight = 1 }) => {
+        const win = BrowserWindow.fromWebContents(event.sender);
+        if (!win || win.isDestroyed()) return { success: false };
+
+        const { screen } = require('electron');
+        const panelBounds = win.getBounds();
+        const workArea = screen.getDisplayNearestPoint({ x: panelBounds.x, y: panelBounds.y }).workArea;
+        const centeredPanelX = panelBounds.x + (panelBounds.width - width) / 2;
+        const x = Math.max(workArea.x, Math.min(centeredPanelX, workArea.x + workArea.width - width));
+        const y = Math.max(workArea.y, Math.min(panelBounds.y, workArea.y + workArea.height - height));
+
+        win.setMinimumSize(minWidth, minHeight);
+        win.setBounds({ x, y, width, height });
+        return { success: true, bounds: win.getBounds() };
+    });
+
+    ipcMain.handle('minimize-to-center', (event, { width, height }) => {
         const win = BrowserWindow.fromWebContents(event.sender);
         if (win && !win.isDestroyed()) {
             const { screen } = require('electron');
@@ -1080,8 +1224,8 @@ function setupWindowIpcHandlers(sendToRenderer, geminiSessionRef) {
             const workArea = display.workArea;
             win.setMinimumSize(1, 1);
             win.setBounds({
-                x: workArea.x + 20,
-                y: workArea.y + workArea.height - height - 20,
+                x: workArea.x + Math.round((workArea.width - width) / 2),
+                y: workArea.y + 80,
                 width: width,
                 height: height
             });
@@ -1154,10 +1298,6 @@ function setupWindowIpcHandlers(sendToRenderer, geminiSessionRef) {
             // Return to interactive floating overlay
             win.setAlwaysOnTop(true, 'floating');
 
-            if (process.platform === 'win32') {
-                win.setSkipTaskbar(false);
-            }
-
             // Restore window capabilities
             win.setMaximizable(true);
             win.setFullScreenable(true);
@@ -1174,6 +1314,7 @@ module.exports = {
     triggerAutoStealthStart: () => { if(triggerAutoStealthStartFn) triggerAutoStealthStartFn(); },
     triggerAutoStealthStop: () => { if(triggerAutoStealthStopFn) triggerAutoStealthStopFn(); },
     createWindow,
+    createControlPanelWindow,
     createSessionWindow,
     getDefaultKeybinds,
     updateGlobalShortcuts,

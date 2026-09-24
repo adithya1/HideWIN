@@ -1,7 +1,7 @@
 # ZERO DOWNTIME DEPLOYMENT STRATEGY
 
 ## Overview
-Hide-WIN production enforces a strict Zero Downtime Deployment (ZDD) strategy. Deployments must not drop active WebRTC sessions, API requests, or cause database locks that stall the application.
+Hide-WIN production enforces a strict Zero Downtime Deployment (ZDD) strategy. Deployments must not drop active API or application WebSocket requests, or cause database locks that stall the application.
 
 ## 1. Kubernetes Rolling Updates
 The primary deployment strategy is a **Rolling Update**.
@@ -32,5 +32,5 @@ Breaking changes to the REST API must be introduced under a new version namespac
 ## 5. Deployment Verification
 Before a deployment is marked successful:
 1. `Readiness Gates` must report healthy for 100% of new pods.
-2. The CI/CD pipeline executes the automated `tests/load/webrtc_load_test.py` against the canary.
+2. Automated canary load testing is not currently configured. Add and validate a real load-test job before treating this as a deployment gate.
 3. OpenTelemetry logs must confirm that the Database Connection Pool saturation remains stable.

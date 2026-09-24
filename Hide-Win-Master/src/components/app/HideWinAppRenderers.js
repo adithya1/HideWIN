@@ -1,8 +1,8 @@
 import { html } from '../../assets/lit-core-2.7.4.min.js';
 
 export function renderTopToolbar() {
-        if (!this.isAuthenticated && this.windowType !== 'session') return '';
         if (this.windowType === 'session') return '';
+        if (!this.isAuthenticated) return '';
 
         const w = this._windowWidth || window.innerWidth || 1050;
         const isMobile = w <= 650;
@@ -21,9 +21,7 @@ export function renderTopToolbar() {
             { id: 'main',         label: 'Home',    icon: html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 8.71l-5.333-4.148a2.666 2.666 0 0 0-3.274 0L5.059 8.71a2.67 2.67 0 0 0-1.029 2.105v7.2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.2c0-.823-.38-1.6-1.03-2.105"/><path d="M16 15c-2.21 1.333-5.792 1.333-8 0"/></svg>` },
             { id: 'ai-customize', label: 'Profile', icon: html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>` },
             { id: 'notes',        label: 'Notes',   icon: html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>` },
-            { id: 'history',      label: 'History', icon: html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20.777a9 9 0 0 1-2.48-.969M14 3.223a9.003 9.003 0 0 1 0 17.554m-9.421-3.684a9 9 0 0 1-1.227-2.592M3.124 10.5c.16-.95.468-1.85.9-2.675l.169-.305m2.714-2.941A9 9 0 0 1 10 3.223"/><path d="M12 8v4l3 3"/></svg>` },
             { id: 'browse',       label: 'Browse',  icon: html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
-            { id: 'invite',       label: 'Invite',  icon: html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>` },
         ];
 
         const menuBtnStyle = `display:flex;align-items:center;gap:8px;padding:6px 14px;background:transparent;border:none;width:100%;text-align:left;cursor:pointer;color:var(--text-primary);font-size:12px;transition:background 0.15s;`;
@@ -37,7 +35,7 @@ export function renderTopToolbar() {
                     </button>
                     
                     <div style="font-weight: 700; font-size: 15px; color: var(--text-primary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px;">
-                        <img src="./assets/images/small_icon.png" style="height: 18px; filter: var(--logo-filter, none);" alt=""/>
+                        ${this._getBrandLogoUrl() ? html`<img src=${this._getBrandLogoUrl()} style="height: 18px; max-width: 28px; object-fit: contain;" alt=""/>` : ''}
                         HideWin
                     </div>
 
@@ -47,24 +45,6 @@ export function renderTopToolbar() {
                         </div>
                     </div>
 
-                    <!-- Window Controls (Merged from drag bar) -->
-                    <div style="display:flex;align-items:center;border-left:1px solid var(--border);padding-left:4px;margin-left:4px;">
-                        <button class="win-btn minimize" @click=${() => this._handleMinimize()} style="background:transparent;border:none;color:var(--text-primary);padding:8px;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
-                            <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
-                                <rect x="1" y="5.5" width="10" height="1.5" rx="0.75" fill="currentColor"/>
-                            </svg>
-                        </button>
-                        <button class="win-btn maximize" @click=${() => this._handleMaximize()} style="background:transparent;border:none;color:var(--text-primary);padding:8px;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
-                            <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
-                                <rect x="1.5" y="1.5" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                            </svg>
-                        </button>
-                        <button class="win-btn close" @click=${() => this.handleClose()} style="background:transparent;border:none;color:var(--text-primary);padding:8px;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='var(--danger)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--text-primary)'">
-                            <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
-                                <path d="M2 2L10 10M10 2L2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Mobile Slide-out Drawer -->
@@ -117,7 +97,7 @@ export function renderTopToolbar() {
         return html`
             <div class="top-toolbar ${this._isLiveMode() ? 'hidden' : ''}" @mousedown=${e => this._startMove(e)}>
                 <div class="titlebar-brand" style="-webkit-app-region: drag; margin-right: 8px;">
-                    <div class="brand-logo"></div>
+                    ${this._getBrandLogoUrl() ? html`<img src=${this._getBrandLogoUrl()} alt="HideWin" style="width:24px;height:24px;object-fit:contain;" />` : ''}
                 </div>
                 <nav class="horizontal-nav" style="-webkit-app-region: no-drag; flex: 1;">
                     ${items.map(item => html`
@@ -155,6 +135,11 @@ export function renderTopToolbar() {
                                     Settings
                                 </button>
 
+                                <button @click=${() => { this.openUserHistory(); this.showAvatarMenu = false; }} style="${menuBtnStyle}" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+                                    History
+                                </button>
+
                                 <button @click=${() => { this.navigate('help'); this.showAvatarMenu = false; }} style="${menuBtnStyle}" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9-9 9s-9-1.8-9-9s1.8-9 9-9m0 13v.01"/><path d="M12 13a2 2 0 0 0 .914-3.782a1.98 1.98 0 0 0-2.414.483"/></svg>
                                     Help & Support
@@ -175,7 +160,7 @@ export function renderTopToolbar() {
                         ` : ''}
                     </div>
 
-                                        <!-- Quick Settings -->
+                    <!-- Quick Settings -->
                     <div style="position: relative;">
                         <button class="stealth-tooltip" data-tooltip="Quick Settings" @click=${(e) => { e.stopPropagation(); this.isQuickSettingsOpen = !this.isQuickSettingsOpen; }} style="padding:3px;border:none;background:transparent;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;transition:color 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
@@ -223,9 +208,9 @@ export function renderTopToolbar() {
                             </div>
                         ` : ''}
                     </div>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
     }
 
 
@@ -270,7 +255,7 @@ export function renderLiveBar() {
 
 export function renderCurrentView() {
         if (!this.isAuthenticated) {
-            return html`<auth-view @auth-success=${async (e) => {
+            return html`<auth-view ?embedded=${this.windowType === 'main'} .brandingLogo=${this._getBrandLogoUrl()} @auth-success=${async (e) => {
                 try {
                     if (window.hideWin && window.hideWin.storage) {
                         let creds = {};
@@ -284,6 +269,8 @@ export function renderCurrentView() {
                     }
                 } catch(fatalErr) {} finally {
                     this.isAuthenticated = true;
+                    this.notifyPanelAuth(true);
+                    this._signInExpanded = false;
                     this.requestUpdate();
                 }
             }}></auth-view>`;
@@ -317,6 +304,8 @@ export function renderCurrentView() {
                                 console.error("Non-fatal storage error during login:", fatalErr);
                             } finally {
                                 this.isAuthenticated = true;
+                                this.notifyPanelAuth(true);
+                                this._signInExpanded = false;
                                 this.requestUpdate();
                                 if (this.isMainWindowMinimized) {
                                     this._handleMaximize();
@@ -382,32 +371,6 @@ export function renderCurrentView() {
 
             case 'help':
                 return html`<help-view .onExternalLinkClick=${url => this.handleExternalLinkClick(url)}></help-view>`;
-
-            case 'invite':
-                return html`
-                    <meeting-dashboard-view
-                        @new-meeting=${() => { this.navigate('schedule-meeting'); }}
-                        @edit-meeting=${(e) => { this._editingMeeting = e.detail; this.navigate('schedule-meeting'); this.requestUpdate(); }}
-                        @start-existing-meeting=${(e) => { this._meetingToStart = e.detail; this.navigate('meeting-room'); this.requestUpdate(); }}
-                    ></meeting-dashboard-view>
-                `;
-
-            case 'schedule-meeting':
-                return html`
-                    <schedule-meeting-view
-                        .editMeeting=${this._editingMeeting || null}
-                        @close-meeting=${() => { this._editingMeeting = null; this.navigate('invite'); }}
-                    ></schedule-meeting-view>
-                `;
-
-            case 'meeting-room':
-                return html`
-                    <invite-view
-                        .prefillChannelId=${this._meetingToStart ? this._meetingToStart.id : ''}
-                        .prefillPasscode=${this._meetingToStart ? (this._meetingToStart.passcode || '') : ''}
-                        @minimize-meeting=${() => this.navigate('invite')}
-                    ></invite-view>
-                `;
 
             case 'history':
                 return html`<history-view></history-view>`;
@@ -523,14 +486,3 @@ export function renderCurrentView() {
                 return html`<div>Unknown view: ${this.currentView}</div>`;
         }
     }
-
-
-
-
-
-
-
-
-
-
-

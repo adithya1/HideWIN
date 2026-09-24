@@ -14,7 +14,7 @@ async function validateSubscriptionWithAdmin() {
         
         const request = net.request({
             method: 'POST',
-            url: `${backendUrl}/api/auth/validate-hash`,
+            url: `${backendUrl}/auth/validate-hash`,
             headers: {
                 'Authorization': `Bearer ${credentials.jwtToken}`,
                 'X-Session-Hashkey': credentials.hashkey,

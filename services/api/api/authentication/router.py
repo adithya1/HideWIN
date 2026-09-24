@@ -2,6 +2,10 @@ import hmac
 import hashlib
 from datetime import datetime, timezone, timedelta
 from services.api.core.admin_config import get_admin_settings
+from services.api.core.config import settings
+from services.api.core.security import get_current_user
+from fastapi import Header
+from fastapi.security import OAuth2PasswordBearer
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +16,19 @@ from services.api.schemas.auth_schema import UserCreate, UserResponse, Token
 from services.api.models.user import User
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+bearer_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+@router.post("/validate-hash")
+async def validate_desktop_hash(
+    token: str = Depends(bearer_scheme),
+    hashkey: str = Header(..., alias="X-Session-Hashkey"),
+    _user: User = Depends(get_current_user),
+):
+    expected = hmac.new(settings.JWT_SECRET_KEY.encode(), token.encode(), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, hashkey):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid desktop session signature")
+    return {"valid": True}
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def signup(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
@@ -111,8 +128,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
     access_token = AuthenticationService.create_access_token(data={"sub": user.email})
     
     # Generate SHA256 HMAC for desktop hand-off
-    secret = b"hidewin-desktop-secure-secret-2026"
-    hash_sig = hmac.new(secret, access_token.encode(), hashlib.sha256).hexdigest()
+    hash_sig = hmac.new(settings.JWT_SECRET_KEY.encode(), access_token.encode(), hashlib.sha256).hexdigest()
     
     return {"access_token": access_token, "token_type": "bearer", "hash": hash_sig}
 from services.api.schemas.auth_schema import SendOtpRequest
@@ -156,18 +172,6 @@ async def reset_password(body: ResetPasswordRequest, db: AsyncSession = Depends(
         return await PasswordService.reset_password(body.token, body.new_password, db)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-from services.api.schemas.auth_schema import InviteRequest
-from services.api.api.authentication.invitation_service import InvitationService
-from services.api.core.security import get_current_user
-from services.api.models.user import User
-
-@router.post("/send-invites")
-async def send_invites(
-    body: InviteRequest, 
-    db: AsyncSession = Depends(get_db), 
-    current_user: User = Depends(get_current_user)
-):
-    return await InvitationService.send_invites(body.emails, current_user, db)
 from fastapi.responses import RedirectResponse
 from services.api.api.authentication.oauth.google import GoogleOAuthService
 
@@ -182,8 +186,7 @@ async def google_callback(code: str, db: AsyncSession = Depends(get_db)):
     access_token = AuthenticationService.create_access_token(data={"sub": user.email})
     
     # Generate SHA256 HMAC for desktop hand-off
-    secret = b"hidewin-desktop-secure-secret-2026"
-    hash_sig = hmac.new(secret, access_token.encode(), hashlib.sha256).hexdigest()
+    hash_sig = hmac.new(settings.JWT_SECRET_KEY.encode(), access_token.encode(), hashlib.sha256).hexdigest()
     
     return {"access_token": access_token, "token_type": "bearer", "hash": hash_sig}
 

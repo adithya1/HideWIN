@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 from services.api.core.config import settings
-from services.api.routers import calendar_webhooks, admin, ws, ai_proxy, meeting, user_meetings, email_templates, admin_billing
+from services.api.routers import admin, ws, ai_proxy, email_templates, admin_billing
 from services.api.api.authentication.router import router as auth
 from services.api.api.transcription.admin import router as stt_admin
 from services.api.api.transcription.websocket import router as stt_ws
@@ -11,7 +11,6 @@ from services.api.api.devices.router import router as devices_router
 from services.api.api.notifications.router import router as notifications_router
 from services.api.api.system.router import router as system_router
 from services.api.api.ai_config.router import router as llm_router
-from services.api.api.calendar.router import router as calendar_router
 from services.api.api.resume.router import router as resume_router
 from services.api.api.code_pilot.router import router as code_pilot_router
 from services.api.api.context.router import router as context_router
@@ -31,7 +30,7 @@ app = FastAPI(title="Hide-WIN API", version="1.0.0", debug=settings.DEBUG)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,7 +46,6 @@ app.include_router(devices_router)
 app.include_router(notifications_router)
 app.include_router(system_router)
 app.include_router(llm_router)
-app.include_router(calendar_router)
 app.include_router(resume_router)
 app.include_router(code_pilot_router)
 app.include_router(context_router)
@@ -64,24 +62,10 @@ app.include_router(orders_admin_router)
 app.include_router(orders_user_router)
 app.include_router(ws.router)
 app.include_router(ai_proxy.router)
-app.include_router(meeting.router)
-app.include_router(user_meetings.router)
-app.include_router(user_meetings.public_router)
-app.include_router(calendar_webhooks.router)
 app.include_router(email_templates.router)
 
 app.add_exception_handler(ApplicationError, application_error_handler)
 app.add_exception_handler(ValidationError, validation_error_handler)
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from services.api.services.reminder_service import ReminderService
-
-@app.on_event("startup")
-async def start_scheduler():
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(ReminderService.process_reminders, 'interval', minutes=5)
-    scheduler.start()
-    print("Background Meeting Reminder Scheduler started.")
 
 @app.get("/health")
 async def health_check():

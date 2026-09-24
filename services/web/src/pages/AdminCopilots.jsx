@@ -1,3 +1,4 @@
+import { API_BASE } from '../config.js';
 import React, { useEffect, useState } from "react";
 
 export default function AdminCopilots() {
@@ -7,7 +8,7 @@ export default function AdminCopilots() {
 
     const fetchTemplates = async () => {
         try {
-            const res = await fetch("http://127.0.0.1:8000/admin/copilots/templates");
+            const res = await fetch(API_BASE + "/admin/copilots/templates");
             if (res.ok) setTemplates(await res.json());
         } catch (err) {
             console.error(err);
@@ -23,7 +24,7 @@ export default function AdminCopilots() {
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("http://127.0.0.1:8000/admin/copilots/templates", {
+            const res = await fetch(API_BASE + "/admin/copilots/templates", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...newTemplate, form_schema: JSON.parse(newTemplate.form_schema || "[]") })

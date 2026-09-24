@@ -260,7 +260,9 @@ export class BrowseView extends LitElement {
                 // Navigate webview manually if it exists
                 setTimeout(() => {
                     const wv = this.shadowRoot.getElementById('wv-' + this.activeTabId);
-                    if (wv) wv.loadURL(val);
+                if (wv && typeof wv.loadURL === 'function') {
+                    wv.loadURL(val).catch(error => console.error('Browser navigation failed:', error));
+                }
                 }, 0);
             }
         }
@@ -289,10 +291,19 @@ export class BrowseView extends LitElement {
 
     navigateWebview(action) {
         const wv = this.shadowRoot.getElementById('wv-' + this.activeTabId);
-        if (wv) {
-            if (action === 'back' && wv.canGoBack()) wv.goBack();
-            if (action === 'forward' && wv.canGoForward()) wv.goForward();
-            if (action === 'reload') wv.reload();
+        if (!wv) return;
+
+        if (action === 'back' && typeof wv.canGoBack === 'function' && wv.canGoBack() && typeof wv.goBack === 'function') {
+            wv.goBack();
+        } else if (action === 'forward' && typeof wv.canGoForward === 'function' && wv.canGoForward() && typeof wv.goForward === 'function') {
+            wv.goForward();
+        } else if (action === 'reload') {
+            if (typeof wv.reload === 'function') {
+                wv.reload();
+            } else {
+                const activeTab = this.tabs.find(tab => tab.id === this.activeTabId);
+                if (activeTab?.url) wv.setAttribute('src', activeTab.url);
+            }
         }
     }
 
@@ -338,6 +349,7 @@ export class BrowseView extends LitElement {
                         id="wv-${tab.id}"
                         class="${this.activeTabId === tab.id ? '' : 'hidden'}"
                         src="${tab.url}"
+                        webpreferences="contextIsolation=yes,nodeIntegration=no,sandbox=yes,webSecurity=yes"
                         allowpopups
                         @new-window=${e => { e.preventDefault(); this.addTab(e.url); }}
                         @did-start-loading=${e => this.handleWebviewEvent(tab.id, 'did-start-loading', e)}

@@ -16,16 +16,15 @@ To ensure development parity with production, we utilize Docker Compose to spin 
    ```bash
    make up
    ```
-   *This starts the API, Realtime server, Postgres, Valkey, MinIO, LocalStack, and PgAdmin.*
+   *This starts the services defined in the selected Docker Compose configuration.*
 
 2. **Accessing Services**
    - API (FastAPI): `http://localhost:8000/docs`
-   - Realtime (WebSocket): `ws://localhost:8001`
    - MinIO Console: `http://localhost:9001` (admin/password)
    - PgAdmin: `http://localhost:5050` (admin@admin.com/admin)
 
 3. **Live Reloading**
-   The `docker-compose.dev.yml` file mounts the `./services/api` and `./services/realtime` source directories directly into the containers. Any code changes will trigger `uvicorn --reload` and `nodemon` instantly.
+   The `docker-compose.dev.yml` file mounts the API source directory. API changes trigger `uvicorn --reload`.
 
 4. **Shutdown & Cleanup**
    ```bash

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
     Home, Bot, Clock, Folder, 
-    User, EyeOff, Gift, Volume2, ShieldAlert, HelpCircle, ChevronDown, ChevronUp, Star, Download, Calendar, LogOut, MoreVertical, CreditCard, Menu, ChevronLeft, ChevronRight, UserPlus
+    User, EyeOff, Gift, Volume2, ShieldAlert, HelpCircle, ChevronDown, ChevronUp, Star, Download, LogOut, MoreVertical, CreditCard, Menu, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { API_BASE } from '../config';
 
@@ -79,9 +79,7 @@ export default function Sidebar() {
         { name: 'Dashboard', path: '/dashboard', icon: Home },
         { name: 'My Assistants', path: '/assistants', icon: Bot },
         { name: 'Sessions', path: '/sessions', icon: Clock },
-        { name: 'Meetings', path: '/meetings', icon: Calendar },
         { name: 'Documents', path: '/documents', icon: Folder },
-        { name: 'Invite', path: '/invite', icon: UserPlus },
     ];
 
     const bottomItems = [

@@ -1,6 +1,7 @@
 const { app, BrowserWindow, shell, ipcMain, dialog, Menu } = require('electron');
 app.disableHardwareAcceleration();
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
 if (process.argv.includes('--squirrel-uninstall')) {
     app.whenReady().then(() => {
@@ -30,13 +31,14 @@ if (require('electron-squirrel-startup')) {
 app.commandLine.appendSwitch('disable-features', 'PointerLockRequiresUserGesture');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
-const { createWindow, createSessionWindow, updateGlobalShortcuts } = require('./utils/window');
+const { createWindow, createControlPanelWindow, createSessionWindow, updateGlobalShortcuts } = require('./utils/window');
 const { setupGeminiIpcHandlers, stopMacOSAudioCapture, sendToRenderer } = require('./utils/gemini');
 const storage = require('./storage');
 const { setupStorageIpcHandlers } = require('./ipc-handlers');
 
 const geminiSessionRef = { current: null };
 let mainWindow = null;
+let controlPanelWindow = null;
 let sessionWindow = null;
 let sessionStartTime = null;
 let sessionState = 'idle'; // 'idle', 'active', 'paused'
@@ -54,6 +56,7 @@ function restoreOsCursor() {
 
 function createMainWindow() {
     mainWindow = createWindow(sendToRenderer, geminiSessionRef);
+    controlPanelWindow = createControlPanelWindow(mainWindow);
     
     mainWindow.on('close', (event) => {
         if (!app.isQuiting) {
@@ -98,9 +101,11 @@ if (!gotTheLock) {
 } else {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
         // Someone tried to run a second instance, we should focus our window.
-        if (mainWindow) {
-            if (mainWindow.isMinimized()) mainWindow.restore();
-            mainWindow.focus();
+        if (controlPanelWindow && !controlPanelWindow.isDestroyed()) {
+            controlPanelWindow.show();
+            controlPanelWindow.focus();
+        } else if (mainWindow && !mainWindow.isDestroyed()) {
+            controlPanelWindow = createControlPanelWindow(mainWindow);
         }
         
         // Find the deep link URL in the command line args
@@ -121,10 +126,10 @@ function handleDeepLink(urlStr) {
         const url = new URL(urlStr);
         if (url.hostname === 'auth' || url.hostname === 'callback') {
             const token = url.searchParams.get('token') || url.searchParams.get('code');
-            const hash = url.searchParams.get('hash') || 'default-hash';
+            const hash = url.searchParams.get('hash');
             const userEncoded = url.searchParams.get('user');
             
-            if (token) {
+            if (token && hash) {
                 // Send to renderer
                 if (mainWindow) {
                     mainWindow.webContents.send('deep-link-auth-success', {
@@ -269,7 +274,11 @@ function setupGeneralIpcHandlers() {
 
     ipcMain.handle('open-external', async (event, url) => {
         try {
-            await shell.openExternal(url);
+            const target = new URL(String(url));
+            if (!['https:', 'http:'].includes(target.protocol)) {
+                return { success: false, error: 'Only HTTP and HTTPS links can be opened.' };
+            }
+            await shell.openExternal(target.toString());
             return { success: true };
         } catch (error) {
             console.error('Error opening external URL:', error);
@@ -279,6 +288,9 @@ function setupGeneralIpcHandlers() {
 
     ipcMain.handle('open-path', async (event, filePath) => {
         try {
+            if (typeof filePath !== 'string' || !path.isAbsolute(filePath)) {
+                return { success: false, error: 'An absolute file path is required.' };
+            }
             await shell.openPath(filePath);
             return { success: true };
         } catch (error) {
@@ -427,9 +439,15 @@ ipcMain.handle('show-confirm-dialog', async (event, message) => {
             width: 1200,
             height: 800,
             webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false
+                preload: path.join(__dirname, 'preload.js'),
+                nodeIntegration: false,
+                contextIsolation: true,
+                sandbox: true
             }
+        });
+        adminWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+        adminWindow.webContents.on('will-navigate', (event, targetUrl) => {
+            if (!targetUrl.startsWith('file:')) event.preventDefault();
         });
         adminWindow.loadFile(path.join(__dirname, 'admin.html'));
         adminWindow.maximize();

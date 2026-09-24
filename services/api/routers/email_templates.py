@@ -4,6 +4,7 @@ from services.api.core.database import get_db
 from services.api.db_models.email_template import EmailTemplate
 from pydantic import BaseModel
 from typing import List, Optional, Any
+from sqlalchemy import func
 
 router = APIRouter(prefix="/admin-system", tags=["Admin System"])
 
@@ -16,7 +17,14 @@ class EmailTemplateUpdate(BaseModel):
 @router.get("/email-templates")
 async def get_email_templates(db: Session = Depends(get_db)):
     from sqlalchemy.future import select
-    res = await db.execute(select(EmailTemplate).order_by(EmailTemplate.id))
+    res = await db.execute(
+        select(EmailTemplate)
+        .where(
+            ~func.lower(EmailTemplate.template_key).like("meeting%"),
+            ~func.lower(func.coalesce(EmailTemplate.category, "")).in_(("meeting", "meetings")),
+        )
+        .order_by(EmailTemplate.id)
+    )
     templates = res.scalars().all()
     # If empty, inject the default AUTH_LOGIN_OTP one since it's probably missing from the DB!
     if not templates:
@@ -30,7 +38,14 @@ async def get_email_templates(db: Session = Depends(get_db)):
         )
         db.add(t)
         await db.commit()
-        res = await db.execute(select(EmailTemplate).order_by(EmailTemplate.id))
+        res = await db.execute(
+            select(EmailTemplate)
+            .where(
+                ~func.lower(EmailTemplate.template_key).like("meeting%"),
+                ~func.lower(func.coalesce(EmailTemplate.category, "")).in_(("meeting", "meetings")),
+            )
+            .order_by(EmailTemplate.id)
+        )
         templates = res.scalars().all()
 
     # Convert to dicts for JSON response
@@ -49,10 +64,12 @@ async def get_email_templates(db: Session = Depends(get_db)):
 
 @router.put("/email-templates/{key}")
 async def update_email_template(key: str, data: EmailTemplateUpdate, db: Session = Depends(get_db)):
+    if key.lower().startswith("meeting"):
+        raise HTTPException(status_code=404, detail="Template not found")
     from sqlalchemy.future import select
     res = await db.execute(select(EmailTemplate).where(EmailTemplate.template_key == key))
     t = res.scalars().first()
-    if not t:
+    if not t or (t.category or "").lower() in {"meeting", "meetings"}:
         raise HTTPException(status_code=404, detail="Template not found")
     
     if data.name is not None: t.name = data.name

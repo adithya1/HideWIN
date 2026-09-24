@@ -116,6 +116,8 @@ class EmailNotificationService:
     @staticmethod
     async def dispatch(db: Session, template_key: str, recipient: str, variables: Dict[str, Any]):
         """Main entry point to resolve template, apply variables, and send/queue."""
+        if template_key.strip().lower().startswith("meeting"):
+            return False
         # Log attempt
         log = models.EmailLog(
             template_key=template_key,
@@ -131,6 +133,12 @@ class EmailNotificationService:
         if not template:
             log.status = "FAILED"
             log.failure_reason = "Template not found or disabled"
+            await db.commit()
+            return False
+
+        if (template.category or "").strip().lower() in {"meeting", "meetings"}:
+            log.status = "FAILED"
+            log.failure_reason = "Meeting email templates are disabled"
             await db.commit()
             return False
 

@@ -36,6 +36,10 @@ class AdminSettings(BaseModel):
     logo_dark_url: str = ''
     browser_icon_url: str = ''
 
+    def public_dict(self) -> dict:
+        """Settings safe for API responses; credentials are never returned."""
+        return self.dict(exclude={"smtp_pass", "google_client_secret", "outlook_client_secret"})
+
 def get_admin_settings() -> AdminSettings:
     if os.path.exists(CONFIG_FILE):
         try:

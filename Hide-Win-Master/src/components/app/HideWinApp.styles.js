@@ -123,16 +123,26 @@ export const appStyles =     css`
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
-            pointer-events: none; /* Let clicks pass through empty areas */
+            pointer-events: auto;
         }
         :host(.pill-mode) .app-shell {
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
-            pointer-events: none;
+            pointer-events: auto;
         }
         :host(.pill-mode) .app-shell * {
             pointer-events: auto; /* Re-enable clicks on actual children */
+        }
+
+        :host(.panel-window) {
+            width: 330px !important;
+            height: 66px !important;
+            background: transparent !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            overflow: visible !important;
         }
 
         :host(.is-session-window) {
@@ -189,7 +199,7 @@ export const appStyles =     css`
             right: 0;
             width: 8px;
             height: 8px;
-            cursor: se-resize;
+            cursor: default !important;
         }
 
         /* â”€â”€ Full app shell: top drag bar + horizontal top toolbar + main content â”€â”€ */

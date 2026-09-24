@@ -280,7 +280,7 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
     else:
         groq_keys_objs = await get_active_keys_for_provider('groq', db, stt_model)
         if not groq_keys_objs:
-            raise HTTPException(status_code=500, detail="No active Groq API keys available")
+            raise HTTPException(status_code=503, detail="Speech-to-text is not configured. Add a Groq API key in Settings.")
         # Serialize keys for Redis Manager
         available_keys = [{"id": k.id, "api_key_value": k.api_key_value, "enabled_models": k.enabled_models} for k in groq_keys_objs]
     
@@ -328,7 +328,7 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
                 async def empty_generator(): yield ""
                 return StreamingResponse(empty_generator(), media_type="text/plain")
                 
-            print(f"[Composite Proxy] Selected Key ID {selected_key['id']} STT: '{prompt_text}'")
+            logger.debug("Speech transcription completed using provider key id %s", selected_key['id'])
             
             # Log usage in Token Bucket
             await redis_manager.log_key_usage('groq', selected_key['id'])
@@ -350,8 +350,8 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
                         if chunk.choices and chunk.choices[0].delta.content:
                             yield chunk.choices[0].delta.content
                 except Exception as e:
-                    print(f"Streaming Error: {e}")
-                    yield f"\n[Error: {e}]"
+                    logger.exception("Speech response streaming failed")
+                    yield "\n[Speech response generation failed]"
             
             return StreamingResponse(token_stream_generator(), media_type="text/plain")
             
@@ -366,9 +366,10 @@ async def stream_audio_to_llm(request: Request, file: UploadFile = File(...), db
             else:
                 if err_code == 401:
                     raise HTTPException(status_code=502, detail="Upstream provider (Groq) rejected API key as Unauthorized")
-                raise HTTPException(status_code=err_code, detail=str(e))
+                logger.warning("Speech provider rejected the request with status %s", err_code)
+                raise HTTPException(status_code=502, detail="Speech provider rejected the request. Check the configured model and API key.")
                 
         except Exception as e:
-            print(f"Unknown Groq Error: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+            logger.exception("Speech processing failed")
+            raise HTTPException(status_code=502, detail="Speech processing failed at the provider.")
 

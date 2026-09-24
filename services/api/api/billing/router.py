@@ -10,6 +10,7 @@ from services.api.core.security import get_current_user
 from services.api.db_models.billing import Plan, Subscription
 from services.api.db_models.ai_config import ApiConfig
 from services.api.models.user import User
+from services.api.core.config import settings
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -205,8 +206,8 @@ async def vendor_create_checkout(
                 "quantity": 1,
             }],
             mode="payment",
-            success_url="http://localhost:3000/vendor/billing?success=true",
-            cancel_url="http://localhost:3000/vendor/billing?canceled=true",
+            success_url=f"{settings.WEB_BASE_URL.rstrip('/')}/vendor/billing?success=true",
+            cancel_url=f"{settings.WEB_BASE_URL.rstrip('/')}/vendor/billing?canceled=true",
             customer_email=current_user.email,
             metadata={"vendor_id": current_user.id, "seats": body.seats}
         )
@@ -234,7 +235,7 @@ async def vendor_create_portal(
     try:
         session = stripe.billing_portal.Session.create(
             customer=current_user.stripe_customer_id,
-            return_url="http://localhost:3000/vendor/billing",
+            return_url=f"{settings.WEB_BASE_URL.rstrip('/')}/vendor/billing",
         )
         return {"success": True, "url": session.url}
     except Exception as e:

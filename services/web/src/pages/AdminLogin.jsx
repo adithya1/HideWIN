@@ -1,3 +1,4 @@
+import { API_BASE } from '../config.js';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
@@ -12,7 +13,7 @@ export default function AdminLogin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/auth/branding')
+    fetch(API_BASE + '/auth/branding')
       .then(res => res.json())
       .then(data => {
         setBranding(data);
@@ -34,7 +35,7 @@ export default function AdminLogin() {
       params.append('username', email);
       params.append('password', password);
       
-      const response = await fetch('http://127.0.0.1:8000/auth/login', {
+      const response = await fetch(API_BASE + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params

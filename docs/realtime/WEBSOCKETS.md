@@ -1,7 +1,7 @@
 # WEBSOCKET ARCHITECTURE
 
 ## Overview
-WebSockets (`wss://`) form the backbone of the Hide-WIN Realtime Service. They carry WebRTC signaling, AI transcription chunks, and active presence data.
+WebSockets (`wss://`) carry active application data such as AI transcription chunks and presence. The meeting-room WebRTC signaling relay has been retired and its implementation is preserved under `deleted/retired-realtime-service/`.
 
 ## 1. Connection Lifecycle
 - **Authentication**: JWTs cannot be sent via HTTP headers in native browser WebSocket APIs. Hide-WIN clients MUST send their JWT in the first `{"type": "authenticate", "token": "..."}` message immediately after the TCP handshake.

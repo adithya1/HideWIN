@@ -9,7 +9,7 @@ Hide-WIN is a real-time AI meeting, interview, and presentation assistant provid
 - **Description**: Securely capture system/microphone audio and transcribe it in real-time.
 - **Priority**: P0
 - **Acceptance Criteria**: Audio is cleanly captured on Desktop/Web; transcription arrives continuously with <500ms latency.
-- **Dependencies**: WebRTC Media layer, Whisper service.
+- **Dependencies**: Desktop audio capture, transcription service.
 - **Failure Behavior**: Fall back to secondary transcription provider (e.g., Deepgram/AWS Transcribe).
 - **Observability**: Metrics on chunk processing latency and transcription accuracy confidence.
 - **Performance Target**: Audio-to-text latency < 500ms.
@@ -35,29 +35,15 @@ Hide-WIN is a real-time AI meeting, interview, and presentation assistant provid
 - **Performance Target**: First useful response <= 2 seconds (TTFT p50 < 700ms).
 - **Security**: Zero retention policy for prompts at vendor level; no PII logged.
 
-### REQ-04: Horizontal WebRTC Signaling
-- **Description**: A scalable signaling plane to negotiate peer connections.
-- **Priority**: P0
-- **Acceptance Criteria**: The system supports distributed connection routing without a single point of failure.
-- **Dependencies**: Realtime service, Redis Pub/Sub.
-- **Failure Behavior**: Connections transparently fail over to healthy relay nodes.
-- **Observability**: Active connections, signaling latency, ICE negotiation success rate.
-- **Performance Target**: Support 10,000 concurrent WebRTC sessions; Signaling p95 < 250ms.
-- **Security**: WSS required. Valid JWT required to establish socket.
+### REQ-04: Retired WebRTC Signaling
+- **Status**: Removed from the active product. The meeting-room UI, signaling relay, and meeting APIs are archived under `deleted/`.
 
 ---
 
 ## P1: Core Product Features
 
-### REQ-05: Meeting Rooms & Guest Access
-- **Description**: Users can generate secure meeting links for guests to join a session via the Web app.
-- **Priority**: P1
-- **Acceptance Criteria**: Guests can join without installing the desktop app via an invite link.
-- **Dependencies**: Hide-Win-Web, API authentication.
-- **Failure Behavior**: Reject invalid/expired links gracefully.
-- **Observability**: Room join latency, concurrent room metrics.
-- **Performance Target**: Join flow < 1 second.
-- **Security**: Expiring cryptographic tokens for invites; RBAC separating host from guest.
+### REQ-05: Retired Meeting Rooms & Guest Access
+- **Status**: Removed from the active product. User-facing meeting tabs, guest join pages, and meeting CRUD APIs are archived under `deleted/`.
 
 ### REQ-06: Profile Switching
 - **Description**: The AI dynamically adjusts its behavior based on the selected profile (Interview, Sales, Presentation).
@@ -70,10 +56,10 @@ Hide-WIN is a real-time AI meeting, interview, and presentation assistant provid
 - **Security**: Prevent prompt injection attacks via profile configurations.
 
 ### REQ-07: Desktop & Web Parity
-- **Description**: Distinct applications for the host (Desktop overlay) and guests/admins (Web).
+- **Description**: Distinct applications for the desktop assistant and the web user/admin account experience.
 - **Priority**: P1
-- **Acceptance Criteria**: Web UI replicates the signaling capabilities of Desktop.
-- **Dependencies**: Hide-Win-Web, Hide-Win-Master.
+- **Acceptance Criteria**: Web UI supports the active user-account and administration workflows.
+- **Dependencies**: Hide-Win-Web, Hide-Win-Master, API authentication.
 - **Failure Behavior**: Degraded UI rather than blank screens.
 - **Observability**: Client-side error tracking.
 - **Performance Target**: Web client TTI (Time to Interactive) < 1.5s.
@@ -106,7 +92,7 @@ Hide-WIN is a real-time AI meeting, interview, and presentation assistant provid
 ### REQ-10: Automated Testing & CI/CD
 - **Description**: Production-grade automated tests across all boundaries.
 - **Priority**: P2
-- **Acceptance Criteria**: PRs cannot merge without passing Unit, Integration, and E2E WebRTC tests.
+- **Acceptance Criteria**: PRs cannot merge without passing unit, integration, and end-to-end tests for active product flows.
 - **Dependencies**: GitHub Actions, Jest/PyTest.
 - **Failure Behavior**: Pipeline halts; blocks merge.
 - **Observability**: Test coverage reports, pipeline duration.

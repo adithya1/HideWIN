@@ -15,8 +15,6 @@ import SessionDetail from "./pages/SessionDetail";
 import AdminCopilots from "./pages/AdminCopilots";
 import AdminOrders from "./pages/AdminOrders";
 import CreateAssistant from "./pages/CreateAssistant";
-import Meetings from "./pages/Meetings";
-import JoinMeeting from "./pages/JoinMeeting";
 
 function App() {
   const adminPath = import.meta.env.VITE_ADMIN_PATH || "/admin_hw";
@@ -29,7 +27,6 @@ function App() {
                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Login />} />
-          <Route path="/join/:meetingId" element={<JoinMeeting />} />
           
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -39,7 +36,6 @@ function App() {
             <Route path="/sessions" element={<Sessions />} />
             <Route path="/session/:id/:tab?" element={<SessionDetail />} />
             <Route path="/documents" element={<Documents />} />
-            <Route path="/invite" element={<Meetings />} /><Route path="/meetings" element={<Meetings />} />
             <Route path="/invisible" element={<GoInvisible />} />
             <Route path="/downloads" element={<GoInvisible />} />
             <Route path="/refer" element={<Refer />} />

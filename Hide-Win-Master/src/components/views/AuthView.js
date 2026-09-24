@@ -51,6 +51,22 @@ export class AuthView extends LitElement {
             overflow: hidden;
         }
 
+        :host([embedded]) {
+            height: 100%;
+            min-height: 0;
+            border-radius: 0;
+        }
+        :host([embedded]) .auth-layout,
+        :host([embedded]) .auth-card,
+        :host([embedded]) .auth-right {
+            height: 100%;
+            min-height: 0;
+        }
+        :host([embedded]) .drag-region,
+        :host([embedded]) .window-controls {
+            display: none;
+        }
+
         .window-controls {
             position: absolute;
             top: 0;
@@ -368,6 +384,8 @@ export class AuthView extends LitElement {
 `;
 
     static properties = {
+        embedded: { type: Boolean, reflect: true },
+        brandingLogo: { type: String },
         showPolicyModal: { state: true },
         showTermsModal: { state: true },
         _isWaiting: { state: true },
@@ -424,7 +442,8 @@ export class AuthView extends LitElement {
             const clientId = "c0b65c72458d40d5a3f477dcf3c07f4c";
             const protocol = window.configManager && window.configManager.getProtocolName ? window.configManager.getProtocolName() : 'hidewin';
             const redirectUri = `${protocol}://callback`;
-            const webBaseUrl = window.configManager && window.configManager.getWebBaseUrl ? window.configManager.getWebBaseUrl() : 'http://localhost:5173';
+            const webBaseUrl = window.configManager?.getWebBaseUrl?.();
+            if (!webBaseUrl) throw new Error('Web application URL is not configured.');
             
             const returnUrl = `${webBaseUrl}/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&code_challenge=${challenge}&code_challenge_method=S256&state=${state}&scope=openid%20profile%20email`;
             
@@ -433,6 +452,10 @@ export class AuthView extends LitElement {
             if (window.require) {
                 const { ipcRenderer } = window.require('electron');
                 ipcRenderer.invoke('open-external', fullUrl);
+                // Minimize main window and show panel automatically
+                setTimeout(() => {
+                    ipcRenderer.invoke('panel-toggle-main');
+                }, 100);
             } else {
                 window.location.href = fullUrl;
             }
@@ -497,13 +520,13 @@ export class AuthView extends LitElement {
             // Success - save token
             if (window.hideWin && window.hideWin.storage) {
                 const creds = await window.hideWin.storage.getCredentials() || {};
-                await window.hideWin.storage.setCredentials({ ...creds, jwtToken: token, hashkey: 'fallback-hash' });
+                await window.hideWin.storage.setCredentials({ ...creds, jwtToken: token, hashkey: data.hash });
             }
             
             if (window.hideWin && window.hideWin.ipcRenderer) {
                 window.hideWin.ipcRenderer.send('deep-link-auth-success', {
                     token: token,
-                    hash: 'fallback-hash',
+                    hash: data.hash,
                     user: null
                 });
             }
@@ -557,57 +580,6 @@ export class AuthView extends LitElement {
     }
 
 
-                async _handleContinue(e) {
-        if (e) e.preventDefault();
-        console.log("Forcing dev bypass from Continue button!");
-        return this._handleDevBypass(e || new Event('click'));
-    }
-
-    async _handleDevBypass(e) {
-        if (e) e.preventDefault();
-        console.log("Safely dispatching auth-success to force login...");
-        
-        this.dispatchEvent(new CustomEvent('auth-success', {
-            detail: {
-                token: 'dev-bypass-token',
-                hash: 'dev-bypass-hash',
-                user: { name: 'Admin', role: 'admin' }
-            },
-            bubbles: true,
-            composed: true
-        }));
-    }
-
-    async _handleTokenSubmit() {
-        const input = this.shadowRoot.querySelector('.token-input');
-        if (!input || !input.value.trim()) return;
-        
-        const token = input.value.trim();
-        
-        if (window.hideWin && window.hideWin.storage) {
-            const creds = await window.hideWin.storage.getCredentials();
-            await window.hideWin.storage.setCredentials({ ...creds, jwtToken: token, hashkey: 'fallback-hash' });
-        }
-        
-        // Dispatch global custom event that HideWinApp can catch
-        if (window.hideWin && window.hideWin.ipcRenderer) {
-            window.hideWin.ipcRenderer.send('deep-link-auth-success', {
-                token: token,
-                hash: 'fallback-hash',
-                user: null
-            });
-        }
-        
-        this.dispatchEvent(new CustomEvent('auth-success', {
-            detail: { token: token },
-            bubbles: true,
-            composed: true
-        }));
-    }
-
-
-
-
     render() {
         return html`
             <div class="auth-layout">
@@ -626,8 +598,7 @@ export class AuthView extends LitElement {
 
                 <div class="auth-card">
                     <div class="brand-logo">
-                        <img src="./assets/images/small_icon.png" alt="" />
-                        
+                        ${this.brandingLogo ? html`<img src=${this.brandingLogo} alt="HideWin" />` : html`<span class="brand-name">HideWin</span>`}
                     </div>
 
                     ${this.step === 'email' ? html`

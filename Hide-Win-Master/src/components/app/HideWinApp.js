@@ -25,9 +25,6 @@ import { AICustomizeView } from '../views/AICustomizeView.js';
 import { FeedbackView } from '../views/FeedbackView.js';
 import { NotesView } from '../views/NotesView.js';
 import { AuthView } from '../views/AuthView.js';
-import { InviteView } from '../views/InviteView.js';
-import '../views/ScheduleMeetingView.js';
-import '../views/MeetingDashboardView.js';
 
 export class HideWinApp extends LitElement {
     static styles = appStyles;
@@ -72,7 +69,9 @@ export class HideWinApp extends LitElement {
         isSessionHidden: { type: Boolean },
         userFullName: { type: String },
         userEmail: { type: String },
-        showAvatarMenu: { state: true }
+        showAvatarMenu: { state: true },
+        _signInExpanded: { state: true },
+        _branding: { state: true }
     };
 
     constructor() {
@@ -85,6 +84,8 @@ export class HideWinApp extends LitElement {
         this.sessionActive = false;
         this.isPaused = false;
         this.isMainWindowMinimized = false;
+        this._signInExpanded = false;
+        this._branding = null;
         this.selectedProfile = '';
         this.selectedModeCategory = 'all';
         this.transcriptionLanguage = 'en-US';
@@ -120,38 +121,10 @@ export class HideWinApp extends LitElement {
         // Read URL params for multi-window support
         const urlParams = new URLSearchParams(window.location.search);
         this.windowType = urlParams.get('windowType') || 'main';
+        this.isMainWindowMinimized = false;
+        this._panelMainOpen = false;
+        this._panelNavigateListener = null;
         
-        // Listen for Deep Link Authentication
-        if (window.hideWin && window.hideWin.ipcRenderer) {
-            window.hideWin.ipcRenderer.on('deep-link-auth-success', async (event, data) => {
-                try {
-                    if (data && data.token) {
-                        const payload = JSON.parse(atob(data.token.split('.')[1]));
-                        if (payload && payload.sub) {
-                            this.userEmail = payload.sub;
-                            if (window.hideWin && window.hideWin.storage) {
-                                window.hideWin.storage.updatePreference('userEmail', payload.sub);
-                                let creds = {};
-                                try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
-                                await window.hideWin.storage.setCredentials({
-                                    ...creds,
-                                    jwtToken: data.token,
-                                    hashkey: data.hash || 'hash',
-                                    user: payload.sub
-                                });
-                            }
-                        }
-                    }
-                } catch(e) { } finally {
-                    this.isAuthenticated = true;
-                    this.requestUpdate();
-                    if (this.isMainWindowMinimized) {
-                        this._handleMaximize();
-                    }
-                }
-            });
-        }
-
         if (this.windowType === 'session') {
             this.currentView = 'assistant';
             this.selectedModeCategory = urlParams.get('modeCategory') || '';
@@ -175,8 +148,10 @@ export class HideWinApp extends LitElement {
 
         this._boundResizingKeydown = this._handleResizingKeydown.bind(this);
 
-        this._loadFromStorage();
-        this._checkForUpdates();
+        if (this.windowType !== 'panel') {
+            this._loadFromStorage();
+            this._checkForUpdates();
+        }
     }
 
     async _checkForUpdates() {
@@ -211,37 +186,6 @@ export class HideWinApp extends LitElement {
             ]);
 
             
-        // Listen for Deep Link Authentication
-        if (window.hideWin && window.hideWin.ipcRenderer) {
-            window.hideWin.ipcRenderer.on('deep-link-auth-success', async (event, data) => {
-                try {
-                    if (data && data.token) {
-                        const payload = JSON.parse(atob(data.token.split('.')[1]));
-                        if (payload && payload.sub) {
-                            this.userEmail = payload.sub;
-                            if (window.hideWin && window.hideWin.storage) {
-                                window.hideWin.storage.updatePreference('userEmail', payload.sub);
-                                let creds = {};
-                                try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
-                                await window.hideWin.storage.setCredentials({
-                                    ...creds,
-                                    jwtToken: data.token,
-                                    hashkey: data.hash || 'hash',
-                                    user: payload.sub
-                                });
-                            }
-                        }
-                    }
-                } catch(e) { } finally {
-                    this.isAuthenticated = true;
-                    this.requestUpdate();
-                    if (this.isMainWindowMinimized) {
-                        this._handleMaximize();
-                    }
-                }
-            });
-        }
-
         if (this.windowType === 'session') {
                 this.currentView = 'assistant';
             } else {
@@ -275,7 +219,34 @@ export class HideWinApp extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
+        if (this.windowType === 'panel') {
+            this.classList.add('panel-window');
+            this._loadBranding();
+            if (!window.require) return;
+            const { ipcRenderer } = window.require('electron');
+            this._panelAuthListener = (_event, authenticated) => {
+                this.isAuthenticated = Boolean(authenticated);
+                this.requestUpdate();
+            };
+            this._panelVisibilityListener = (_event, visible) => {
+                this._panelMainOpen = Boolean(visible);
+                this.requestUpdate();
+            };
+            ipcRenderer.on('panel-auth-state', this._panelAuthListener);
+            ipcRenderer.on('panel-main-visibility', this._panelVisibilityListener);
+            window.hideWin?.storage?.getCredentials?.().then(creds => {
+                this.isAuthenticated = Boolean(creds?.jwtToken);
+                this.requestUpdate();
+            }).catch(() => {});
+            return;
+        }
         bindAppEvents.call(this);
+        this._loadBranding();
+        if (this.windowType === 'main' && window.require) {
+            const { ipcRenderer } = window.require('electron');
+            this._panelNavigateListener = () => this.navigate('customize');
+            ipcRenderer.on('panel-navigate-settings', this._panelNavigateListener);
+        }
         if (this.currentView === 'main' && this.isAuthenticated) {
             // Pill mode disabled
         }
@@ -328,7 +299,16 @@ export class HideWinApp extends LitElement {
 
         disconnectedCallback() {
         super.disconnectedCallback();
-        unbindAppEvents.call(this);
+        if (this.windowType !== 'panel') unbindAppEvents.call(this);
+        if (window.require && this._panelAuthListener) {
+            const { ipcRenderer } = window.require('electron');
+            ipcRenderer.removeListener('panel-auth-state', this._panelAuthListener);
+            ipcRenderer.removeListener('panel-main-visibility', this._panelVisibilityListener);
+            ipcRenderer.removeListener('panel-navigate-settings', this._panelNavigateListener);
+        }
+        if (window.require && this.windowType === 'main' && this._panelNavigateListener) {
+            window.require('electron').ipcRenderer.removeListener('panel-navigate-settings', this._panelNavigateListener);
+        }
         if (this.currentView === 'main' && this.isAuthenticated) {
             // Pill mode disabled
         }
@@ -485,37 +465,6 @@ export class HideWinApp extends LitElement {
 
     async handleClose() {
         
-        // Listen for Deep Link Authentication
-        if (window.hideWin && window.hideWin.ipcRenderer) {
-            window.hideWin.ipcRenderer.on('deep-link-auth-success', async (event, data) => {
-                try {
-                    if (data && data.token) {
-                        const payload = JSON.parse(atob(data.token.split('.')[1]));
-                        if (payload && payload.sub) {
-                            this.userEmail = payload.sub;
-                            if (window.hideWin && window.hideWin.storage) {
-                                window.hideWin.storage.updatePreference('userEmail', payload.sub);
-                                let creds = {};
-                                try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
-                                await window.hideWin.storage.setCredentials({
-                                    ...creds,
-                                    jwtToken: data.token,
-                                    hashkey: data.hash || 'hash',
-                                    user: payload.sub
-                                });
-                            }
-                        }
-                    }
-                } catch(e) { } finally {
-                    this.isAuthenticated = true;
-                    this.requestUpdate();
-                    if (this.isMainWindowMinimized) {
-                        this._handleMaximize();
-                    }
-                }
-            });
-        }
-
         if (this.windowType === 'session') {
             if (window.require) {
                 const { ipcRenderer } = window.require('electron');
@@ -537,32 +486,44 @@ export class HideWinApp extends LitElement {
     }
 
     async _handleMinimize() {
+        if (this.windowType !== 'main') return;
         this.isMainWindowMinimized = true;
+        this._signInExpanded = false;
+        this.classList.add('pill-mode');
         if (window.require) {
             const { ipcRenderer } = window.require('electron');
             const bounds = await ipcRenderer.invoke('get-window-bounds');
             this._previousMainWindowBounds = bounds;
-            await ipcRenderer.invoke('minimize-to-bottom-left', { width: 280, height: 60 });
-            // Force dark theme for the minimized panel (stealth mode)
-            document.documentElement.setAttribute('data-theme', 'dark');
+            await ipcRenderer.invoke('minimize-to-center', { width: 250, height: 48 });
+            if (this.isAuthenticated) {
+                // Keep the authenticated stealth panel dark while preserving the pre-login theme.
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
             // Enable stealth mode (click-through)
-            await ipcRenderer.invoke('set-ignore-mouse-events', true, { forward: true });
+            await ipcRenderer.invoke('set-ignore-mouse-events', false);
         }
+        this.requestUpdate();
     }
 
     async _handleMaximize() {
         if ((this.windowType === 'main' || this.windowType === 'session') && this.isMainWindowMinimized) {
             this.isMainWindowMinimized = false;
+            if (this.windowType === 'main') this.classList.remove('pill-mode');
             if (window.require && this._previousMainWindowBounds) {
                 const { ipcRenderer } = window.require('electron');
-                await ipcRenderer.invoke('set-window-bounds', { 
+                const restoreBounds = {
                     x: this._previousMainWindowBounds.x,
                     y: this._previousMainWindowBounds.y,
-                    width: this._previousMainWindowBounds.width, 
+                    width: this._previousMainWindowBounds.width,
                     height: this._previousMainWindowBounds.height,
-                    minWidth: 400, // Restore MIN_WINDOW_SIZE
+                    minWidth: 400,
                     minHeight: 300
-                });
+                };
+                if (this.windowType === 'main') {
+                    await ipcRenderer.invoke('restore-window-from-panel', restoreBounds);
+                } else {
+                    await ipcRenderer.invoke('set-window-bounds', restoreBounds);
+                }
                 // Restore theme for main window
                 window.hideWin.theme.load();
                 // Disable stealth mode
@@ -810,6 +771,78 @@ export class HideWinApp extends LitElement {
         }
     }
 
+    async _openSignIn() {
+        if (this.windowType === 'panel' && window.require) {
+            const { ipcRenderer } = window.require('electron');
+            await ipcRenderer.invoke('panel-open-main');
+            this._panelMainOpen = true;
+            this.requestUpdate();
+        }
+    }
+
+    async _handlePanelClick() {
+        if (this._panelDragging || this.windowType !== 'panel' || !window.require) return;
+        const { ipcRenderer } = window.require('electron');
+        const result = await ipcRenderer.invoke('panel-toggle-main');
+        this._panelMainOpen = result?.visible !== false;
+        this.requestUpdate();
+    }
+
+    async _loadBranding() {
+        try {
+            const configManager = window.configManager || (window.require && window.require('./utils/configManager.js'));
+            const apiBaseUrl = configManager?.getApiBaseUrl?.();
+            if (!apiBaseUrl) return;
+
+            const response = await fetch(new URL('/auth/branding', apiBaseUrl));
+            if (!response.ok) return;
+            const branding = await response.json();
+            const resolveLogo = value => {
+                if (typeof value !== 'string' || !value.trim()) return '';
+                try {
+                    const logoUrl = new URL(value.trim(), apiBaseUrl);
+                    return ['http:', 'https:', 'data:'].includes(logoUrl.protocol) ? logoUrl.toString() : '';
+                } catch {
+                    return '';
+                }
+            };
+            this._branding = {
+                logo_light: resolveLogo(branding.logo_light),
+                logo_dark: resolveLogo(branding.logo_dark)
+            };
+            this.requestUpdate();
+        } catch (error) {
+            console.warn('Could not load app branding.');
+        }
+    }
+
+    notifyPanelAuth(authenticated) {
+        if (this.windowType !== 'main' || !window.require) return;
+        window.require('electron').ipcRenderer.send('panel-auth-state', Boolean(authenticated));
+    }
+
+    _getBrandLogoUrl() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return isDark
+            ? (this._branding?.logo_dark || this._branding?.logo_light || '')
+            : (this._branding?.logo_light || this._branding?.logo_dark || '');
+    }
+
+    async openUserHistory() {
+        try {
+            if (!window.require) throw new Error('External links are unavailable in this window.');
+
+            const configManager = window.require('./utils/configManager.js');
+            const historyUrl = new URL('/sessions', configManager.getWebBaseUrl()).toString();
+            const { ipcRenderer } = window.require('electron');
+            const result = await ipcRenderer.invoke('open-external', historyUrl);
+            if (!result?.success) throw new Error(result?.error || 'Unable to open session history.');
+        } catch (error) {
+            console.error('Failed to open session history:', error);
+            this.setStatus(error.message || 'Unable to open session history.');
+        }
+    }
+
     async handleSendText(message) {
         if (!message || !message.trim()) return;
         this._resetIdleTimer();
@@ -944,10 +977,15 @@ export class HideWinApp extends LitElement {
     }
 
     async _startMove(e) {
-        // Only respond to primary button; skip if the click target is interactive
+        // Only move from non-interactive panel space, including nested SVG/icon targets.
         if (e.button !== 0) return;
-        const tag = e.target.tagName;
-        if (tag === 'BUTTON' || tag === 'A' || tag === 'INPUT' || tag === 'SELECT') return;
+        let target = e.target;
+        while (target && target !== this) {
+            const tag = target.tagName?.toLowerCase();
+            if (['button', 'a', 'input', 'select', 'textarea', 'option'].includes(tag) ||
+                target.isContentEditable || target.getAttribute?.('role') === 'button') return;
+            target = target.parentElement || target.getRootNode?.().host;
+        }
         e.preventDefault();
 
         const { ipcRenderer } = window.require('electron');
@@ -958,14 +996,18 @@ export class HideWinApp extends LitElement {
         const startScreenY = e.screenY;
 
         const handleMouseMove = (event) => {
+            if (this.windowType === 'panel' && (Math.abs(event.screenX - startScreenX) > 3 || Math.abs(event.screenY - startScreenY) > 3)) {
+                this._panelDragging = true;
+            }
             const newX = startBounds.x + (event.screenX - startScreenX);
             const newY = startBounds.y + (event.screenY - startScreenY);
-            ipcRenderer.invoke('move-window', { x: newX, y: newY });
+            ipcRenderer.invoke(this.windowType === 'panel' ? 'panel-move-windows' : 'move-window', { x: newX, y: newY });
         };
 
         const handleMouseUp = () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
+            if (this.windowType === 'panel' && this._panelDragging) setTimeout(() => { this._panelDragging = false; }, 0);
         };
 
         window.addEventListener('mousemove', handleMouseMove);
@@ -1073,41 +1115,32 @@ export class HideWinApp extends LitElement {
 
     render() {
         try {
-        // Enforce Minimized Widget First (so it works even if not authenticated)
-        if (this.isMainWindowMinimized) {
+        if (this.windowType === 'panel') {
+            const logoUrl = this._getBrandLogoUrl();
             return html`
-                <div class="live-bar" style="display: flex; justify-content: center; align-items: flex-start; padding: 0; background: transparent; position: relative; width: 100%; height: 100%; -webkit-app-region: drag;">
-                    <div style="display: flex; align-items: center; background: var(--bg-surface);  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 4px 6px; gap: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.6); margin-top: 4px;">
-                        
-                        <!-- Logo Icon -->
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-image: url('./assets/images/small_icon.png'); background-size: auto 32px; background-position: center; background-repeat: no-repeat; margin-left: 4px;">
-                        </div>
-                        
-                        ${this.startTime != null ? html`
-                            ${this.renderStatusDot()}
-                            <div style="color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; margin: 0 4px;">
-                                ${this.getElapsedTime()}
-                            </div>
-                        ` : ''}
-
-                        <!-- Maximize Button -->
-                        <button class="stealth-tooltip" data-tooltip="Restore HideWin" @click=${() => this._handleMaximize()} style="background: transparent; border: none; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 15px; font-weight: 700; padding: 6px 10px; border-radius: 20px; transition: all 0.2s; -webkit-app-region: no-drag;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
-                            Restore
-                        </button>
+                <div class="floating-brand-panel" @mousedown=${e => this._startMove(e)} @click=${e => { if (!e.target.closest('button')) this._handlePanelClick(); }} style="display:flex;align-items:center;justify-content:space-between;width:calc(100% - 12px);height:54px;margin:6px;padding:6px 9px 6px 12px;gap:10px;border:1px solid rgba(255,255,255,.16);border-radius:28px;background:linear-gradient(135deg,rgba(34,43,59,.98),rgba(17,23,34,.98));box-shadow:0 10px 28px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.12);color:#f8fafc;">
+                    <div style="display:flex;align-items:center;min-width:0;flex:1;pointer-events:none;">
+                        ${logoUrl ? html`<img src=${logoUrl} alt="HideWin" style="display:block;max-width:120px;width:auto;height:36px;object-fit:contain;object-position:left center;" />` : ''}
                     </div>
+                    ${this.isAuthenticated ? html`
+                        <button @click=${async e => { e.stopPropagation(); const { ipcRenderer } = window.require('electron'); const result = await ipcRenderer.invoke('panel-toggle-main'); this._panelMainOpen = result?.visible !== false; this.requestUpdate(); }} aria-label=${this._panelMainOpen ? 'Hide main window' : 'Show main window'} title=${this._panelMainOpen ? 'Hide main window' : 'Show main window'} style="width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${this._panelMainOpen ? html`<path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a15.5 15.5 0 0 1-3.2 4.2M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10.8 10.8 0 0 0 4-.7"/>` : html`<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/>`}</svg>
+                        </button>
+                        <button @click=${async e => { e.stopPropagation(); const { ipcRenderer } = window.require('electron'); await ipcRenderer.invoke('panel-open-settings'); this._panelMainOpen = true; this.requestUpdate(); }} aria-label="Open settings" title="Settings" style="width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.95-.08-.02a1.7 1.7 0 0 0-1.82.56l-.05.07h-3.4l-.03-.08a1.7 1.7 0 0 0-1.55-1.08 1.7 1.7 0 0 0-1.17.45l-.06.06-2.95-1.7.02-.08a1.7 1.7 0 0 0-.56-1.82l-.07-.05v-3.4l.08-.03a1.7 1.7 0 0 0 1.08-1.55 1.7 1.7 0 0 0-.45-1.17l-.06-.06 1.7-2.95.08.02a1.7 1.7 0 0 0 1.82-.56l.05-.07h3.4l.03.08a1.7 1.7 0 0 0 1.55 1.08 1.7 1.7 0 0 0 1.17-.45l.06-.06 2.95 1.7-.02.08a1.7 1.7 0 0 0 .56 1.82l.07.05v3.4l-.08.03a1.7 1.7 0 0 0-1.08 1.55z"/></svg>
+                        </button>
+                    ` : html`
+                        <button @click=${e => { e.stopPropagation(); this._openSignIn(); }} style="height:36px;padding:0 16px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:#3b82f6;color:white;font-size:12px;font-weight:650;white-space:nowrap;cursor:pointer;box-shadow:0 2px 8px rgba(59,130,246,.28);">Sign in to continue <span aria-hidden="true">→</span></button>
+                    `}
                 </div>
             `;
         }
-
         // Onboarding is fullscreen, no toolbar
         if (this.currentView === 'onboarding') {
             return html`
                             <!-- Resize Handles (Corner Only) -->
             ${!this.isSessionHidden ? html`
-                <div class="resize-handle top-left" @mousedown=${e => this._startResize(e, 'top-left')}></div>
-                <div class="resize-handle top-right" @mousedown=${e => this._startResize(e, 'top-right')}></div>
-                <div class="resize-handle bottom-left" @mousedown=${e => this._startResize(e, 'bottom-left')}></div>
+                ${this.windowType === 'session' ? html`<div class="resize-handle top-left" @mousedown=${e => this._startResize(e, 'top-left')}></div><div class="resize-handle top-right" @mousedown=${e => this._startResize(e, 'top-right')}></div><div class="resize-handle bottom-left" @mousedown=${e => this._startResize(e, 'bottom-left')}></div>` : ''}
                 <div class="resize-handle bottom-right" @mousedown=${e => this._startResize(e, 'bottom-right')}></div>
             ` : ''}
             <div class="app-shell">
@@ -1134,9 +1167,7 @@ export class HideWinApp extends LitElement {
 
                         <!-- Resize Handles (Corner Only) -->
             ${!this.isSessionHidden ? html`
-                <div class="resize-handle top-left" @mousedown=${e => this._startResize(e, 'top-left')}></div>
-                <div class="resize-handle top-right" @mousedown=${e => this._startResize(e, 'top-right')}></div>
-                <div class="resize-handle bottom-left" @mousedown=${e => this._startResize(e, 'bottom-left')}></div>
+                ${this.windowType === 'session' ? html`<div class="resize-handle top-left" @mousedown=${e => this._startResize(e, 'top-left')}></div><div class="resize-handle top-right" @mousedown=${e => this._startResize(e, 'top-right')}></div><div class="resize-handle bottom-left" @mousedown=${e => this._startResize(e, 'bottom-left')}></div>` : ''}
                 <div class="resize-handle bottom-right" @mousedown=${e => this._startResize(e, 'bottom-right')}></div>
             ` : ''}
             <div class="app-shell" style="${this.isSessionHidden ? 'display: none;' : ''}">

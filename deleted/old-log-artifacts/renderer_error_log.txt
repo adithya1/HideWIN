@@ -1,0 +1,6 @@
+Uncaught TypeError: wv.reload is not a function
+TypeError: wv.reload is not a function
+    at BrowseView.navigateWebview (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/BrowseView.js:295:41)
+    at html.addressInputValue (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/components/views/BrowseView.js:322:61)
+    at st.handleEvent (file:///C:/Users/akula/Downloads/Hide-WIN/Hide-Win-Master/src/assets/lit-core-2.7.4.min.js:16:7320)
+

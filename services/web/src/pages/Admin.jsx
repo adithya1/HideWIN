@@ -1,3 +1,4 @@
+import { API_BASE } from '../config.js';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
@@ -179,7 +180,7 @@ export default function Admin() {
       setOauthSaving(true);
       try {
           const token = localStorage.getItem('hidewin_token');
-          const res = await fetch('http://127.0.0.1:8000/admin/settings', {
+          const res = await fetch(API_BASE + '/admin/settings', {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
               body: JSON.stringify(oauthConfig)
@@ -200,7 +201,7 @@ export default function Admin() {
 
   useEffect(() => {
     if (activeSettingsTab === 'email_templates' && emailTemplates.length === 0) {
-      fetch('http://127.0.0.1:8000/admin-system/email-templates', { headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }})
+      fetch(API_BASE + '/admin-system/email-templates', { headers: { 'Authorization': `Bearer ${localStorage.getItem('hidewin_token')}` }})
         .then(res => res.json())
         .then(data => {
             if(Array.isArray(data)) {
@@ -216,7 +217,7 @@ export default function Admin() {
   const createTemplate = async () => {
     if (!newTemplate.action_trigger || !newTemplate.title) return alert("Trigger and Title are required");
     try {
-        const res = await fetch(`http://127.0.0.1:8000/admin-system/email-templates`, {
+        const res = await fetch(`${API_BASE}/admin-system/email-templates`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -244,7 +245,7 @@ export default function Admin() {
   const saveTemplate = async () => {
     if (!selectedTemplate) return;
     try {
-        const res = await fetch(`http://127.0.0.1:8000/admin-system/email-templates/${selectedTemplate.action_trigger}`, {
+        const res = await fetch(`${API_BASE}/admin-system/email-templates/${selectedTemplate.action_trigger}`, {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
@@ -268,13 +269,13 @@ export default function Admin() {
       const token = localStorage.getItem('hidewin_token');
       const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
       
-      const keysRes = await fetch('http://127.0.0.1:8000/admin/llm/keys', { headers });
+      const keysRes = await fetch(API_BASE + '/admin/llm/keys', { headers });
       if (keysRes.ok) {
         const data = await keysRes.json();
         setAiKeys({ gemini: data.aiKeys.gemini || [], openai: data.aiKeys.openai || [], groq: data.aiKeys.groq || [], claude: data.aiKeys.claude || [], deepseek: data.aiKeys.deepseek || [], custom: data.aiKeys.custom || [] });
       }
       
-      const settingsRes = await fetch('http://127.0.0.1:8000/admin/settings', { headers });
+      const settingsRes = await fetch(API_BASE + '/admin/settings', { headers });
       if (settingsRes.ok) {
         const data = await settingsRes.json();
         setAppSettings(prev => ({ ...prev, ...data.settings }));
@@ -290,7 +291,7 @@ export default function Admin() {
         }
       }
 
-      const smtpRes = await fetch('http://127.0.0.1:8000/admin/smtp', { headers });
+      const smtpRes = await fetch(API_BASE + '/admin/smtp', { headers });
       if (smtpRes.ok) {
         const data = await smtpRes.json();
         if (data.config) {
@@ -299,7 +300,7 @@ export default function Admin() {
       }
 
       // Load STT configs
-      const sttRes = await fetch('http://127.0.0.1:8000/admin/stt/config');
+      const sttRes = await fetch(API_BASE + '/admin/stt/config');
       if (sttRes.ok) {
         const data = await sttRes.json();
         setSttConfigs(data.configs || []);
@@ -317,7 +318,7 @@ export default function Admin() {
     const key = sttForm.groq_key;
     if (!key) { alert('Please enter a Groq API key first'); return; }
     try {
-      const res = await fetch('http://127.0.0.1:8000/admin/llm/fetch-models', {
+      const res = await fetch(API_BASE + '/admin/llm/fetch-models', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'groq', api_key_value: key })
@@ -337,7 +338,7 @@ export default function Admin() {
     if (!key) return;
     setSttSaving('groq');
     try {
-      const res = await fetch('http://127.0.0.1:8000/admin/llm/keys', {
+      const res = await fetch(API_BASE + '/admin/llm/keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'groq', api_key_value: key, enabled_models: sttGroqModelsSelected })
@@ -368,7 +369,7 @@ export default function Admin() {
         buffer_seconds: parseInt(sttForm.groq_buffer || '3'),
         ...(providerName === 'custom' ? { custom_url: sttForm.custom_url, custom_name: sttForm.custom_name || 'Custom' } : {})
       };
-      const r = await fetch('http://127.0.0.1:8000/admin/stt/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const r = await fetch(API_BASE + '/admin/stt/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!r.ok) throw new Error(await r.text());
       fetchAiData();
       alert(`Success! ${providerName} STT key has been saved.`);
@@ -379,7 +380,7 @@ export default function Admin() {
   const handleActivateStt = async (providerName, mode) => {
     try {
       const payload = { provider_name: providerName, mode, is_enabled: true, is_active: true, priority: 1, buffer_seconds: parseInt(sttForm.groq_buffer || '3') };
-      const r = await fetch('http://127.0.0.1:8000/admin/stt/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const r = await fetch(API_BASE + '/admin/stt/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!r.ok) throw new Error(await r.text());
       fetchAiData();
     } catch(e) { alert('Activate failed: ' + e.message); }
@@ -388,7 +389,7 @@ export default function Admin() {
   const handleTestStt = async (providerName) => {
     setSttTestResults(prev => ({ ...prev, [providerName]: { loading: true } }));
     try {
-      const r = await fetch('http://127.0.0.1:8000/admin/stt/config/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider_name: providerName }) });
+      const r = await fetch(API_BASE + '/admin/stt/config/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider_name: providerName }) });
       const data = await r.json();
       setSttTestResults(prev => ({ ...prev, [providerName]: data }));
     } catch(e) {
@@ -401,7 +402,7 @@ export default function Admin() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('hidewin_token');
-      const res = await fetch('http://127.0.0.1:8000/admin/users', {
+      const res = await fetch(API_BASE + '/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -459,7 +460,7 @@ export default function Admin() {
   const handleToggleKey = async (id, currentState) => {
     try {
       const token = localStorage.getItem('hidewin_token');
-      await fetch(`http://127.0.0.1:8000/admin/llm/keys/${id}/toggle`, {
+      await fetch(`${API_BASE}/admin/llm/keys/${id}/toggle`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -477,7 +478,7 @@ export default function Admin() {
     setAppSettings(prev => ({ ...prev, [key]: value }));
     try {
       const token = localStorage.getItem('hidewin_token');
-      await fetch('http://127.0.0.1:8000/admin/settings', {
+      await fetch(API_BASE + '/admin/settings', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ [key]: value })
@@ -492,7 +493,7 @@ export default function Admin() {
     setSmtpStatus({ loading: true, message: '', error: false });
     try {
       const token = localStorage.getItem('hidewin_token');
-      const res = await fetch('http://127.0.0.1:8000/admin/smtp', {
+      const res = await fetch(API_BASE + '/admin/smtp', {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(smtpConfig)
@@ -513,7 +514,7 @@ export default function Admin() {
     setSmtpStatus({ loading: true, message: 'Sending test email...', error: false });
     try {
       const token = localStorage.getItem('hidewin_token');
-      const res = await fetch('http://127.0.0.1:8000/admin/smtp/test', {
+      const res = await fetch(API_BASE + '/admin/smtp/test', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ test_email: smtpTestEmail })
@@ -541,7 +542,7 @@ export default function Admin() {
     if (!window.confirm('Are you sure you want to unblock this user?')) return;
     try {
       const token = localStorage.getItem('hidewin_token');
-      const res = await fetch(`http://127.0.0.1:8000/admin/users/${userId}/unblock`, {
+      const res = await fetch(`${API_BASE}/admin/users/${userId}/unblock`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -570,7 +571,7 @@ export default function Admin() {
     setIsFetchingModels(true);
     setModalError('');
     try {
-      const res = await fetch('http://127.0.0.1:8000/admin/llm/fetch-models', {
+      const res = await fetch(API_BASE + '/admin/llm/fetch-models', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider, api_key_value: apiKey })
@@ -613,7 +614,7 @@ export default function Admin() {
           setModalError('Email and password are required');
           return;
         }
-        const res = await fetch(`http://127.0.0.1:8000/api/admin/user/create?role=${modalForm.role}`, {
+        const res = await fetch(`${API_BASE}/api/admin/user/create?role=${modalForm.role}`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: modalForm.email, password: modalForm.password })
@@ -622,7 +623,7 @@ export default function Admin() {
         fetchUsers();
       } 
       else if (type === 'DELETE_USER') {
-        const res = await fetch(`http://127.0.0.1:8000/api/admin/user/${payload.id}`, {
+        const res = await fetch(`${API_BASE}/api/admin/user/${payload.id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -630,7 +631,7 @@ export default function Admin() {
         fetchUsers();
       }
       else if (type === 'UPDATE_USER') {
-        const res = await fetch(`http://127.0.0.1:8000/api/admin/user/${payload.id}/role`, {
+        const res = await fetch(`${API_BASE}/api/admin/user/${payload.id}/role`, {
           method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ role: modalForm.role })
@@ -643,7 +644,7 @@ export default function Admin() {
             setModalError('API Key is required');
             return;
           }
-          const res = await fetch('http://127.0.0.1:8000/admin/llm/keys', {
+          const res = await fetch(API_BASE + '/admin/llm/keys', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ provider: payload.provider, api_key_value: modalForm.apiKey, custom_url: modalForm.customUrl || null, is_enabled: true, enabled_models: selectedModels })
@@ -652,7 +653,7 @@ export default function Admin() {
           fetchAiData();
         }
       else if (type === 'DELETE_KEY') {
-        const res = await fetch(`http://127.0.0.1:8000/admin/llm/keys/${payload.id}`, {
+        const res = await fetch(`${API_BASE}/admin/llm/keys/${payload.id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -1528,7 +1529,7 @@ export default function Admin() {
                             </div>
                             <button className="btn-primary" onClick={() => {
                               // Save as STT
-                              fetch('http://127.0.0.1:8000/admin/llm/keys', {
+                              fetch(API_BASE + '/admin/llm/keys', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ provider: 'groq', api_key_value: sttForm.groq_key, enabled_models: selectedModels })

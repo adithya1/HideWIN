@@ -35,7 +35,7 @@ jobs:
         run: echo "Executing Helm upgrade against staging cluster..."
         
       - name: Post-Deployment Verification
-        run: echo "Running automated load tests (tests/load/) against staging..."
+        run: echo "Automated staging load testing is not configured in this workflow."
 
   deploy-production:
     needs: deploy-staging

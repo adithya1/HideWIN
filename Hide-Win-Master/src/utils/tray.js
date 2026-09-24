@@ -19,7 +19,6 @@ function setupTray(mainWindow) {
                         mainWindow.setSkipTaskbar(true);
                     } else {
                         mainWindow.show();
-                        mainWindow.setSkipTaskbar(false);
                     }
                 }
             }
@@ -44,7 +43,6 @@ function setupTray(mainWindow) {
                 mainWindow.setSkipTaskbar(true);
             } else {
                 mainWindow.show();
-                mainWindow.setSkipTaskbar(false);
             }
         }
     });

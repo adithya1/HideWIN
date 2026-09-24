@@ -481,6 +481,9 @@ function getModelForToday() {
 // ============ HISTORY ============
 
 function getSessionPath(sessionId) {
+    if (typeof sessionId !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(sessionId)) {
+        throw new TypeError('Invalid session identifier');
+    }
     return path.join(getHistoryDir(), `${sessionId}.json`);
 }
 

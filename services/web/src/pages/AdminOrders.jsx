@@ -1,3 +1,4 @@
+import { API_BASE } from '../config.js';
 import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
@@ -7,7 +8,7 @@ export default function AdminOrders() {
 
     const fetchOrders = async () => {
         try {
-            const res = await fetch("http://127.0.0.1:8000/admin/orders/");
+            const res = await fetch(API_BASE + "/admin/orders/");
             if (res.ok) setOrders(await res.json());
         } catch (err) {
             console.error(err);

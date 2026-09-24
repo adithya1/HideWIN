@@ -12,7 +12,7 @@ Pods are configured with a `preStop` hook: `sleep 5`. This delays the `SIGTERM` 
 When the application (Python/Node.js) receives the `SIGTERM`:
 1. **Stop Accepting**: Immediately close the listening server socket (do not accept new connections).
 2. **Finish Work**: Allow in-flight HTTP requests to complete.
-3. **WebSockets**: Send a reconnect advisory (`{"type": "server_shutdown", "reconnect_in": 1000}`) to all active WebRTC signaling clients. 
+3. **WebSockets**: Drain active application WebSocket connections and send reconnect guidance where the protocol supports it.
 4. **Flush State**: Ensure any pending Redis updates or logs are flushed.
 5. **Exit**: Exit cleanly with code `0`.
 

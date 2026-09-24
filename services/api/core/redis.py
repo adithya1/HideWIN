@@ -3,12 +3,13 @@ import json
 import time
 import asyncio
 from typing import Optional
+from services.api.core.config import settings
 try:
     import redis.asyncio as redis
 except ImportError:
     redis = None
 
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+REDIS_URL = settings.REDIS_URL
 
 class RedisManager:
     def __init__(self):

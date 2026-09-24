@@ -7,6 +7,8 @@ export function bindAppEvents() {
             window.hideWin.storage.getCredentials().then(creds => {
                 if (creds && creds.jwtToken) {
                     this.isAuthenticated = true;
+                    this.isMainWindowMinimized = false;
+                    this._signInExpanded = false;
                     try {
                         const payload = JSON.parse(atob(creds.jwtToken.split('.')[1]));
                         if (payload && payload.sub) {
@@ -15,31 +17,51 @@ export function bindAppEvents() {
                     } catch(e) { }
                     this.requestUpdate();
                 }
-            }).catch(e => console.error("Error loading auth:", e));
+            }).catch(e => {
+                console.error("Error loading auth:", e);
+            });
         }
 
         // Listen for Deep Link Authentication
         if (window.hideWin && window.hideWin.ipcRenderer) {
                         window.hideWin.ipcRenderer.on('deep-link-auth-success', async (event, data) => {
+                let authenticated = false;
                 try {
-                    if (data && data.token && data.hash) {
-                        if (window.hideWin && window.hideWin.storage) {
-                            let creds = {};
-                            try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
-                            await window.hideWin.storage.setCredentials({
-                                ...creds,
-                                jwtToken: data.token,
-                                hashkey: data.hash,
-                                user: data.user || creds.user
-                            });
+                    if (!data || typeof data.token !== 'string' || typeof data.hash !== 'string') return;
+                    const apiBase = window.configManager && window.configManager.getApiBaseUrl();
+                    if (!apiBase || !window.hideWin.storage) return;
+                    const validation = await fetch(`${apiBase}/auth/validate-hash`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${data.token}`,
+                            'X-Session-Hashkey': data.hash
+                        }
+                    });
+                    if (!validation.ok) return;
+
+                    let creds = {};
+                    try { creds = await window.hideWin.storage.getCredentials() || {}; } catch(e) {}
+                    await window.hideWin.storage.setCredentials({
+                        ...creds,
+                        jwtToken: data.token,
+                        hashkey: data.hash,
+                        user: data.user || creds.user
+                    });
+                    this.isAuthenticated = true;
+                    this._signInExpanded = false;
+                    if (this.windowType === 'main') {
+                        this.notifyPanelAuth(true);
+                        // Auto-open main window after login success
+                        if (window.hideWin && window.hideWin.ipcRenderer) {
+                            window.hideWin.ipcRenderer.invoke('panel-open-main');
                         }
                     }
-                } catch(e) { } finally {
-                    this.isAuthenticated = true;
                     this.requestUpdate();
-                    if (this.isMainWindowMinimized) {
-                        this._handleMaximize();
-                    }
+                    authenticated = true;
+                } catch(e) {
+                    console.error('Desktop sign-in validation failed');
+                } finally {
+                    if (authenticated && this.isMainWindowMinimized) this._handleMaximize();
                 }
             });
         }

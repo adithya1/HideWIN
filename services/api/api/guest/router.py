@@ -1,7 +1,8 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from typing import List, Dict
 import json
-from datetime import datetime
+import asyncio
+from datetime import datetime, timezone
 
 from services.api.core.database import async_session
 from sqlalchemy import select
@@ -22,14 +23,21 @@ class ConnectionManager:
 
     def disconnect(self, websocket: WebSocket, session_id: str):
         if session_id in self.active_connections:
-            self.active_connections[session_id].remove(websocket)
+            if websocket in self.active_connections[session_id]:
+                self.active_connections[session_id].remove(websocket)
             if not self.active_connections[session_id]:
                 del self.active_connections[session_id]
 
     async def broadcast(self, message: dict, session_id: str):
         if session_id in self.active_connections:
-            for connection in self.active_connections[session_id]:
-                await connection.send_json(message)
+            connections = tuple(self.active_connections[session_id])
+            results = await asyncio.gather(
+                *(connection.send_json(message) for connection in connections),
+                return_exceptions=True,
+            )
+            for connection, result in zip(connections, results):
+                if isinstance(result, Exception):
+                    self.disconnect(connection, session_id)
 
 manager = ConnectionManager()
 
@@ -64,18 +72,34 @@ async def collaboration_endpoint(websocket: WebSocket, session_id: str, token: s
     await manager.broadcast({
         "type": "USER_JOINED",
         "user": {"id": user.id, "email": user.email, "role": user.role},
-        "timestamp": str(datetime.utcnow())
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }, session_id)
 
     try:
         while True:
             data = await websocket.receive_text()
-            message = json.loads(data)
+            if len(data.encode("utf-8")) > 64 * 1024:
+                await websocket.close(code=1009)
+                break
+            try:
+                message = json.loads(data)
+            except json.JSONDecodeError:
+                await websocket.close(code=1007)
+                break
+            if (
+                not isinstance(message, dict)
+                or len(message) > 32
+                or not isinstance(message.get("type"), str)
+                or not message["type"].strip()
+                or len(message["type"]) > 64
+            ):
+                await websocket.close(code=1008)
+                break
             
             broadcast_msg = {
+                **message,
                 "sender": user.email,
                 "role": user.role,
-                **message
             }
             await manager.broadcast(broadcast_msg, session_id)
             
@@ -84,5 +108,5 @@ async def collaboration_endpoint(websocket: WebSocket, session_id: str, token: s
         await manager.broadcast({
             "type": "USER_LEFT",
             "user": user.email,
-            "timestamp": str(datetime.utcnow())
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }, session_id)

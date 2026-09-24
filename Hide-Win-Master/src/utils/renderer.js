@@ -1483,9 +1483,9 @@ async function initSileroVAD(mediaStream) {
 
                     // Send directly to our new FastAPI proxy!
                     
-                                        const headers = { 'X-STT-Model': 'whisper-large-v3-turbo' };
+                    const headers = { 'X-STT-Model': 'whisper-large-v3-turbo' };
                     if (groqKey) {
-                        headers['Authorization'] = `Bearer ${groqKey}`;
+                        headers['X-Groq-Api-Key'] = groqKey;
                     }
                     const response = await fetch(`${configManager.getApiBaseUrl()}/api/ai-proxy/stream-audio-to-llm`, {
                         method: 'POST',
@@ -1493,8 +1493,15 @@ async function initSileroVAD(mediaStream) {
                         body: formData
                     });
 
-                    if (!response.ok)
- throw new Error(`Proxy error: ${response.statusText}`);
+                    if (!response.ok) {
+                        const responseBody = await response.text();
+                        let detail = responseBody;
+                        try {
+                            const parsedBody = JSON.parse(responseBody);
+                            detail = parsedBody.detail || parsedBody.message || responseBody;
+                        } catch {}
+                        throw new Error(detail || `Speech processing failed (${response.status})`);
+                    }
                     
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder('utf-8');
@@ -1509,8 +1516,9 @@ async function initSileroVAD(mediaStream) {
                 } catch (err) {
                     console.error('VAD Processing Error:', err.message || err);
                     const view = document.getElementById('appRoot')?.shadowRoot?.querySelector('assistant-view') || document.getElementById('appRoot')?.shadowRoot?.querySelector('main-view');
-                    if (view) view.statusText = 'Error: Proxy Offline (Failed to fetch)';
-                    window.dispatchEvent(new CustomEvent('update-status', { detail: 'Error: FastAPI proxy not running' }));
+                    const message = `Speech processing failed: ${err.message || 'unknown error'}`;
+                    if (view) view.statusText = message;
+                    window.dispatchEvent(new CustomEvent('update-status', { detail: message }));
                 }
             },
             

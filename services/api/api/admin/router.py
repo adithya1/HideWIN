@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func, case
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from datetime import datetime, timezone
+import re
 import json
 import os
 import uuid
@@ -11,6 +13,7 @@ from services.api.core.database import get_db
 from services.api.core.security import get_current_user
 from services.api.models.user import User
 from services.api.db_models.email_template import EmailTemplate
+from services.api.db_models.session import Session
 
 router = APIRouter(prefix="/admin-system", tags=["Admin Settings & Compliance"])
 
@@ -61,14 +64,23 @@ class EmailBrandingSchema(BaseModel):
 
 @router.get("/email-templates")
 async def get_email_templates(db: AsyncSession = Depends(get_db), _: User = Depends(verify_admin)):
-    res = await db.execute(select(EmailTemplate).order_by(EmailTemplate.id.desc()))
+    res = await db.execute(
+        select(EmailTemplate)
+        .where(
+            ~func.lower(EmailTemplate.template_key).like("meeting%"),
+            ~func.lower(func.coalesce(EmailTemplate.category, "")).in_(("meeting", "meetings")),
+        )
+        .order_by(EmailTemplate.id.desc())
+    )
     return res.scalars().all()
 
 @router.put("/email-templates/{template_key}")
 async def update_email_template(template_key: str, template_data: EmailTemplateSchema, db: AsyncSession = Depends(get_db), _: User = Depends(verify_admin)):
+    if template_key.lower().startswith("meeting"):
+        raise HTTPException(status_code=404, detail="Template not found")
     res = await db.execute(select(EmailTemplate).filter(EmailTemplate.template_key == template_key))
     template = res.scalars().first()
-    if not template:
+    if not template or (template.category or "").lower() in {"meeting", "meetings"}:
         raise HTTPException(status_code=404, detail="Template not found")
     
     for key, value in template_data.dict(exclude_unset=True).items():
@@ -79,6 +91,8 @@ async def update_email_template(template_key: str, template_data: EmailTemplateS
 
 @router.post("/email-templates")
 async def create_email_template(template_data: EmailTemplateSchema, db: AsyncSession = Depends(get_db), _: User = Depends(verify_admin)):
+    if template_data.template_key.lower().startswith("meeting") or template_data.category.lower() in {"meeting", "meetings"}:
+        raise HTTPException(status_code=400, detail="Meeting email templates are disabled")
     res = await db.execute(select(EmailTemplate).filter(EmailTemplate.template_key == template_data.template_key))
     existing = res.scalars().first()
     if existing:
@@ -143,12 +157,13 @@ async def dispatch_marketing_campaign(
 
 @router.get("/email-analytics")
 async def get_email_analytics(db: AsyncSession = Depends(get_db), _: User = Depends(verify_admin)):
-    res = await db.execute(select(EmailLog.status))
-    statuses = res.scalars().all()
-    
-    total = len(statuses)
-    delivered = sum(1 for s in statuses if s in ("DELIVERED", "SENT"))
-    failed = sum(1 for s in statuses if s == "FAILED")
+    res = await db.execute(select(
+        func.count(EmailLog.id),
+        func.sum(case((EmailLog.status.in_(("DELIVERED", "SENT")), 1), else_=0)),
+        func.sum(case((EmailLog.status == "FAILED", 1), else_=0)),
+    ))
+    total, delivered, failed = res.one()
+    total, delivered, failed = int(total or 0), int(delivered or 0), int(failed or 0)
     
     return {
         "total_attempted": total,
@@ -185,28 +200,35 @@ async def retry_email_log(log_id: int, db: AsyncSession = Depends(get_db), _: Us
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/email-logs")
-async def get_email_logs(limit: int = 50, db: AsyncSession = Depends(get_db), _: User = Depends(verify_admin)):
+async def get_email_logs(limit: int = Query(50, ge=1, le=500), db: AsyncSession = Depends(get_db), _: User = Depends(verify_admin)):
     res = await db.execute(select(EmailLog).order_by(EmailLog.id.desc()).limit(limit))
     return res.scalars().all()
 
 class AuditChunkUpload(BaseModel):
-    session_id: str
-    chunk_index: int
-    encrypted_payload: str
+    session_id: str = Field(min_length=1, max_length=128)
+    chunk_index: int = Field(ge=0)
+    encrypted_payload: str = Field(max_length=4 * 1024 * 1024)
 
 @router.post("/compliance/audit-chunk")
 async def upload_audit_chunk(chunk: AuditChunkUpload, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", chunk.session_id):
+        raise HTTPException(status_code=400, detail="Invalid session_id")
+    session_result = await db.execute(select(Session).filter(Session.id == chunk.session_id))
+    session_record = session_result.scalars().first()
+    if not session_record or session_record.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Session not found")
+
     audit_dir = os.path.join(os.path.dirname(__file__), "..", "..", "secure_audit_logs")
     os.makedirs(audit_dir, exist_ok=True)
     
-    filename = f"{chunk.session_id}_chunk_{chunk.chunk_index}_{uuid.uuid4().hex[:4]}.json"
+    filename = f"{chunk.session_id}_chunk_{chunk.chunk_index}_{uuid.uuid4().hex}.json"
     filepath = os.path.join(audit_dir, filename)
     
     with open(filepath, "w") as f:
         json.dump({
             "user": current_user.email,
             "role": current_user.role,
-            "timestamp": str(datetime.utcnow()),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "payload": chunk.encrypted_payload
         }, f)
         

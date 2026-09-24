@@ -11,6 +11,9 @@ build/
 .next/
 *.log
 
-hidewin.db
-
+# Local databases and runtime admin secrets
 *.db
+*.sqlite
+*.sqlite3
+/services/api/data/admin_settings.json
+/services/api/secure_audit_logs/

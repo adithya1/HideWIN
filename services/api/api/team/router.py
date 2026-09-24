@@ -13,7 +13,7 @@ except ImportError:
     third_eye_graph = None
     logging.warning("third_eye_graph not found in agents module. Third-Eye queries will fallback.")
 
-router = APIRouter(prefix="/ws", tags=["webrtc-team"])
+router = APIRouter(prefix="/ws", tags=["team-ai"])
 
 class ConnectionManager:
     def __init__(self):

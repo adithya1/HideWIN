@@ -3,7 +3,7 @@ from sqlalchemy.pool import NullPool
 import os
 
 # For PgBouncer compatibility (transaction mode), we use NullPool and let PgBouncer handle pooling
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/hidewin")
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 # Writer Engine (Primary)
 engine = create_async_engine(

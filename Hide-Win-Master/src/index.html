@@ -102,6 +102,12 @@ window.addEventListener('error', function(e) {
                 overflow: hidden;
                 background-color: transparent !important;
             }
+            html.is-panel hide-win-app {
+                background: transparent !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
             ::-webkit-scrollbar {
         width: 4px;
         height: 4px;
@@ -121,6 +127,10 @@ window.addEventListener('error', function(e) {
     }
         </style>
         <script>
+            if (window.location.search.includes('windowType=panel')) {
+                document.documentElement.classList.add('is-panel');
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
             if (window.location.search.includes('windowType=session')) {
                 document.documentElement.classList.add('is-session');
                 document.documentElement.setAttribute('data-theme', 'dark');

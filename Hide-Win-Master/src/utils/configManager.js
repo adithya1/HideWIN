@@ -1,4 +1,3 @@
-
 const isBrowser = typeof window !== 'undefined';
 let storage;
 
@@ -19,35 +18,42 @@ function getConfig() {
 
 function getWebBaseUrl() {
     const config = getConfig();
-    if (config.networkMode === 'cloud' && config.webDomain) {
-        let domain = config.webDomain.trim();
-        if (!domain.startsWith('http')) domain = 'https://' + domain;
-        // Strip trailing slash
-        return domain.endsWith('/') ? domain.slice(0, -1) : domain;
-    }
-    return 'http://localhost:5173';
+    const configuredUrl = config.networkMode === 'cloud' ? config.webDomain : '';
+    const envUrl = typeof process !== 'undefined' ? process.env.HIDEWIN_WEB_URL : '';
+    return normalizeHttpUrl(configuredUrl || envUrl, 'HIDEWIN_WEB_URL');
 }
 
 function getApiBaseUrl() {
     const config = getConfig();
-    if (config.networkMode === 'cloud' && config.apiDomain) {
-        let domain = config.apiDomain.trim();
-        if (!domain.startsWith('http')) domain = 'https://' + domain;
-        return domain.endsWith('/') ? domain.slice(0, -1) : domain;
-    }
-    return 'http://localhost:8000';
+    const configuredUrl = config.networkMode === 'cloud' ? config.apiDomain : '';
+    const envUrl = typeof process !== 'undefined' ? process.env.HIDEWIN_API_URL : '';
+    return normalizeHttpUrl(configuredUrl || envUrl, 'HIDEWIN_API_URL');
 }
 
 function getWsBaseUrl() {
-    const config = getConfig();
-    if (config.networkMode === 'cloud' && config.apiDomain) {
-        let domain = config.apiDomain.trim();
-        if (domain.startsWith('https://')) domain = domain.replace('https://', 'wss://');
-        else if (domain.startsWith('http://')) domain = domain.replace('http://', 'ws://');
-        else domain = 'wss://' + domain;
-        return domain.endsWith('/') ? domain.slice(0, -1) : domain;
+    const envUrl = typeof process !== 'undefined' ? process.env.HIDEWIN_WS_URL : '';
+    const parsed = new URL(envUrl || getApiBaseUrl());
+    if (!['ws:', 'wss:', 'http:', 'https:'].includes(parsed.protocol)) {
+        throw new Error('HIDEWIN_WS_URL must use WS or WSS.');
     }
-    return 'ws://localhost:8000';
+    if (parsed.protocol === 'http:') parsed.protocol = 'ws:';
+    if (parsed.protocol === 'https:') parsed.protocol = 'wss:';
+    return parsed.toString().replace(/\/+$/, '');
+}
+
+function normalizeHttpUrl(value, name) {
+    if (typeof value !== 'string' || !value.trim()) {
+        if (name === 'HIDEWIN_WEB_URL') return 'http://127.0.0.1:5173';
+        if (name === 'HIDEWIN_API_URL') return 'http://127.0.0.1:8000';
+        return '';
+    }
+    let endpoint = value.trim();
+    if (!/^https?:\/\//i.test(endpoint)) endpoint = "https://" + endpoint;
+    const parsed = new URL(endpoint);
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+        throw new Error(name + ' must use HTTP or HTTPS.');
+    }
+    return parsed.toString().replace(/\/+$/, '');
 }
 
 function getProtocolName() {

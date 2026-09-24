@@ -7,7 +7,7 @@
     <script>
         (async () => {
             try {
-                const { ipcRenderer } = require('electron');
+                const ipcRenderer = window.adminBridge;
                 const prefsStr = await ipcRenderer.invoke('get-preferences');
                 const prefs = typeof prefsStr === 'string' ? JSON.parse(prefsStr) : prefsStr;
                 if (prefs && prefs.themeMain === 'light') {
@@ -475,7 +475,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const { ipcRenderer } = require('electron');
+        const ipcRenderer = window.adminBridge;
 
         // --- Nav ---
         function showPanel(id, el) {
@@ -566,7 +566,7 @@
             const seats = document.getElementById('v-seats').value.trim();
             if (!email) { toast('Enter vendor email', 'error'); return; }
             try {
-                const res = await fetch('http://localhost:8000/api/vendor/invite-user', {
+                const res = await fetch(`${ipcRenderer.getApiBaseUrl()}/api/vendor/invite-user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, seats: parseInt(seats) || 50 })
@@ -592,7 +592,7 @@
         async function checkStatus() {
             // API status
             try {
-                const r = await fetch('http://localhost:8000/health', { signal: AbortSignal.timeout(2000) });
+                const r = await fetch(`${ipcRenderer.getApiBaseUrl()}/health`, { signal: AbortSignal.timeout(2000) });
                 const el = document.getElementById('api-status');
                 if (r.ok) { el.className = 'status status-ok'; el.innerHTML = '<span class="dot"></span> Online'; }
                 else throw new Error();
@@ -624,7 +624,7 @@
         
         async function loadSttConfig() {
             try {
-                const res = await fetch('http://localhost:8000/api/stt/config');
+                const res = await fetch(`${ipcRenderer.getApiBaseUrl()}/api/stt/config`);
                 const data = await res.json();
                 
                 data.configs.forEach(c => {
@@ -665,7 +665,7 @@
                     payload.custom_url = document.getElementById('stt-custom-url').value;
                 }
                 
-                await fetch('http://localhost:8000/api/stt/config', {
+                await fetch(`${ipcRenderer.getApiBaseUrl()}/api/stt/config`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)
@@ -686,8 +686,8 @@
 
         async function saveNetworkSettings() {
             const isCloud = document.getElementById('pref-networkmode').classList.contains('on');
-            const webDomain = document.getElementById('pref-webdomain').value.trim() || 'localhost:5173';
-            const apiDomain = document.getElementById('pref-apidomain').value.trim() || 'localhost:8000';
+            const webDomain = document.getElementById('pref-webdomain').value.trim() || ipcRenderer.getWebBaseUrl();
+            const apiDomain = document.getElementById('pref-apidomain').value.trim() || ipcRenderer.getApiBaseUrl();
             const deployment = document.getElementById('pref-deployment').value;
             const ip = document.getElementById('pref-serverip').value;
             const username = document.getElementById('pref-serveruser').value;
@@ -716,8 +716,8 @@
             else document.getElementById('pref-networkmode').classList.remove('on');
             
             
-            document.getElementById('pref-webdomain').value = config.webDomain || 'localhost:5173';
-            document.getElementById('pref-apidomain').value = config.apiDomain || 'localhost:8000';
+            document.getElementById('pref-webdomain').value = config.webDomain || ipcRenderer.getWebBaseUrl();
+            document.getElementById('pref-apidomain').value = config.apiDomain || ipcRenderer.getApiBaseUrl();
             document.getElementById('pref-protocol').value = config.appProtocol || 'hidewin';
 
             document.getElementById('pref-deployment').value = config.deploymentStrategy || 'localhost';

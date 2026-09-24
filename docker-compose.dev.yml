@@ -8,9 +8,11 @@ services:
     volumes:
       - ./services/api:/app
       - ./:/app_root
+    env_file:
+      - .env
     environment:
       - APP_ENV=development
-      - DEBUG=true
+      - DEBUG=false
       - DATABASE_URL=sqlite+aiosqlite:////app_root/hidewin.db
     ports:
       - "8000:8000"
