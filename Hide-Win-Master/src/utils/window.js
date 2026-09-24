@@ -1047,16 +1047,14 @@ function setupWindowIpcHandlers(sendToRenderer, geminiSessionRef) {
         if (!panel || panel.isDestroyed()) return { success: false };
         const px = Math.round(x);
         const py = Math.round(y);
-        const panelBounds = panel.getBounds();
-        panel.setBounds({ x: px, y: py, width: panelBounds.width, height: panelBounds.height });
+        panel.setPosition(px, py);
         if (mainWindowRef && !mainWindowRef.isDestroyed() && mainWindowRef.isVisible()) {
-            const bounds = mainWindowRef.getBounds();
-            mainWindowRef.setBounds({
-                x: Math.round(px + (panelBounds.width - bounds.width) / 2),
-                y: py + panelBounds.height + 8,
-                width: bounds.width,
-                height: bounds.height
-            });
+            const [panelWidth, panelHeight] = panel.getSize();
+            const [mainWidth, mainHeight] = mainWindowRef.getSize();
+            mainWindowRef.setPosition(
+                Math.round(px + (panelWidth - mainWidth) / 2),
+                py + panelHeight + 8
+            );
         }
         return { success: true };
     });

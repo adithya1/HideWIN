@@ -774,8 +774,8 @@ export class HideWinApp extends LitElement {
     async _openSignIn() {
         if (this.windowType === 'panel' && window.require) {
             const { ipcRenderer } = window.require('electron');
-            await ipcRenderer.invoke('panel-open-main');
-            this._panelMainOpen = true;
+            const result = await ipcRenderer.invoke('panel-toggle-main');
+            this._panelMainOpen = result?.visible !== false;
             this.requestUpdate();
         }
     }
